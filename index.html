@@ -1,0 +1,3504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Insurance Cold Calling CRM</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f1f5f9; color: #1e293b;
+  height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+}
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  color: white; padding: 0 20px; height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.brand h1 { font-size: 16px; font-weight: 800; }
+.brand p { font-size: 10px; opacity: 0.65; margin-top: 1px; }
+.btn-add {
+  background: white; color: #2563eb; border: none; padding: 7px 14px;
+  border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+}
+.btn-add:hover { background: #dbeafe; }
+/* LAYOUT */
+.main { display: flex; flex: 1; overflow: hidden; }
+/* SIDEBAR */
+.sidebar {
+  width: 295px; background: white; border-right: 1px solid #e2e8f0;
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar-top { padding: 10px 11px; border-bottom: 1px solid #f1f5f9; }
+.search-wrap { position: relative; margin-bottom: 8px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
+.search-input {
+  width: 100%; padding: 7px 10px 7px 30px; border: 1px solid #e2e8f0;
+  border-radius: 8px; font-size: 12px; outline: none; background: #f8fafc; transition: all 0.15s;
+}
+.search-input:focus { border-color: #2563eb; background: white; }
+.filter-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.fbtn {
+  padding: 3px 8px; border-radius: 20px; border: 1px solid #e2e8f0;
+  font-size: 10px; font-weight: 700; cursor: pointer; background: white; color: #64748b; transition: all 0.12s;
+}
+.fbtn.active { background: #2563eb; border-color: #2563eb; color: white; }
+.leads-list { flex: 1; overflow-y: auto; padding: 5px; }
+.lead-item {
+  padding: 9px 10px; border-radius: 9px; cursor: pointer;
+  transition: all 0.12s; margin-bottom: 3px; border: 2px solid transparent;
+}
+.lead-item:hover { background: #f8fafc; }
+.lead-item.active { background: #eff6ff; border-color: #2563eb; }
+.li-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+.li-name { font-size: 13px; font-weight: 700; }
+.li-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 20px; white-space: nowrap; }
+.li-phone { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+.li-meta { display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; }
+.due-over { color: #ef4444; font-weight: 700; }
+.due-today { color: #ef4444; font-weight: 700; }
+.due-soon { color: #f59e0b; font-weight: 700; }
+.empty-state { text-align: center; padding: 32px 14px; color: #94a3b8; }
+.empty-state .ei { font-size: 28px; margin-bottom: 8px; }
+.empty-state h3 { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+.empty-state p { font-size: 11px; }
+/* DETAIL */
+.detail { flex: 1; overflow-y: auto; padding: 18px; background: #f1f5f9; }
+.no-sel {
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; height: 100%; color: #94a3b8; gap: 10px;
+}
+.no-sel .ni { font-size: 40px; }
+.no-sel h2 { font-size: 16px; color: #64748b; }
+.no-sel p { font-size: 12px; }
+/* Detail header */
+.dh {
+  background: white; border-radius: 12px; padding: 16px 18px;
+  margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.dh-name { font-size: 19px; font-weight: 800; margin-bottom: 5px; }
+.dh-info { display: flex; gap: 10px; font-size: 11px; color: #64748b; flex-wrap: wrap; }
+.dh-actions { display: flex; gap: 5px; }
+/* Buttons */
+.btn {
+  padding: 6px 11px; border-radius: 7px; border: none; font-size: 12px;
+  font-weight: 700; cursor: pointer; transition: all 0.12s; display: flex; align-items: center; gap: 4px;
+}
+.bp { background: #2563eb; color: white; } .bp:hover { background: #1d4ed8; }
+.bs { background: #10b981; color: white; } .bs:hover { background: #059669; }
+.bd { background: #fef2f2; color: #ef4444; } .bd:hover { background: #fee2e2; }
+.bg { background: #f1f5f9; color: #475569; } .bg:hover { background: #e2e8f0; }
+.bw { background: #fef3c7; color: #92400e; } .bw:hover { background: #fde68a; }
+/* Follow-up bar */
+.fu-bar {
+  background: white; border-radius: 10px; padding: 9px 14px; margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.fu-bar label { font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap; }
+.fu-input {
+  border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px;
+  font-size: 11px; outline: none; transition: border-color 0.15s; cursor: pointer;
+}
+.fu-input:focus { border-color: #2563eb; }
+.fu-status { font-size: 11px; font-weight: 700; }
+/* Stage progress */
+.stage-card {
+  background: white; border-radius: 12px; padding: 16px 18px;
+  margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.sec-title {
+  font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1px; color: #94a3b8; margin-bottom: 12px;
+}
+.stage-track { display: flex; align-items: flex-start; overflow-x: auto; padding-bottom: 2px; }
+.st-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 50px; }
+.st-dot {
+  width: 22px; height: 22px; border-radius: 50%; border: 3px solid #e2e8f0; background: white;
+  display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800;
+  z-index: 1; transition: all 0.2s; cursor: pointer;
+}
+.st-dot.done { background: #10b981; border-color: #10b981; color: white; }
+.st-dot.current { background: #2563eb; border-color: #2563eb; color: white; box-shadow: 0 0 0 3px #dbeafe; }
+.st-dot.future { color: #d1d5db; }
+.st-conn-wrap { flex: 1; display: flex; align-items: flex-start; padding-top: 11px; }
+.st-conn { height: 3px; width: 100%; background: #e2e8f0; transition: background 0.2s; }
+.st-conn.done { background: #10b981; }
+.st-lbl { font-size: 8px; text-align: center; color: #94a3b8; margin-top: 4px; line-height: 1.3; max-width: 50px; }
+.st-lbl.current { color: #2563eb; font-weight: 700; }
+.st-lbl.done { color: #10b981; }
+.stage-btns { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+.stage-cur { padding: 5px 11px; border-radius: 7px; font-size: 11px; font-weight: 800; }
+/* Theme badge */
+.theme-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+  margin-bottom: 10px; display: inline-block;
+}
+/* Cards */
+.card {
+  background: white; border-radius: 12px; padding: 16px 18px;
+  margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+/* Task checklist */
+.task-list { margin-bottom: 4px; }
+.task-item {
+  display: flex; align-items: flex-start; gap: 9px; padding: 7px 10px;
+  border-radius: 8px; margin-bottom: 4px; border: 1px solid #e2e8f0; background: #f8fafc;
+  cursor: pointer; transition: all 0.12s;
+}
+.task-item:hover { background: #f1f5f9; }
+.task-item.done-task { background: #f0fdf4; border-color: #bbf7d0; }
+.task-check {
+  width: 17px; height: 17px; border-radius: 5px; border: 2px solid #cbd5e1;
+  background: white; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px; transition: all 0.12s; font-size: 10px;
+}
+.task-item.done-task .task-check { background: #10b981; border-color: #10b981; color: white; }
+.task-label { font-size: 12px; color: #374151; line-height: 1.4; }
+.task-item.done-task .task-label { text-decoration: line-through; color: #94a3b8; }
+.task-icon { font-size: 14px; flex-shrink: 0; margin-top: 0px; }
+/* Script sections */
+.script-section { margin-bottom: 14px; }
+.script-section:last-child { margin-bottom: 0; }
+.script-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; background: #f1f5f9; border-radius: 8px 8px 0 0;
+  border: 1px solid #e2e8f0; border-bottom: none; cursor: pointer;
+}
+.script-header-title { font-size: 12px; font-weight: 700; color: #374151; }
+.script-subject { font-size: 10px; color: #94a3b8; font-style: italic; margin-top: 1px; }
+.script-body-wrap {
+  border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; overflow: hidden;
+}
+.script-body {
+  padding: 12px 14px; font-size: 12px; line-height: 1.75; color: #374151;
+  white-space: pre-wrap; font-family: inherit; background: #fafafa;
+}
+.script-note {
+  padding: 7px 12px; background: #eff6ff; border-top: 1px solid #dbeafe;
+  font-size: 10px; color: #1d4ed8; font-style: italic;
+}
+.script-tip {
+  padding: 8px 12px; background: #f0f9ff; border-top: 1px solid #bae6fd;
+  font-size: 11px; color: #0369a1; line-height: 1.5;
+}
+.copy-btn { font-size: 10px; padding: 4px 9px; }
+/* Cold call script */
+.call-section { margin-bottom: 10px; }
+.call-sec-title {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+  color: #64748b; padding: 6px 0 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+.call-block {
+  border: 1px solid #e2e8f0; border-radius: 9px; overflow: hidden; margin-bottom: 6px;
+}
+.call-block-q {
+  padding: 8px 12px; background: #f8fafc; font-size: 12px; font-weight: 700;
+  color: #374151; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.call-block-q:hover { background: #f1f5f9; }
+.call-block-body {
+  padding: 10px 14px; font-size: 12px; line-height: 1.7;
+  white-space: pre-wrap; font-family: inherit; color: #374151; display: none;
+}
+.call-block.open .call-block-body { display: block; }
+.call-arrow { font-size: 9px; transition: transform 0.15s; }
+.call-block.open .call-arrow { transform: rotate(180deg); }
+/* Objections */
+.objection { border: 1px solid #e2e8f0; border-radius: 9px; overflow: hidden; margin-bottom: 6px; }
+.obj-q {
+  padding: 8px 12px; background: #fffbeb; font-size: 12px; font-weight: 700;
+  color: #92400e; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+}
+.obj-q:hover { background: #fef3c7; }
+.obj-a {
+  padding: 10px 13px; font-size: 12px; color: #374151;
+  line-height: 1.6; border-top: 1px solid #fde68a; display: none; background: #fffdf5;
+}
+.objection.open .obj-a { display: block; }
+.obj-arrow { font-size: 9px; transition: transform 0.15s; }
+.objection.open .obj-arrow { transform: rotate(180deg); }
+/* Notes */
+.notes-list { margin-bottom: 10px; }
+.note-item {
+  padding: 8px 11px; background: #f8fafc; border-radius: 8px;
+  margin-bottom: 5px; font-size: 12px; line-height: 1.5; border-left: 3px solid #2563eb;
+}
+.note-meta { font-size: 10px; color: #94a3b8; margin-bottom: 2px; }
+.note-add { display: flex; gap: 6px; align-items: flex-end; }
+.note-input {
+  flex: 1; padding: 7px 10px; border: 1px solid #e2e8f0; border-radius: 8px;
+  font-size: 12px; font-family: inherit; outline: none; resize: none; height: 52px;
+  transition: border-color 0.15s;
+}
+.note-input:focus { border-color: #2563eb; }
+/* Activity */
+.act-item { display: flex; gap: 8px; margin-bottom: 7px; align-items: flex-start; font-size: 11px; }
+.act-dot { width: 6px; height: 6px; border-radius: 50%; background: #2563eb; flex-shrink: 0; margin-top: 3px; }
+.act-txt { color: #374151; line-height: 1.4; }
+.act-time { color: #94a3b8; font-size: 10px; }
+/* Modal */
+.overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.5);
+  display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(3px);
+}
+.modal {
+  background: white; border-radius: 14px; padding: 22px; width: 460px;
+  max-width: 92vw; max-height: 86vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+}
+.modal h2 { font-size: 15px; font-weight: 800; margin-bottom: 16px; }
+.frow { display: flex; gap: 10px; }
+.frow .fg { flex: 1; }
+.fg { margin-bottom: 11px; }
+.fg label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 4px; }
+.fg input, .fg textarea {
+  width: 100%; padding: 7px 10px; border: 1px solid #e2e8f0; border-radius: 7px;
+  font-size: 13px; font-family: inherit; outline: none; transition: all 0.15s;
+}
+.fg input:focus, .fg textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #dbeafe; }
+.m-actions {
+  display: flex; gap: 6px; justify-content: flex-end;
+  margin-top: 16px; padding-top: 12px; border-top: 1px solid #f1f5f9;
+}
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+/* ── CALL OUTCOME BUTTONS ── */
+.call-outcomes {
+  background: white; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: flex; gap: 6px; flex-wrap: wrap;
+}
+.call-outcome-btn {
+  padding: 6px 11px; border-radius: 16px; border: 1px solid #e2e8f0;
+  font-size: 11px; font-weight: 700; cursor: pointer; background: white; color: #475569;
+  transition: all 0.12s; display: flex; align-items: center; gap: 4px;
+}
+.call-outcome-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+.call-outcome-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
+/* ── QUEUE VIEW ── */
+.queue-wrap { flex: 1; overflow-y: auto; padding: 18px; background: #f1f5f9; }
+.queue-card {
+  background: white; border-radius: 11px; padding: 13px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 8px;
+  border-left: 4px solid #2563eb; transition: all 0.12s;
+}
+.queue-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+.queue-card-name { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+.queue-card-meta { display: flex; gap: 10px; font-size: 10px; color: #94a3b8; margin-bottom: 8px; flex-wrap: wrap; }
+.queue-card-meta span { display: flex; align-items: center; gap: 3px; }
+.queue-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+/* ── TAB BAR ── */
+.tab-bar {
+  background: white; border-bottom: 2px solid #e2e8f0;
+  display: flex; align-items: center; padding: 0 18px; gap: 0;
+  flex-shrink: 0; height: 42px;
+}
+.tab-btn {
+  padding: 0 16px; height: 100%; border: none; background: none;
+  cursor: pointer; font-size: 12px; font-weight: 700; color: #64748b;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  transition: all 0.12s; display: flex; align-items: center; gap: 5px;
+}
+.tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+.tab-btn:hover:not(.active) { color: #374151; background: #f8fafc; }
+/* ── OVERVIEW ── */
+#view-overview { flex: 1; overflow: hidden; display: none; flex-direction: column; }
+.overview-inner { flex: 1; overflow: auto; padding: 18px; }
+/* MONTH BREAKDOWN */
+.month-breakdown {
+  background: white; border-radius: 12px; padding: 14px 18px;
+  margin-bottom: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.mb-title { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+.mb-row, .mb-head {
+  display: grid; grid-template-columns: 1fr 90px 90px 90px;
+  align-items: center; padding: 7px 8px; border-radius: 7px; gap: 6px;
+}
+.mb-head { background: #f8fafc; margin-bottom: 4px; }
+.mb-head span { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; }
+.mb-head .mb-h-active { color: #059669; }
+.mb-head .mb-h-lost   { color: #dc2626; }
+.mb-head .mb-h-won    { color: #10b981; }
+.mb-row { border-bottom: 1px solid #f1f5f9; }
+.mb-row:last-child { border-bottom: none; }
+.mb-row:hover { background: #f8fafc; }
+.mb-month { font-size: 12px; font-weight: 700; color: #1e293b; }
+.mb-val { font-size: 14px; font-weight: 800; text-align: center; padding: 2px 0; }
+.mb-val.active { color: #059669; }
+.mb-val.lost   { color: #dc2626; }
+.mb-val.won    { color: #10b981; }
+.mb-val.zero   { color: #cbd5e1; font-weight: 600; }
+
+.ov-stats { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.ov-stat {
+  border-radius: 10px; padding: 12px 18px; min-width: 130px; flex: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.ov-stat-val { font-size: 26px; font-weight: 800; }
+.ov-stat-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75; margin-top: 2px; }
+.pipeline-board { display: flex; gap: 10px; align-items: flex-start; min-width: max-content; padding-bottom: 8px; }
+.pipeline-col { width: 178px; flex-shrink: 0; }
+.pipeline-col-header {
+  padding: 7px 11px; border-radius: 9px 9px 0 0; font-size: 10px;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.7px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pipeline-col-body {
+  border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 9px 9px;
+  background: white; min-height: 50px; padding: 5px;
+}
+.pipeline-card {
+  padding: 7px 9px; border-radius: 7px; border: 1px solid #e2e8f0;
+  margin-bottom: 4px; cursor: pointer; transition: all 0.12s; background: white;
+}
+.pipeline-card:hover { border-color: #2563eb; box-shadow: 0 2px 8px rgba(37,99,235,0.14); transform: translateY(-1px); }
+.pc-name { font-size: 11px; font-weight: 700; color: #1e293b; }
+.pc-sub { font-size: 10px; color: #94a3b8; margin-top: 1px; }
+.pc-due { font-size: 9px; font-weight: 700; margin-top: 3px; }
+.col-empty { color: #cbd5e1; font-size: 10px; text-align: center; padding: 10px 4px; }
+.pcnt { font-size: 10px; font-weight: 800; background: rgba(0,0,0,0.15); padding: 1px 5px; border-radius: 8px; color: white; }
+/* ── CONV STAGE DROPDOWN ── */
+.conv-stage-bar {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #7dd3fc; border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.conv-stage-bar label { font-size: 11px; font-weight: 800; color: #0369a1; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.2px; }
+.conv-stage-select {
+  flex: 1; min-width: 220px; padding: 6px 10px; border: 1px solid #7dd3fc;
+  border-radius: 7px; font-size: 12px; font-weight: 600; color: #0c4a6e;
+  background: white; outline: none; cursor: pointer; transition: border-color 0.15s;
+}
+.conv-stage-select:focus { border-color: #0284c7; box-shadow: 0 0 0 3px #e0f2fe; }
+.conv-stage-active {
+  font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 12px;
+  background: #0369a1; color: white; white-space: nowrap;
+}
+/* ── EMAIL GUIDE ── */
+#view-email { flex: 1; overflow: hidden; display: none; }
+.email-guide-wrap { height: 100%; overflow-y: auto; padding: 18px; background: #f1f5f9; }
+.eg-hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  color: white; border-radius: 14px; padding: 22px 24px; margin-bottom: 16px;
+}
+.eg-hero h2 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.eg-hero p { font-size: 12px; opacity: 0.85; line-height: 1.55; }
+.eg-card {
+  background: white; border-radius: 12px; padding: 18px 20px;
+  margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.eg-card h3 { font-size: 13px; font-weight: 800; margin-bottom: 12px; color: #1e293b; }
+.eg-step { display: flex; gap: 11px; margin-bottom: 12px; align-items: flex-start; }
+.eg-step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: white;
+  font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.eg-step-body { flex: 1; font-size: 12px; line-height: 1.65; color: #374151; }
+.eg-step-body strong { color: #1e293b; display: block; margin-bottom: 2px; }
+.eg-option {
+  border: 1px solid #e2e8f0; border-radius: 9px; padding: 12px 14px;
+  margin-bottom: 8px; transition: border-color 0.12s;
+}
+.eg-option:hover { border-color: #2563eb; }
+.eg-option-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.eg-option h4 { font-size: 12px; font-weight: 800; color: #1e293b; margin: 0; flex: 1; }
+.eg-option p { font-size: 11px; color: #64748b; line-height: 1.55; margin: 0; }
+.eg-badge { font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+.eg-free { background: #d1fae5; color: #065f46; }
+.eg-paid { background: #dbeafe; color: #1d4ed8; }
+.eg-easy { background: #fef3c7; color: #92400e; }
+.eg-code {
+  background: #f1f5f9; border-radius: 6px; padding: 9px 12px;
+  font-family: monospace; font-size: 11px; color: #1e293b; margin: 8px 0;
+  white-space: pre-wrap; border-left: 3px solid #2563eb; line-height: 1.5;
+}
+.eg-tl-item {
+  display: flex; gap: 12px; padding: 8px 0 8px 16px; border-left: 2px solid #dbeafe;
+  margin-left: 10px; position: relative;
+}
+.eg-tl-item::before {
+  content: ''; position: absolute; left: -5px; top: 14px;
+  width: 8px; height: 8px; border-radius: 50%; background: #2563eb;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+.eg-tl-day { font-size: 10px; font-weight: 800; color: #2563eb; min-width: 44px; flex-shrink: 0; padding-top: 2px; }
+.eg-tl-body { font-size: 11px; color: #374151; line-height: 1.5; }
+.eg-tl-body strong { color: #1e293b; }
+/* ── RICH TEXT TOOLBAR ── */
+.rich-toolbar {
+  display: flex; gap: 3px; padding: 6px 10px;
+  background: #f1f5f9; border: 1px solid #e2e8f0;
+  border-radius: 8px 8px 0 0; border-bottom: none; flex-wrap: wrap; align-items: center;
+}
+.rtb {
+  width: 28px; height: 26px; border: 1px solid #cbd5e1; background: white;
+  border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.1s; color: #374151; flex-shrink: 0;
+}
+.rtb:hover { background: #dbeafe; border-color: #2563eb; color: #1d4ed8; }
+.rtb-sep { width: 1px; background: #e2e8f0; height: 18px; margin: 0 2px; flex-shrink: 0; }
+.rtb-wide { width: auto; padding: 0 8px; font-size: 11px; }
+.rich-edit-area {
+  width: 100%; min-height: 120px; padding: 12px 14px;
+  border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px;
+  font-size: 12px; font-family: inherit; line-height: 1.75; color: #374151;
+  background: #f0f6ff; outline: none; overflow-y: auto; border-top: 2px solid #2563eb;
+}
+.rich-edit-area:focus { background: white; }
+.rich-edit-area b, .rich-edit-area strong { font-weight: 800; }
+.rich-edit-area u { text-decoration: underline; }
+.rich-edit-area ul { padding-left: 18px; margin: 4px 0; }
+.rich-edit-area ol { padding-left: 18px; margin: 4px 0; }
+/* ── RESEARCH PANEL ── */
+.research-panel {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #7dd3fc; border-radius: 12px;
+  padding: 14px 16px; margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(3,105,161,0.08);
+}
+.research-panel-title { font-size: 12px; font-weight: 800; color: #0369a1; margin-bottom: 4px; }
+.research-panel-sub { font-size: 11px; color: #0284c7; margin-bottom: 10px; line-height: 1.5; }
+.research-textarea {
+  width: 100%; min-height: 110px; padding: 10px 12px;
+  border: 1px solid #bae6fd; border-radius: 8px; font-size: 12px;
+  font-family: inherit; line-height: 1.6; outline: none; resize: vertical;
+  background: white; color: #1e293b; margin-bottom: 8px; transition: border-color 0.15s;
+}
+.research-textarea:focus { border-color: #0369a1; box-shadow: 0 0 0 3px #e0f2fe; }
+.research-panel-actions { display: flex; gap: 7px; align-items: center; }
+/* ── LOST LEADS ── */
+.lost-wrap { flex: 1; overflow-y: auto; padding: 20px; background: #f1f5f9; }
+.lost-banner {
+  background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+  border: 1px solid #fde68a; border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 18px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.lost-banner-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.lost-banner-body { flex: 1; }
+.lost-banner-title { font-size: 13px; font-weight: 800; color: #92400e; margin-bottom: 3px; }
+.lost-banner-text { font-size: 11px; color: #78350f; line-height: 1.6; }
+.lost-grid { display: flex; flex-direction: column; gap: 8px; }
+.lost-card {
+  background: white; border-radius: 11px; padding: 13px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 12px;
+  border-left: 4px solid #e2e8f0; transition: all 0.12s;
+}
+.lost-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); border-left-color: #f59e0b; }
+.lost-card-info { flex: 1; min-width: 0; }
+.lost-card-name { font-size: 14px; font-weight: 800; color: #1e293b; }
+.lost-card-company { font-size: 11px; color: #64748b; margin-top: 1px; }
+.lost-card-meta { display: flex; gap: 14px; margin-top: 5px; font-size: 10px; color: #94a3b8; flex-wrap: wrap; }
+.lost-card-meta span { display: flex; align-items: center; gap: 3px; }
+.cold-badge {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  background: #fef3c7; color: #92400e; white-space: nowrap; flex-shrink: 0;
+}
+.cold-badge.very-cold { background: #e0f2fe; color: #0369a1; }
+.lost-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.lost-empty { text-align: center; padding: 48px 20px; color: #94a3b8; }
+.lost-empty .lei { font-size: 36px; margin-bottom: 10px; }
+.lost-empty h3 { font-size: 14px; color: #64748b; margin-bottom: 6px; }
+.lost-empty p { font-size: 12px; }
+/* ── DRAG AND DROP ── */
+.pipeline-card[draggable=true] { cursor: grab; }
+.pipeline-card[draggable=true]:active { cursor: grabbing; opacity: 0.7; }
+.pipeline-card.dragging { opacity: 0.4; transform: scale(0.97); box-shadow: none; }
+.pipeline-col-body.drag-over {
+  background: #eff6ff; border-color: #2563eb;
+  border: 2px dashed #2563eb; border-radius: 0 0 9px 9px;
+}
+/* ── COLLAPSIBLE SCRIPT HEADER ── */
+.script-header { cursor: pointer; user-select: none; }
+.script-chevron {
+  font-size: 9px; transition: transform 0.18s; color: #94a3b8;
+  flex-shrink: 0; margin-left: 4px;
+}
+.script-section.open .script-chevron { transform: rotate(180deg); }
+/* Import modal */
+.import-modal {
+  background: white; border-radius: 14px; padding: 22px; width: 860px;
+  max-width: 96vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  display: flex; flex-direction: column;
+}
+.import-modal h2 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+.import-modal .sub { font-size: 12px; color: #64748b; margin-bottom: 14px; }
+.paste-zone {
+  border: 2px dashed #cbd5e1; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+  background: #f8fafc; transition: border-color 0.15s;
+}
+.paste-zone:focus-within { border-color: #2563eb; background: white; }
+.paste-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+.paste-textarea {
+  width: 100%; height: 70px; border: none; background: transparent; font-size: 12px;
+  font-family: monospace; outline: none; resize: none; color: #374151; line-height: 1.5;
+}
+.import-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.import-divider span { font-size: 11px; color: #94a3b8; white-space: nowrap; }
+.import-divider hr { flex: 1; border: none; border-top: 1px solid #e2e8f0; }
+.itbl-wrap { overflow-x: auto; margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 9px; }
+.itbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.itbl thead th {
+  background: #f8fafc; padding: 7px 8px; text-align: left; font-size: 10px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+.itbl thead th.req::after { content: ' *'; color: #ef4444; }
+.itbl tbody tr:not(:last-child) td { border-bottom: 1px solid #f1f5f9; }
+.itbl tbody tr:hover td { background: #f8fafc; }
+.itbl td { padding: 3px 4px; }
+.itbl td input {
+  width: 100%; padding: 5px 7px; border: 1px solid transparent; border-radius: 6px;
+  font-size: 12px; font-family: inherit; outline: none; background: transparent; transition: all 0.12s;
+}
+.itbl td input:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 2px #dbeafe; }
+.itbl td input.err { border-color: #ef4444; background: #fef2f2; }
+.itbl td.del-col { width: 28px; text-align: center; }
+.del-row-btn {
+  background: none; border: none; cursor: pointer; color: #cbd5e1; font-size: 14px;
+  line-height: 1; padding: 2px; border-radius: 4px; transition: color 0.12s;
+}
+.del-row-btn:hover { color: #ef4444; }
+.import-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+.import-count { font-size: 12px; color: #64748b; flex: 1; }
+.import-count strong { color: #1e293b; }
+.parse-btn { font-size: 11px; padding: 4px 10px; }
+.import-hint { font-size: 10px; color: #94a3b8; margin-top: 6px; }
+.row-ok td input:not(:placeholder-shown) { /* valid */ }
+.import-error { font-size: 11px; color: #ef4444; margin-top: 4px; }
+/* Inline script editing */
+.script-edit-area {
+  width: 100%; padding: 12px 14px; border: none; border-top: 2px solid #2563eb;
+  font-size: 12px; font-family: inherit; line-height: 1.75; color: #374151;
+  background: #f0f6ff; outline: none; resize: vertical; min-height: 120px; display: block;
+}
+.script-edit-actions {
+  display: flex; gap: 7px; align-items: center; padding: 8px 12px;
+  background: #eff6ff; border-top: 1px solid #dbeafe; flex-wrap: wrap;
+}
+.edited-badge {
+  display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 20px; margin-left: 6px;
+}
+.call-block-edit-area {
+  width: 100%; padding: 10px 14px; border: none; border-top: 2px solid #2563eb;
+  font-size: 12px; font-family: inherit; line-height: 1.7; color: #374151;
+  background: #f0f6ff; outline: none; resize: vertical; min-height: 100px; display: block;
+}
+.call-edit-actions {
+  display: flex; gap: 7px; align-items: center; padding: 8px 12px;
+  background: #eff6ff; border-top: 1px solid #dbeafe; flex-wrap: wrap;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand"><h1>📞 Health Insurance Cold Calling CRM</h1><p>ACA / Group Benefits — Cold Outbound Sequence</p></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="exportCSV()">📥 Export CSV</button>
+    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="openImport()">📥 Bulk Import</button>
+    <button class="btn-add" onclick="openAdd()">+ Add Lead</button>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-queue" onclick="switchTab('queue')">📋 Call Queue</button>
+  <button class="tab-btn" id="tab-kanban" onclick="switchTab('kanban')">🗂 Kanban</button>
+  <button class="tab-btn" id="tab-overview" onclick="switchTab('overview')">📊 Pipeline Overview</button>
+  <button class="tab-btn" id="tab-lost" onclick="switchTab('lost')">❄️ Lost Leads</button>
+  <button class="tab-btn" id="tab-email" onclick="switchTab('email')">📧 Email Setup Guide</button>
+</div>
+
+<div class="main" id="view-leads">
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Search leads…" oninput="onSearch(this.value)">
+      </div>
+      <div class="filter-row">
+        <button class="fbtn active" onclick="setF('due',this)">Due</button>
+        <button class="fbtn" onclick="setF('quoting',this)">Quoting</button>
+        <button class="fbtn" onclick="setF('won',this)">Won</button>
+      </div>
+    </div>
+    <div class="leads-list" id="leadsList"></div>
+  </div>
+  <div class="detail" id="detail">
+    <div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>or click + Add Lead to get started</p></div>
+  </div>
+</div>
+
+<div id="view-kanban" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="kanbanInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading board…</div>
+  </div>
+</div>
+
+<div id="view-overview" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="overviewInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading overview…</div>
+  </div>
+</div>
+
+<div id="view-email" style="display:none;flex:1;overflow:hidden;">
+  <div class="email-guide-wrap">
+    <div class="eg-hero">
+      <h2>📧 Gmail Integration Guide</h2>
+      <p>Your 30-day outreach sequence is built in. Here's how to connect it to Gmail — from zero-setup one-click drafts to a fully automated sequence that sends itself.</p>
+    </div>
+
+    <!-- LEVEL 0 -->
+    <div class="eg-card">
+      <h3>⚡ Level 0 — One-Click Gmail Draft (Built In, No Setup)</h3>
+      <p style="font-size:12px;color:#64748b;margin-bottom:12px">On any lead's script page, expand any email script and click <strong>📧 Send</strong>. This opens Gmail in a new tab pre-filled with the script body, subject line, and lead's name/company already inserted. Hit Schedule Send to queue it for the right day.</p>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:11px;color:#065f46;font-weight:700;line-height:1.6">
+        ✅ Already live — Leads tab → select lead → Scripts for This Stage → expand any email → click 📧 Send
+      </div>
+      <div class="eg-option" style="margin-top:10px">
+        <div class="eg-option-head">
+          <h4>Enable Gmail Schedule Send</h4>
+          <span class="eg-badge eg-free">Free</span>
+          <span class="eg-badge eg-easy">Easiest</span>
+        </div>
+        <p>In Gmail compose window: click the ▾ arrow next to the blue Send button → "Schedule Send" → pick the right day and time. Batch-schedule all 8 emails in ~5 minutes when you add a new lead.</p>
+      </div>
+    </div>
+
+    <!-- LEVEL 1 -->
+    <div class="eg-card">
+      <h3>📋 Level 1 — Gmail Templates (Free, Saves Time Per Lead)</h3>
+      <p style="font-size:12px;color:#64748b;margin-bottom:10px">Save each of your 7 email scripts as a Gmail Template so you can load them instantly without copy-pasting from the CRM every time.</p>
+      <div class="eg-step">
+        <div class="eg-step-num">1</div>
+        <div class="eg-step-body">
+          <strong>Turn on Gmail Templates</strong>
+          Gmail → Settings (gear icon) → See all settings → Advanced tab → Templates → Enable → Save Changes.
+        </div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">2</div>
+        <div class="eg-step-body">
+          <strong>Save each script as a template</strong>
+          Open a new Gmail compose → paste the script body → click the three-dot menu (⋮) in the compose toolbar → Templates → Save draft as template → name it "Day 1 – Problem Email", "Day 3 – Bubble-Up", etc.
+        </div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">3</div>
+        <div class="eg-step-body">
+          <strong>Use when adding a new lead</strong>
+          Compose → ⋮ → Templates → Insert template → personalize the [Name]/[Company] fields → Schedule Send to the right day. Repeat for all 8 emails.
+        </div>
+      </div>
+      <div style="background:#eff6ff;border-radius:7px;padding:9px 12px;font-size:11px;color:#1d4ed8;margin-top:4px">
+        💡 <strong>Pro tip:</strong> Use Gmail's "Schedule Send" presets — "Tomorrow morning" for Day 1 emails is usually the right cadence.
+      </div>
+    </div>
+
+    <!-- LEVEL 2 -->
+    <div class="eg-card">
+      <h3>🔗 Level 2 — Gmail + Zapier Automation (Recommended for Scale)</h3>
+      <p style="font-size:12px;color:#64748b;margin-bottom:12px">Connect this CRM's lead flow to Gmail via Google Sheets + Zapier. When you add a lead to a Google Sheet, Zapier fires all 8 emails automatically at the right delays — replies stop the sequence.</p>
+      <div class="eg-step">
+        <div class="eg-step-num">1</div>
+        <div class="eg-step-body">
+          <strong>Create a "Benepath Leads" Google Sheet</strong>
+          Columns: First Name, Last Name, Email, Company, Industry, State, Lead Date. Every time you add a lead here, Zapier fires the sequence.
+        </div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">2</div>
+        <div class="eg-step-body">
+          <strong>Sign up at zapier.com — free plan covers ~100 tasks/month</strong>
+          That's roughly 12 full 8-email sequences per month on free tier. Starter plan ($20/mo) removes limits.
+        </div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">3</div>
+        <div class="eg-step-body">
+          <strong>Build a multi-step Zap: Google Sheets → Gmail (x8 emails with delays)</strong>
+          Trigger: New row in Google Sheets. Then chain 8 Gmail "Send Email" steps, each preceded by a Delay step. Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">{{First Name}}</code> and <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">{{Company}}</code> as merge tags in the email body.
+        </div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">4</div>
+        <div class="eg-step-body">
+          <strong>Add a "Filter" step after each delay — stop if replied</strong>
+          In Zapier, add a Filter step that checks Gmail for a reply from that contact. If a reply exists, the Zap halts. This prevents follow-ups landing after someone has already responded.
+        </div>
+      </div>
+      <div class="eg-code">Zapier Multi-Step Sequence (Gmail):
+Trigger → Google Sheets: New Row
+├─ Gmail: Send Email (Day 1 – Problem Email, 0 delay)
+├─ Delay: 2 days → Filter: no reply? → Gmail: Send (Day 3 – Bubble-Up)
+├─ Delay: 2 days → Filter: no reply? → Gmail: Send (Day 5 – Push Text note)
+├─ Delay: 2 days → Filter: no reply? → Gmail: Send (Day 7 – Make It Real)
+├─ Delay: 4 days → Filter: no reply? → Gmail: Send (Day 11 – 2nd Problem)
+├─ Delay: 4 days → Filter: no reply? → Gmail: Send (Day 15 – Right Person?)
+├─ Delay: 4 days → Filter: no reply? → Gmail: Send (Day 19 – Pushaway)
+└─ Delay: 4 days → Filter: no reply? → Gmail: Send (Day 23 – Final)</div>
+      <div style="background:#fef3c7;border-radius:7px;padding:9px 12px;font-size:11px;color:#92400e;margin-top:4px">
+        ⚠️ <strong>Important:</strong> Day 3/7 emails should be replies to the original thread — in Zapier's Gmail action, set "In Reply To" using the Thread ID from Step 1 to keep them in the same Gmail thread.
+      </div>
+    </div>
+
+    <!-- LEVEL 3 -->
+    <div class="eg-card">
+      <h3>⚙️ Level 3 — Google Apps Script (Free, Fully Automated, No Zapier)</h3>
+      <p style="font-size:12px;color:#64748b;margin-bottom:12px">If you want zero monthly cost and full control, Google Apps Script runs directly inside Google Sheets and sends Gmail on a schedule — no third-party tools required.</p>
+      <div class="eg-step">
+        <div class="eg-step-num">1</div>
+        <div class="eg-step-body">
+          <strong>Open your Google Sheet → Extensions → Apps Script</strong>
+          This opens a free JavaScript environment that has full access to Gmail and your Sheet. No coding experience required — use the template below.
+        </div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">2</div>
+        <div class="eg-step-body">
+          <strong>Paste a send-sequence script and set a daily trigger</strong>
+          The script reads each row, checks how many days since the lead date, and sends the matching email if it's due. Run it on a daily time-based trigger (Triggers → Add Trigger → Time-driven → Day timer).
+        </div>
+      </div>
+      <div class="eg-code">// Google Apps Script — daily email sequence
+function sendSequence() &#123;
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const data = sheet.getDataRange().getValues();
+  const today = new Date();
+
+  for (let i = 1; i &lt; data.length; i++) &#123;
+    const [firstName, , email, company, , , leadDate, lastSent] = data[i];
+    if (!email || !leadDate) continue;
+    const daysSince = Math.floor((today - new Date(leadDate)) / 86400000);
+    const SEQ = [&#123;day:1,subj:`${firstName}'s Health Insurance`,body:`Hi ${firstName}...`&#125;,
+                 &#123;day:3,subj:'RE: ...',body:`Hey ${firstName}, just tried you...`&#125;];
+    const step = SEQ.find(s => s.day === daysSince);
+    if (step && lastSent !== step.day) &#123;
+      GmailApp.sendEmail(email, step.subj, step.body);
+      sheet.getRange(i+1, 8).setValue(step.day); // mark sent
+    &#125;
+  &#125;
+&#125;</div>
+      <div style="background:#eff6ff;border-radius:7px;padding:9px 12px;font-size:11px;color:#1d4ed8;margin-top:4px">
+        💡 Ask Claude to write the full Apps Script for all 8 email steps using your exact script content from this CRM — just paste the scripts in and it'll build the whole thing for you.
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="eg-card">
+      <h3>📅 Your 30-Day Gmail Sequence Timeline</h3>
+      <p style="font-size:11px;color:#64748b;margin-bottom:12px">Map these to your Gmail method of choice (Schedule Send, Zapier, or Apps Script).</p>
+      <div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 1</div><div class="eg-tl-body"><strong>Email 1</strong> — Personalized problem. New subject line. Also send Text 1 + LinkedIn connection.</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 3</div><div class="eg-tl-body"><strong>Email 2</strong> — Bubble-up reply in same Gmail thread. "Just tried you over the phone."</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 5</div><div class="eg-tl-body"><strong>Text only</strong> — Short bubble-up. Email not needed this day.</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 7</div><div class="eg-tl-body"><strong>Email 3</strong> — Reply in same thread. Share Google Business Profile link.</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 11</div><div class="eg-tl-body"><strong>Email 4</strong> — NEW Gmail thread, new subject line. 2nd biggest problem angle.</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 15</div><div class="eg-tl-body"><strong>Email 5</strong> — Reply in Day 11 thread. "Am I reaching the right person?"</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 19</div><div class="eg-tl-body"><strong>Email 6</strong> — NEW Gmail thread. Pushaway: "thumbs up or thumbs down?"</div></div>
+        <div class="eg-tl-item"><div class="eg-tl-day">Day 23</div><div class="eg-tl-body"><strong>Email 7</strong> — Reply in Day 19 thread. Final: leave resources, reconnect in 30 days.</div></div>
+        <div class="eg-tl-item" style="border-left-color:#10b981"><div class="eg-tl-day" style="color:#059669">Day 53+</div><div class="eg-tl-body"><strong>Re-engagement</strong> — Monthly Gmail check-in for non-responders.</div></div>
+      </div>
+    </div>
+
+    <!-- BEST PRACTICES -->
+    <div class="eg-card">
+      <h3>💡 Gmail Deliverability Best Practices</h3>
+      <div class="eg-step">
+        <div class="eg-step-num">✓</div>
+        <div class="eg-step-body"><strong>Keep Day 3, 7, 15, 23 emails as replies to existing threads</strong> — In Gmail this means hitting "Reply" and keeping the same subject prefix (RE:). Zapier and Apps Script both support "In Reply To" using the thread ID from the first email.</div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">✓</div>
+        <div class="eg-step-body"><strong>Best Gmail send times: Tue–Thu, 8–10am or 3–5pm (prospect's local time)</strong> — Gmail's Schedule Send lets you pick a specific time. Avoid Monday mornings and Friday afternoons.</div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">✓</div>
+        <div class="eg-step-body"><strong>Stop automation immediately when someone replies</strong> — In Zapier add a "Filter" step; in Apps Script check for reply threads before sending. Nothing kills a warm lead faster than an automated follow-up after they've already responded.</div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">✓</div>
+        <div class="eg-step-body"><strong>Send from your real Gmail, not a bulk tool</strong> — For cold outreach at under 50/day, your personal Gmail (or Google Workspace nick@bridgewaterbenefits.com) has better deliverability than Mailchimp or mass-send platforms, which are flagged as marketing.</div>
+      </div>
+      <div class="eg-step">
+        <div class="eg-step-num">✓</div>
+        <div class="eg-step-body"><strong>Warm up a Google Workspace domain first</strong> — If you're on a new domain, send 10–20 real emails per day for 2 weeks before starting automated sequences. This builds your sender reputation with Google.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="view-queue" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="queue-wrap" id="queueInner"></div>
+</div>
+
+<div id="view-lost" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="lost-wrap" id="lostInner"></div>
+</div>
+
+<div class="overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 id="mtitle">➕ Add New Lead</h2>
+    <div class="frow">
+      <div class="fg"><label>First Name *</label><input id="fF" placeholder="John"></div>
+      <div class="fg"><label>Last Name *</label><input id="fL" placeholder="Smith"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Phone *</label><input id="fP" placeholder="(555) 123-4567" type="tel"></div>
+      <div class="fg"><label>Email</label><input id="fE" placeholder="john@email.com" type="email"></div>
+    </div>
+    <div class="fg"><label>Company / Business Name</label><input id="fCo" placeholder="Acme Dental"></div>
+    <div class="frow">
+      <div class="fg"><label>City</label><input id="fCity" placeholder="Modesto"></div>
+      <div class="fg"><label>State</label><input id="fSt" placeholder="CA" maxlength="2"></div>
+    </div>
+    <div class="fg"><label>Business Website</label><input id="fWeb" placeholder="https://acmedental.com" type="url"></div>
+    <div class="fg"><label>Industry</label><input id="fInd" placeholder="Dental, Restaurant, Construction…"></div>
+    <div class="frow">
+      <div class="fg"><label>Decision Maker</label><input id="fDM" placeholder="Jane Smith — HR Director"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label># Employees</label><input id="fEmp" placeholder="12" type="number"></div>
+      <div class="fg"><label>Lead Date</label><input id="fLD" type="date"></div>
+    </div>
+    <div class="fg"><label>Lead Source</label>
+      <select id="fSrc" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b">
+        <option value="">— Select source —</option>
+        <option value="Benepath">Benepath</option>
+        <option value="BNI">BNI</option>
+        <option value="Carrier Rep">Carrier Rep</option>
+        <option value="Online">Online</option>
+      </select>
+    </div>
+    <div class="fg"><label>Referred By</label><input id="fRef" placeholder="John at BNI, carrier rep, etc."></div>
+    <div class="frow">
+      <div class="fg"><label>Carrier</label><input id="fCarrier" placeholder="e.g. Blue Shield, Kaiser"></div>
+      <div class="fg"><label>Plan Type</label><input id="fPlan" placeholder="e.g. PPO, HMO, Level-Funded"></div>
+    </div>
+    <div class="fg"><label>Renewal Date</label><input id="fRenew" type="date"></div>
+    <div class="fg"><label>Initial Notes</label><textarea id="fN" style="height:55px;resize:none" placeholder="Anything notable…"></textarea></div>
+    <div class="m-actions">
+      <button class="btn bg" onclick="closeModal()">Cancel</button>
+      <button class="btn bp" id="mSave" onclick="saveLead()">Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Import Modal -->
+<div class="overlay" id="importModal" style="display:none" onclick="if(event.target===this)closeImport()">
+  <div class="import-modal">
+    <h2>📥 Bulk Import Leads</h2>
+    <p class="sub">Paste from Excel, Google Sheets, or a Benepath export — or type leads directly into the table below.</p>
+
+    <div class="paste-zone">
+      <div class="paste-label">
+        <span>📋 Paste from Excel / Benepath (tab-separated or CSV)</span>
+        <button class="btn bg parse-btn" onclick="parsePaste()">Parse & Fill Table →</button>
+      </div>
+      <textarea class="paste-textarea" id="pasteArea" placeholder="Copy cells from Excel or Google Sheets and paste here, then click Parse. Columns expected: First Name, Last Name, Phone, Company, Industry, State, Employees, Lead Date"></textarea>
+      <div class="import-hint">Tip: Select rows in Excel or Google Sheets → Copy → Paste here. Column order: First Name, Last Name, Phone, Company, Industry, State, # Employees, Lead Date (optional header row is fine)</div>
+    </div>
+
+    <div class="import-divider"><hr><span>OR TYPE DIRECTLY</span><hr></div>
+
+    <div class="itbl-wrap">
+      <table class="itbl" id="importTable">
+        <thead>
+          <tr>
+            <th class="req">First</th>
+            <th class="req">Last</th>
+            <th class="req">Phone</th>
+            <th>Company</th>
+            <th>Industry</th>
+            <th>State</th>
+            <th>Employees</th>
+            <th>Lead Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="importBody"></tbody>
+      </table>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <button class="btn bg" onclick="addImportRow()" style="font-size:11px;padding:5px 11px">+ Add Row</button>
+    </div>
+
+    <div class="import-footer">
+      <div class="import-count" id="importCount">0 leads ready to import</div>
+      <button class="btn bg" onclick="closeImport()">Cancel</button>
+      <button class="btn bp" id="importBtn" onclick="doImport()">📥 Import Leads</button>
+    </div>
+    <div class="import-error" id="importError"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════
+//  COLD CALL SCRIPT (reusable)
+// ═══════════════════════════════
+const CALL_SCRIPT = [
+  {
+    id: 'gatekeeper', title: '🚪 Gatekeeper Script',
+    body: `🎯 GOAL: Win the first 10 seconds. Sound calm, relevant, and intentional.
+Gatekeepers are filters — make their job easier.
+
+━━━ STEP 1: OPENERS (choose one, say it slowly) ━━━
+
+Respect + Empathy:
+"Hi, this is Nick. I know your role is to protect [DM Name]'s time, so I'll keep this brief."
+
+Familiarity + Relevance:
+"Hi, this is Nick. I work with several small business owners in [area], and I thought this might already be on [DM Name]'s radar."
+
+Authority + Certainty:
+"Hi, this is Nick. Could you connect me with [DM Name]? I have something specific for them."
+
+Pattern Interrupt:
+"Hi, this is Nick. I'm not sure if you're the right person or if it's better to speak with them directly."
+
+Collaboration:
+"Hi, this is Nick. Quick question — would you be the best person to point me in the right direction, or would that be [DM Name]?"
+
+━━━ STEP 2: "WHAT IS THIS ABOUT?" ━━━
+
+Stay calm. Stay vague. Stay relevant.
+
+Option 1 – Industry Relevance:
+"That's fair. I work with other small business owners in [area], and they've been dealing with rising group health costs. I thought it might be relevant to [DM Name] as well. Best if I share it directly with them."
+
+Option 2 – Respectful Curiosity:
+"Good question. I'm not sure yet if it's relevant — that's why it's easier for them to decide."
+
+Option 3 – Insight Teaser:
+"I've noticed a trend with small businesses that's costing them on their health coverage. I'm not sure if [DM Name] is seeing the same thing, which is why I reached out."
+
+Option 4 – Peer Social Proof:
+"I've spoken with a few other business owners in [area] about this recently. Since [DM Name] runs the company, I thought it might be useful context for them."
+
+Option 5 – Low Pressure:
+"I don't want to waste their time if it's not useful. It's usually easier for them to hear it directly and decide quickly."
+
+If asked for company name:
+"It's Bridgewater Benefits."
+
+━━━ STEP 3: OBJECTIONS ━━━
+
+"Send me an email":
+→ "Email works sometimes. Live is usually faster — would you be open to a quick transfer so they can decide?"
+→ "Of course. To make sure it's useful, what would you want me to highlight in that email?"
+→ "The reason I ask to connect live is it usually saves time for both sides. Would you mind putting me through briefly?"
+
+"They're busy":
+→ "I only need 30 seconds. If it's not relevant, I'll step away."
+→ "Totally expected. Since this is quick, is now better or should I try back later?"
+→ "That's why I keep it short and let them decide fast."
+
+"We're not interested":
+→ "Totally fair. Is that because you already have something in place, or because it hasn't been a priority?"
+→ "When I hear that, it's usually timing or an existing plan. Is that the case here?"
+→ "That makes sense. Would it be reasonable to check back later this year?"
+
+"It's my job to screen these calls":
+→ "I understand, and you're doing it well. Usually [DM Name] decides very quickly if it's worth continuing — would you be open to letting them make that call?"
+→ "Of course. What I've found is it's often quicker if they hear the first 30 seconds directly."
+→ "That's exactly why I keep these short. If you could transfer me, they can decide right away."
+
+DM is unavailable:
+→ "No problem — when would be a good time to try back?"
+→ "Do you happen to have a good cell number for them?"
+→ "Would you be able to schedule a quick call for us to connect?"
+
+━━━ QUICK REMINDERS ━━━
+• Tone matters more than the words
+• Calm confidence beats clever scripts
+• Do NOT pitch the gatekeeper
+• Short, low-pressure requests are hardest to refuse`
+  },
+  {
+    id: 'opener1', title: '💬 Opener 1: "Heard the Name Tossed Around?"',
+    body: `Lead with context:
+"Hi [Name], we work with a few other [small businesses / dental offices / etc.] in [area]. It's Nick Burt from Bridgewater Benefits."
+
+"Heard the name tossed around?"
+
+[If NO]
+"Ha! Guess I'm not as popular as I thought. Well, the reason for my call is…"
+— OR —
+"Huh! Well, we work with a few other [industry] in [area] and the reason I called you is…"
+
+[If YES]
+"What'd you hear?"
+
+─────────────────────────────────
+ALTERNATE: Value-Led Opener
+
+Lead directly with a specific idea or result instead of name recognition:
+
+"Hi [Name], I was calling to share a quick idea that has helped my clients like you to save 20% on their benefits — I was curious if you have a sec to discuss this."
+
+Why this works: You're leading with value and a concrete outcome rather than asking for permission to pitch. Tailor the stat or idea to what's relevant for that specific group (cost savings, compliance, carrier options, etc.).`
+  },
+  {
+    id: 'opener2', title: '💬 Opener 2: Research-Based',
+    body: `"[Name], I just [saw your LinkedIn post / noticed you opened a new office / read about your recent growth].
+
+I'm going to be honest — this is a cold call, but it is a well-researched one. Can I get 30 seconds to tell you why that prompted me to call you specifically, then you can tell me whether or not it makes sense for us to speak?"
+
+Triggers to personalize:
+• "I just read about the big case win" (they'd be collecting money)
+• "I just saw you opened a new office" (tax/benefits implications)
+• "I was reading about your growing headcount" (staffing + benefits costs)`
+  },
+  {
+    id: 'denial', title: '❌ If They Deny Permission to Pitch',
+    body: `Response 1:
+"Shoot, my bad. Just so nobody from my team bugs you again…
+Is it just that I caught you at a horrible time, or is it that you already know what we do, and this just isn't a priority at all?"
+
+Response 2:
+"I appreciate you being upfront. To be honest, I don't really love making these calls and I'm sure you're not a fan either.
+Look, I did my research on ya and this isn't just a random call. Could I take 30 seconds to share what I found and then you can totally hang up on me if it's not relevant?"`
+  },
+  {
+    id: 'pitch', title: '🎯 Problem Proposition',
+    body: `Triggering Problem:
+"The reason I'm calling is that health insurance premiums continue to increase, especially impacting small business employers. It's frankly outrageous."
+
+One-Sentence Solution:
+"I help employers like yourself look at creative options in the health insurance market and receive the personalized servicing that they deserve. And no, this isn't an AI pitch."
+
+Interest-Based CTA:
+"I'm wondering if you might be open to learning more about how I can help your team — when I'm not completely calling you out of the blue?"`
+  },
+  {
+    id: 'appt', title: '📅 Transition to the Appointment',
+    body: `"Based on what you shared, I have a few other suggestions that could really help here."
+
+"What I'd recommend is running a few quotes and seeing if there are any opportunities in the market for savings. We can then set up a 30-minute call where I can walk you through them and we can see if any next steps make sense."
+
+"Would you be able to send me over a census with the ages and zip codes of your employees by this Friday?"`
+  },
+  {
+    id: 'lockin', title: '🔒 Lock It In',
+    body: `"Great — I'll send over a calendar invite to lock it in."
+"Is this the best number to reach you?"
+"What's the best email to send the invite to?"
+
+─────────────────────────────────
+IF THEY SAY "CALL ME AFTER [DATE]":
+
+Don't accept a vague "call me later" — lock in a real time instead:
+
+"Let's set up a date and time so we don't have to chase each other around. I can give you a call on the [date+1] at 3pm or the [date+2] at 3pm — how does that work on your end?"
+
+Why this works: Offering two specific options turns a "maybe" into a committed meeting. You get the calendar invite instead of a call-me-maybe.`
+  }
+];
+
+const CALL_OBJECTIONS = [
+  { q: '"Not interested" / "We\'re all set"', a: `"I would have expected you would not be interested. I would have expected you'd be set. That's exactly why I wanted to speak with you — because your current team may have overlooked different strategies that are working right now."` },
+  { q: '"We already have a broker"', a: `"That's great — most of my clients did too before we connected. I'm not here to replace anyone, just to give you a second opinion. Would it hurt to get a fresh set of eyes on your current plan?"` },
+  { q: '"Send me something in writing"', a: `"Absolutely — what's the best email? And just so I can make it relevant, does your team currently offer a group health plan, or are you looking to set one up?"` },
+  { q: '"We\'re too small"', a: `"I actually work with groups as small as 2 employees. The rates might surprise you — and there are options even for very small teams."` },
+  { q: '"We use our payroll company for benefits"', a: `"That's really common — and honestly, payroll companies are great at payroll. But benefits brokerage is a specialty. My service is free to you, and I represent 15+ carriers, which payroll companies often don't. Would you be open to a quick comparison?"` },
+];
+
+// ═══════════════════════════════
+//  DISCOVERY QUESTIONS
+// ═══════════════════════════════
+const DISC_NO_INS = [
+  { key:'q2',      label:"What's your familiarity with health insurance — have you looked into it at all? And how many W2 employees do you have?" },
+  { key:'q3',      label:"What's driving the decision to offer benefits right now — is it keeping your team around, attracting new hires, or something else?" },
+  { key:'q5',      label:"What's the most important thing you want in place within the next 90 days — and when would you ideally want a benefits package to start?" },
+  { key:'q8',      label:"So if we can find you an affordable health insurance plan — and you were paying somewhere around $200 to $500 per employee — would that return on investment make sense for keeping your team?" },
+  { key:'q9',      label:"Who else would be involved in making this decision with you?" },
+  { key:'qp',      label:"Would you like benefits to integrate into payroll? If so, who is your current payroll provider? And who are you offering 401k through?" },
+  { key:'q_ready', label:'Once we go over the quote together — if everything looks right and the numbers make sense — are you ready to move forward with health insurance right away? (If no: "Help me understand — what\'s holding you back from moving forward?")' },
+  { key:'q11',     label:"To get you accurate quotes, I just need an employee census — basic DOBs and zip codes for each of your eligible employees. Do you have that info readily available? If not, I can send an email requesting this info." },
+  { key:'q_slot',  label:"What's a good 15-minute slot next week for us to review the quotes? I'll send a Google Calendar invite to meet." },
+];
+
+const DISC_HAS_INS = [
+  { key:'h2',  label:"What's your familiarity with health insurance — do you currently offer benefits or are you looking into it?" },
+  { key:'h3',  label:'On a scale of 1–10, how happy are you with your current plan and broker?', isScore:true },
+  { key:'h4',  label:"What's been your biggest frustration — is it the rising cost, lack of support, or employees not understanding what they have?" },
+  { key:'h5',  label:'What is the most important goal you want to accomplish with your benefits in the next 90 days?' },
+  { key:'h6',  label:'If you could fix one thing about your benefits this year, what would it be?' },
+  { key:'h8',  label:'When does your plan renew?' },
+  { key:'h9',  label:'Who else would be involved in making a change like this?' },
+  { key:'h10', label:"I'd love to put some options together for comparison — I just need a quick census and we can set up 30 minutes to go over everything. Does later this week work?" },
+];
+
+// ═══════════════════════════════
+//  PIPELINE STAGES
+// ═══════════════════════════════
+const STAGES = [
+  {
+    id: 'new', label: 'New Lead', short: 'New',
+    color: '#3b82f6', bg: '#eff6ff', text: '#1d4ed8', followDays: 0, theme: null,
+    tasks: [],
+    scripts: []
+  },
+  {
+    id: 'day1', label: 'Day 1 – Launch', short: 'Day 1',
+    color: '#2563eb', bg: '#dbeafe', text: '#1e3a8a', followDays: 2, theme: '📩 Theme 1: 1st Big Problem',
+    tasks: [
+      { icon: '📬', label: 'Email/Text: Send personalized problem email or text' },
+      { icon: '🤝', label: 'LinkedIn: Send blank connection request (no message)' },
+      { icon: '☎️', label: 'Cold Call: Dial — NO voicemail if no answer' },
+    ],
+    scripts: [
+      {
+        tab: '📬 Email 1', title: 'Email 1: Personalized Problem',
+        subject: 'Subject Line: [Prospect\'s Name]\'s Health Insurance',
+        body: `[Prospect's Name],
+
+I saw that [personalized context — e.g., your team is rapidly expanding / you recently opened a new location] — [connecting problem: expanding means managing rising health insurance costs for your growing team].
+
+I guide business owners in reviewing, setting up, and managing group health plans that fit their budget and remain compliant so you can focus on growing your business.
+
+Open to discussing how I can help you find the right business group health insurance plan?`,
+        note: 'Personalization → 1st Problem → One-sentence Solution → Interest-based CTA'
+      },
+      {
+        tab: '💬 Text 1', title: 'Text 1: Personalized Problem',
+        body: `Hi [Name], this is Nick.
+
+[Company] has [X]+ employees and with tons of growth comes the challenge of balancing the cost of health benefits.
+
+[Add personalized context — e.g., "Building a family-owned business in [area] for 20+ years can't be easy, and navigating how to offer health insurance to employees can be one of the most challenging next steps."]
+
+I help small CA business owners find group health plans that fit their budget and give employees benefits they actually value.
+
+Open to a quick chat to see if I can be helpful? Here's a brief video proving I'm not spam or AI! [link]`,
+        note: 'Personalization → 1st Problem → Solution → Interest-based CTA'
+      },
+      {
+        tab: '🤝 LinkedIn', title: 'LinkedIn: Blank Connection Request',
+        body: `Send a BLANK connection request — no message.
+
+Blank requests have higher acceptance rates. Personalizing can trigger "sales alarms" and lower acceptance chances.`,
+        note: 'No message — keep it blank'
+      },
+      { tab: '☎️ Call Script', title: 'Cold Call Script', isCallScript: true }
+    ]
+  },
+  {
+    id: 'day3', label: 'Day 3 – Bubble-Up', short: 'Day 3',
+    color: '#4f46e5', bg: '#e0e7ff', text: '#3730a3', followDays: 2, theme: '📩 Theme 1: 1st Big Problem',
+    tasks: [
+      { icon: '☎️', label: 'Cold Call: Leave Voicemail #1 (point to email)' },
+      { icon: '📬', label: 'Email/Text: Bubble-up — reply to Email 1 thread' },
+      { icon: '🤝', label: 'LinkedIn: Send context-only message (no pitch)' },
+    ],
+    scripts: [
+      {
+        tab: '📱 Voicemail 1', title: 'Voicemail #1',
+        body: `"Hi [Name], I'm calling to share a tip you can use for saving 20% on your group's benefits — I work with a few other small businesses in [area] and this has been working really well for them.
+
+No need to call back. I'm about to hit send on an email.
+
+Just so we don't play phone tag, mind replying and letting me know if it's even moderately interesting?
+
+It'll come from Nick at Bridgewater Benefits, cheers."`,
+        tip: '💡 Always lead with a value hook — vary the tip based on the group (e.g., compliance deadline, carrier switch savings, level-funded options). Best times to call: 10am–Noon or 4–7pm local. Avoid Monday mornings.'
+      },
+      {
+        tab: '📬 Email 2', title: 'Email 2: Bubble-Up',
+        subject: 'Subject Line: REPLY to the original email thread',
+        body: `Hey [Name], just tried you over the phone.
+
+Any thoughts?`,
+        note: 'Short on purpose — allude to the call, point back to Email 1'
+      },
+      {
+        tab: '💬 Text 2', title: 'Text 2: Bubble-Up',
+        body: `Hey [Name], just shot you a voice message. What do you think?`,
+        note: 'Allude to call → point back to first text'
+      },
+      {
+        tab: '🤝 LinkedIn', title: 'LinkedIn Message 1: Context Only',
+        body: `Hey [Name] — noticed your [recent LinkedIn post / request for group health insurance info] and sent you an email the other day about it.
+
+I know everyone hates the whole connect-and-pitch thing, so I won't restate it all here.
+
+Did you see my note by chance?`,
+        note: 'Point back to email. Do NOT re-pitch on LinkedIn.'
+      },
+      { tab: '☎️ Call Script', title: 'Cold Call Script (If They Pick Up)', isCallScript: true }
+    ]
+  },
+  {
+    id: 'day5', label: 'Day 5 – Push', short: 'Day 5',
+    color: '#7c3aed', bg: '#ede9fe', text: '#4c1d95', followDays: 2, theme: '📩 Theme 1: 1st Big Problem',
+    tasks: [
+      { icon: '☎️', label: 'Cold Call: Dial — NO voicemail if no answer' },
+      { icon: '💬', label: 'Text: Bubble-up (reference the call attempt)' },
+    ],
+    scripts: [
+      {
+        tab: '💬 Text', title: 'Text: Bubble-Up (2nd)',
+        body: `Hey [Name], just tried calling again. Open to chatting?`,
+        note: 'Short — allude to call, point back to 1st text'
+      },
+      { tab: '☎️ Call Script', title: 'Cold Call Script (If They Pick Up)', isCallScript: true }
+    ]
+  },
+  {
+    id: 'day7', label: 'Day 7 – Make it Real', short: 'Day 7',
+    color: '#6d28d9', bg: '#ddd6fe', text: '#4c1d95', followDays: 4, theme: '📩 Theme 1: 1st Big Problem',
+    tasks: [
+      { icon: '☎️', label: 'Cold Call: Leave Voicemail #2' },
+      { icon: '📬', label: 'Email/Text: "Make it Real" — share Google Business profile / case study' },
+      { icon: '🤝', label: 'LinkedIn: Bubble-up message ("Any thoughts?")' },
+    ],
+    scripts: [
+      {
+        tab: '📱 Voicemail 2', title: 'Voicemail #2',
+        body: `[Name], we work with a few other small businesses in the [area] reviewing and maintaining their health insurance benefits.
+
+I'm sure you've got that taken care of, but I'm about to press send on an email to give you an idea of how I support other folks.
+
+Just so we don't play phone tag, mind replying and letting me know if it's even moderately interesting?
+
+It'll come from Nick at Bridgewater Benefits, cheers.`,
+        tip: '💡 Keep it casual and low-pressure — you\'re not asking for a meeting, just a quick reply. Pairs directly with Email 3 which goes out right after this voicemail.'
+      },
+      {
+        tab: '📬 Email 3', title: 'Email 3: Make it Real',
+        subject: 'Subject Line: REPLY to the original email thread',
+        body: `Left you a VM. Here's a link to my Google Business Profile with reviews from my satisfied clients. [link]
+
+Open to discussing how I can help?`,
+        note: 'Make it tangible — social proof (reviews, case study, or brief demo video)'
+      },
+      {
+        tab: '💬 Text 3', title: 'Text 3: Make it Real',
+        body: `Just left you a VM. Sharing my Google Business Profile here so you can see client reviews for my agency. [link]
+
+Open to a quick conversation?`,
+        note: 'Make it real — sell the social proof'
+      },
+      {
+        tab: '🤝 LinkedIn', title: 'LinkedIn Message 2: Bubble-Up',
+        body: `Any thoughts?`,
+        note: 'Short and simple — mirrors the email bubble-up'
+      },
+      { tab: '☎️ Call Script', title: 'Cold Call Script (If They Pick Up)', isCallScript: true }
+    ]
+  },
+  {
+    id: 'day11', label: 'Day 11 – 2nd Problem', short: 'Day 11',
+    color: '#c026d3', bg: '#fae8ff', text: '#86198f', followDays: 4, theme: '📧 Theme 2: 2nd Big Problem',
+    tasks: [
+      { icon: '☎️', label: 'Cold Call: Dial — NO voicemail (phase out calls now)' },
+      { icon: '📬', label: 'Email/Text: New subject line — lead with 2nd biggest problem' },
+    ],
+    scripts: [
+      {
+        tab: '📬 Email 4', title: 'Email 4: 2nd Biggest Problem',
+        subject: 'Subject Line: Navigating Group Health Insurance (NEW thread — new subject!)',
+        body: `[Name],
+
+Understanding what insurance carrier to select, reviewing market trends to verify you are offering the right plan design, and staying compliant with CA Labor Law is a juggling act — it takes a PhD-level education to understand even where to start!
+
+I help busy business owners focus on building their businesses and retaining talent by thoroughly reviewing the health insurance market, educating them on possible options, and keeping their team compliant.
+
+Open to seeing why employers select me as their employee benefits quarterback over massive payroll companies?`,
+        note: 'Change subject line — start a fresh thread. Reuse the personalization from Email 1 if possible.'
+      },
+      {
+        tab: '💬 Text 4', title: 'Text 4: 2nd Biggest Problem',
+        body: `Hi [Name],
+
+Choosing the right insurance, keeping up with market changes, and staying compliant with CA labor laws is unnecessarily complex.
+
+I handle all of that for busy business owners so they can focus on growing and retaining talent.
+
+Open to a quick chat on why employers choose me as their benefits quarterback over big payroll companies?`,
+        note: '2nd problem → solution → CTA'
+      },
+      { tab: '☎️ Call Script', title: 'Cold Call Script (If They Pick Up)', isCallScript: true }
+    ]
+  },
+  {
+    id: 'day15', label: 'Day 15 – Right Person?', short: 'Day 15',
+    color: '#ea580c', bg: '#ffedd5', text: '#9a3412', followDays: 4, theme: '📧 Theme 2: 2nd Big Problem',
+    tasks: [
+      { icon: '☎️', label: 'Cold Call: Dial — NO voicemail' },
+      { icon: '📬', label: 'Email/Text: "Right person?" — ask if they\'re the correct contact' },
+    ],
+    scripts: [
+      {
+        tab: '📬 Email 5', title: 'Email 5: Right Person?',
+        subject: 'Subject Line: REPLY to the Theme 2 email thread',
+        body: `Hey [Name] – I'd hate to bother you if this doesn't fall on your plate.
+
+Is there someone else on the team you think I should reach out to?`,
+        note: '"Wrong person?" gives an easy out — and often surfaces a referral or confirms they ARE the right person.'
+      },
+      {
+        tab: '💬 Text 5', title: 'Text 5: Right Person?',
+        body: `Hey [Name], if this isn't your responsibility, no worries at all.
+
+Who would you recommend I reach out to?`,
+        note: 'Simple and non-pushy — opens the door for a referral or confirmation.'
+      },
+      { tab: '☎️ Call Script', title: 'Cold Call Script (If They Pick Up)', isCallScript: true }
+    ]
+  },
+  {
+    id: 'day19', label: 'Day 19 – Pushaway', short: 'Day 19',
+    color: '#dc2626', bg: '#fee2e2', text: '#991b1b', followDays: 4, theme: '🔎 Theme 3: Get the Truth',
+    tasks: [
+      { icon: '📬', label: 'Email/Text: Pushaway — thumbs up or thumbs down?' },
+    ],
+    scripts: [
+      {
+        tab: '📬 Email 6', title: 'Email 6: Pushaway (Not Interested?)',
+        subject: 'Subject Line: Reach back out?',
+        body: `Hey [Name] – I shared a few ways that I help employers provide attractive employee benefits, but I'd hate to keep reaching out if we weren't a fit.
+
+Mind giving me the thumbs-up or thumbs-down?`,
+        note: 'Creates loss aversion — they\'re on the fence and this nudges a reply.'
+      },
+      {
+        tab: '💬 Text 6', title: 'Text 6: Pushaway',
+        body: `Hey [Name] – I shared a few ways that I help employers navigate employee benefits, but I'd hate to keep reaching out if we weren't a fit.
+
+Mind reacting to this message with a thumbs-up or thumbs-down?`,
+        note: '"React to this message" is natural on mobile — easy engagement.'
+      }
+    ]
+  },
+  {
+    id: 'day23', label: 'Day 23 – Final Pushaway', short: 'Day 23',
+    color: '#b91c1c', bg: '#fecaca', text: '#7f1d1d', followDays: 30, theme: '🔎 Theme 3: Get the Truth',
+    tasks: [
+      { icon: '📬', label: 'Email/Text: Final pushaway — let them know you\'ll reach back in 30 days' },
+    ],
+    scripts: [
+      {
+        tab: '📬 Email 7', title: 'Email 7: Reach Back Out?',
+        subject: 'Subject Line: REPLY to the Theme 3 email thread',
+        body: `Hey [Name], I'll assume this isn't a fit for now. In case you'd ever like to consider us, I'm including a few resources below:
+
+One Sentence Summary: I help employers set up and manage group health insurance by integrating with payroll providers, representing 15+ local and nationwide carriers, and keeping employers up-to-date with local compliance.
+
+Case Study: I helped a San Diego business save 55% on their monthly premium by simply switching to a more competitive carrier — a move their previous broker had not shared with the employer.
+
+I usually reconnect with folks every 30 days or so to see if anything has changed.
+
+Mind letting me know if I shouldn't reach back out?`,
+        note: 'Acknowledge the breakup → leave brief resources → tell them you\'re coming back in 30 days. Draws out last replies.'
+      },
+      {
+        tab: '💬 Text 7', title: 'Text 7: Final Pushaway',
+        body: `Hey [Name], I figure this isn't a challenge you face right now. I've sent over an email with some more resources. In case you'd ever like help, you have my number!
+
+I usually reconnect with folks every 30 days or so to see if anything has changed.
+
+Mind letting me know if I shouldn't reach back out?`,
+        note: 'Point to email for full resources — keep text brief.'
+      }
+    ]
+  },
+  {
+    id: 'live', label: 'Connected, Recontact Later', short: 'Connected',
+    color: '#059669', bg: '#d1fae5', text: '#065f46', followDays: 1, theme: null,
+    tasks: [
+      { icon: '🎯', label: 'Work through discovery questions to understand their situation' },
+      { icon: '📋', label: 'Identify the biggest pain point (rising premiums vs. compliance vs. new plan)' },
+      { icon: '📅', label: 'Get a census (ages + zip codes) and schedule the 30-min quote review call' },
+    ],
+    scripts: [
+      { tab: '☎️ Full Call Script', title: 'Full Cold Call / Discovery Script', isCallScript: true }
+    ]
+  },
+  {
+    id: 'quoted', label: 'Quote Sent', short: 'Quoted',
+    color: '#4f46e5', bg: '#e0e7ff', text: '#3730a3', followDays: 2, theme: null,
+    tasks: [
+      { icon: '📬', label: 'Send quote / proposal via email' },
+      { icon: '📅', label: 'Schedule follow-up call to walk through options together' },
+    ],
+    scripts: [
+      {
+        tab: '📋 Follow-Up', title: 'Quote Follow-Up Script',
+        body: `OPENING:
+"Hi [Name], this is Nick from Bridgewater Benefits. I'm following up on the health insurance quote I sent over — did you get a chance to take a look?"
+
+[If yes]
+"Great! Do you have any questions about the plans? I want to make sure you feel confident before making a decision."
+
+[If no]
+"No worries — let me give you a quick overview…" [walk through top 1–2 options]
+
+CLOSING:
+"Based on what you told me, I think [Plan Name] at $[X]/month would be the best fit because [it keeps Dr. X in-network / lowest deductible / best subsidy match].
+
+Would you like to go ahead and get that enrolled today?"`,
+        objections: [
+          { q: '"It\'s more than I expected"', a: `Let me walk you through exactly what this plan gets you — [explain the key benefits: network, deductible, out-of-pocket max, coverage highlights]. When we get you [specific benefit most important to them], would that make the price worth it to you?\n\nAvoid asking "what can you afford" — that boxes you in on budget before they've felt the value. Instead, anchor to the benefit first, then let them tell you if the price works.` },
+          { q: '"I need more time to think"', a: "Absolutely, no pressure. Can I ask — is there anything specific you're unsure about? I want to make sure you have all the info you need." },
+          { q: '"I\'m going to use my payroll company"', a: "That's really common — my service is actually free to you, paid by the carrier. What I offer is the expertise to match you to the right plan and the ongoing servicing that payroll companies don't provide." },
+          { q: '"I\'ll just shop around"', a: "Totally fair. Just keep in mind I represent 15+ carriers — I'm essentially doing the shopping for you for free. What would it hurt to see the comparison?" }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'won', label: 'Closed – Won ✓', short: 'Won',
+    color: '#10b981', bg: '#ecfdf5', text: '#065f46', followDays: 30, theme: null,
+    tasks: [],
+    scripts: [
+      {
+        tab: '🎉 Post-Sale', title: 'Post-Sale Follow-Up (1 Week Later)',
+        body: `"Hi [Name]! It's Nick from Bridgewater Benefits. I just wanted to check in — have you received your insurance cards and welcome materials? Is everything looking good?
+
+Also — if you ever have questions about your plan, need to make changes, or your situation changes at all, please don't hesitate to reach out. I'm your resource year-round.
+
+And if you know anyone else who might be looking for health coverage or group benefits, a referral would mean a lot to me!"`,
+        tip: '🗓️ Mark their renewal date — reach out proactively 60–90 days before renewal to retain and upsell.'
+      }
+    ]
+  },
+  {
+    id: 'lost', label: 'Closed – Lost', short: 'Lost',
+    color: '#6b7280', bg: '#f3f4f6', text: '#374151', followDays: 30, theme: null,
+    tasks: [],
+    scripts: [
+      {
+        tab: '🔄 Re-Engage', title: 'Re-Engagement Script (30 Days Later)',
+        body: `"Hi [Name], it's Nick from Bridgewater Benefits — we connected about a month ago about your group health insurance.
+
+I just wanted to check in to see if anything has changed or if the timing is any better. I know these things are often about timing.
+
+If it's still not a fit, just let me know and I'll leave you alone — but if there's been any shift, I'd love to pick up where we left off. Fair?"`,
+        tip: '💡 Check your notes for the reason they passed and personalize the re-engagement. Common reasons: already covered, using payroll company, Medicaid, price.'
+      }
+    ]
+  },
+  {
+    id: 'unqualified', label: 'Unqualified', short: 'Unqual',
+    color: '#7c3aed', bg: '#f5f3ff', text: '#5b21b6', followDays: 0, theme: null,
+    tasks: [], scripts: []
+  }
+];
+
+// ═══════════════════════════════
+//  STATE
+// ═══════════════════════════════
+let leads = JSON.parse(localStorage.getItem('bpcrm2_leads') || '[]');
+let scriptOverrides = JSON.parse(localStorage.getItem('bpcrm2_scripts') || '{}');
+let selId = null, editId = null, activeFilter = 'due', searchQ = '', activeTab = 'queue';
+function saveScriptOverrides() { localStorage.setItem('bpcrm2_scripts', JSON.stringify(scriptOverrides)); }
+// Get the current text for a script (override if set, else default)
+function getScriptBody(key, defaultText) { return scriptOverrides[key] !== undefined ? scriptOverrides[key] : defaultText; }
+function isEdited(key) { return scriptOverrides[key] !== undefined; }
+
+// ═══════════════════════════════
+//  HELPERS
+// ═══════════════════════════════
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function save() { localStorage.setItem('bpcrm2_leads', JSON.stringify(leads)); }
+function gS(id) { return STAGES.find(s => s.id === id) || STAGES[0]; }
+function gSI(id) { return STAGES.findIndex(s => s.id === id); }
+function today() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function skipWeekend(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const day = d.getDay(); // 0=Sun, 6=Sat
+  if (day === 6) d.setDate(d.getDate() + 2); // Sat → Mon
+  else if (day === 0) d.setDate(d.getDate() + 1); // Sun → Mon
+  return d.toISOString().split('T')[0];
+}
+function addDays(n) { const d=new Date(); d.setDate(d.getDate()+n); return skipWeekend(d.toISOString().split('T')[0]); }
+function fmtD(s) { if(!s)return''; const d=new Date(s+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function fmtDT(iso) { if(!iso)return''; const d=new Date(iso); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
+function fuSt(l) {
+  if(!l.nextFU) return null;
+  const t = today(); // local YYYY-MM-DD
+  if(l.nextFU < t) return {label:'⚠️ Overdue', cls:'due-over'};
+  if(l.nextFU === t) return {label:'Due TODAY', cls:'due-today'};
+  const tom = new Date();
+  tom.setDate(tom.getDate() + 1);
+  const tomStr = `${tom.getFullYear()}-${String(tom.getMonth()+1).padStart(2,'0')}-${String(tom.getDate()).padStart(2,'0')}`;
+  if(l.nextFU === tomStr) return {label:'Due tomorrow', cls:'due-soon'};
+  return {label:`Due ${fmtD(l.nextFU)}`, cls:''};
+}
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escPre(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function log(l,txt,col='#2563eb'){l.activity=l.activity||[];l.activity.push({txt,col,at:new Date().toISOString()});}
+
+// ═══════════════════════════════
+//  TASK CHECKS
+// ═══════════════════════════════
+function getChecks(lead, stageId) {
+  const st = gS(stageId);
+  lead.taskChecks = lead.taskChecks || {};
+  if (!lead.taskChecks[stageId]) lead.taskChecks[stageId] = st.tasks.map(()=>false);
+  return lead.taskChecks[stageId];
+}
+function toggleTask(leadId, stageId, idx) {
+  const lead = leads.find(l=>l.id===leadId); if(!lead)return;
+  const checks = getChecks(lead, stageId);
+  checks[idx] = !checks[idx];
+  lead.taskChecks[stageId] = checks;
+  save(); renderDetail();
+}
+
+// ═══════════════════════════════
+//  RENDER LIST
+// ═══════════════════════════════
+function renderList() {
+  const el = document.getElementById('leadsList');
+  let arr = leads.filter(l => {
+    const q = searchQ.toLowerCase();
+    const mq = !q || (l.firstName+' '+l.lastName).toLowerCase().includes(q) || l.phone.includes(q) || (l.company||'').toLowerCase().includes(q) || (l.email||'').toLowerCase().includes(q);
+    if(!mq)return false;
+    const inPipeline = !['quoted','won','lost','unqualified'].includes(l.stageId);
+    if(activeFilter==='active')return inPipeline && (!l.nextFU || l.nextFU > today());
+    if(activeFilter==='due')return inPipeline && !!l.nextFU && l.nextFU <= today();
+    if(activeFilter==='quoting')return l.stageId==='quoted';
+    if(activeFilter==='won')return l.stageId==='won';
+    if(activeFilter==='lost')return l.stageId==='lost';
+    return false;
+  });
+  arr.sort((a,b)=>{
+    if(a.nextFU&&b.nextFU)return a.nextFU.localeCompare(b.nextFU);
+    if(a.nextFU)return -1; if(b.nextFU)return 1;
+    return new Date(b.createdAt)-new Date(a.createdAt);
+  });
+  if(!arr.length){el.innerHTML=`<div class="empty-state"><div class="ei">🔍</div><h3>No leads found</h3><p>Adjust filter or add a new lead.</p></div>`;return;}
+  el.innerHTML=arr.map(l=>{
+    const st=gS(l.stageId),fu=fuSt(l);
+    const dayCount = daysInStage(l);
+    const stuckWarning = dayCount > 7 && !['won','lost','unqualified'].includes(l.stageId) ? `⚠️ ${dayCount}d` : '';
+    return `<div class="lead-item ${l.id===selId?'active':''}" onclick="selLead('${l.id}')">
+      <div class="li-top">
+        <div class="li-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
+        <div style="display:flex;gap:4px;align-items:center">
+          ${stuckWarning ? `<span style="font-size:9px;font-weight:700;color:#f59e0b">${stuckWarning}</span>` : ''}
+          <span class="li-badge" style="background:${st.bg};color:${st.text}">${st.short}</span>
+        </div>
+      </div>
+      <div class="li-phone">📞 ${esc(l.phone)}${l.company?' · '+esc(l.company):''}</div>
+      <div class="li-meta">
+        <span>${fmtD(l.leadDate||l.createdAt.split('T')[0])}</span>
+        ${fu?`<span class="${fu.cls}">${fu.label}`:'' }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════
+//  RENDER CALL SCRIPT HTML
+// ═══════════════════════════════
+function renderCallScript() {
+  const sections = CALL_SCRIPT.map((s,i)=>{
+    const key = `c|${s.id}`;
+    const body = getScriptBody(key, s.body);
+    const edited = isEdited(key);
+    return `
+    <div class="call-block" id="cs_${i}">
+      <div class="call-block-q" onclick="toggleCS('cs_${i}')">
+        <span>${esc(s.title)}${edited?'<span class="edited-badge">✏️ Edited</span>':''}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="btn bg" style="font-size:10px;padding:3px 8px;z-index:2" onclick="event.stopPropagation();startCallEdit('${key}',${i},'${s.id}')">✏️ Edit</button>
+          <span class="call-arrow">▼</span>
+        </div>
+      </div>
+      <div class="call-block-body" id="cs_body_${i}">${renderScriptBody(body)}</div>
+    </div>`;
+  }).join('');
+  const objections = CALL_OBJECTIONS.map((o,i)=>{
+    const key = `co|${i}`;
+    const aText = getScriptBody(key, o.a);
+    const edited = isEdited(key);
+    return `
+    <div class="objection" id="cso_${i}">
+      <div class="obj-q" onclick="toggleObj('cso_${i}')">
+        <span>${esc(o.q)}${edited?'<span class="edited-badge">✏️ Edited</span>':''}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="btn bg" style="font-size:10px;padding:3px 8px;z-index:2" onclick="event.stopPropagation();startObjEdit('${key}',${i})">✏️ Edit</button>
+          <span class="obj-arrow">▼</span>
+        </div>
+      </div>
+      <div class="obj-a" id="cso_body_${i}">${renderScriptBody(aText)}</div>
+    </div>`;
+  }).join('');
+  return `<div class="call-section">${sections}</div>
+    <div class="call-sec-title">⚡ Objection Handlers</div>
+    ${objections}`;
+}
+
+// ═══════════════════════════════
+//  RENDER DETAIL
+// ═══════════════════════════════
+// ═══════════════════════════════
+//  DISCOVERY HELPERS
+// ═══════════════════════════════
+function setDiscoveryType(leadId, type) {
+  const l = leads.find(x => x.id === leadId);
+  if (!l) return;
+  if (!l.discovery) l.discovery = { type: null, answers: {} };
+  l.discovery.type = type || null;
+  save();
+  renderDetail();
+}
+
+function saveDiscoveryAnswer(leadId, key) {
+  const l = leads.find(x => x.id === leadId);
+  if (!l) return;
+  if (!l.discovery) l.discovery = { type: null, answers: {} };
+  const el = document.getElementById('dq_' + leadId + '_' + key);
+  if (!el) return;
+  l.discovery.answers = l.discovery.answers || {};
+  l.discovery.answers[key] = el.value;
+  save();
+}
+
+function updateScoreHint(leadId) {
+  const scoreEl = document.getElementById('dq_' + leadId + '_h3score');
+  const hintEl  = document.getElementById('dq_' + leadId + '_scorehint');
+  const taEl    = document.getElementById('dq_' + leadId + '_h3fu');
+  if (!scoreEl || !hintEl) return;
+  const val = parseInt(scoreEl.value);
+  const l = leads.find(x => x.id === leadId);
+  if (l) {
+    if (!l.discovery) l.discovery = { type: null, answers: {} };
+    l.discovery.answers['h3score'] = scoreEl.value;
+    save();
+  }
+  if (!val || isNaN(val) || val < 1 || val > 10) {
+    hintEl.textContent = '';
+    if (taEl) taEl.placeholder = 'Their answer…';
+    return;
+  }
+  if (val < 8) {
+    hintEl.innerHTML = '📌 Follow-up: <em>What would have made it better?</em>';
+    hintEl.style.color = '#dc2626';
+    if (taEl) taEl.placeholder = 'What would have made it better?';
+  } else {
+    hintEl.innerHTML = '📌 Follow-up: <em>What do you like most about your current setup?</em>';
+    hintEl.style.color = '#10b981';
+    if (taEl) taEl.placeholder = 'What do you like most about your current setup?';
+  }
+}
+
+function renderDiscoveryHtml(lead) {
+  const disc = lead.discovery || { type: null, answers: {} };
+  const ans  = disc.answers || {};
+  const type = disc.type || '';
+  const id   = lead.id;
+  const taStyle = 'width:100%;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:7px;padding:8px 10px;font-size:12px;resize:vertical;min-height:54px;font-family:inherit;color:#1e293b;background:#fafbfc;outline:none;transition:border 0.15s';
+  const lblStyle = 'display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:5px;line-height:1.45';
+  const qWrap = 'margin-bottom:15px';
+
+  let questionsHtml = '';
+
+  if (type === 'no_insurance') {
+    questionsHtml = DISC_NO_INS.map((q, i) => `
+      <div style="${qWrap}">
+        <label style="${lblStyle}">${i+1}. ${esc(q.label)}</label>
+        <textarea id="dq_${id}_${q.key}" style="${taStyle}" onblur="saveDiscoveryAnswer('${id}','${q.key}')" onfocus="this.style.border='1.5px solid #2563eb'" onblur2="this.style.border='1.5px solid #e2e8f0'" placeholder="Their answer…">${esc(ans[q.key]||'')}</textarea>
+      </div>`).join('');
+
+  } else if (type === 'has_insurance') {
+    questionsHtml = DISC_HAS_INS.map((q, i) => {
+      if (q.isScore) {
+        const scoreVal = ans['h3score'] || '';
+        const scoreNum = parseInt(scoreVal);
+        const hintText = (!isNaN(scoreNum) && scoreNum >= 1 && scoreNum <= 10)
+          ? (scoreNum < 8
+              ? '📌 Follow-up: <em>What would have made it better?</em>'
+              : '📌 Follow-up: <em>What do you like most about your current setup?</em>')
+          : '';
+        const hintColor = (!isNaN(scoreNum) && scoreNum < 8) ? '#dc2626' : '#10b981';
+        const fuPlaceholder = (!isNaN(scoreNum) && scoreNum >= 1 && scoreNum <= 10)
+          ? (scoreNum < 8 ? 'What would have made it better?' : 'What do you like most about your current setup?')
+          : 'Their answer to the follow-up…';
+        return `
+          <div style="${qWrap}">
+            <label style="${lblStyle}">${i+1}. ${esc(q.label)}</label>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+              <input type="number" id="dq_${id}_h3score" min="1" max="10" value="${esc(scoreVal)}"
+                style="width:68px;border:1.5px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:16px;font-weight:800;text-align:center;color:#1e293b;background:#fafbfc;outline:none"
+                oninput="updateScoreHint('${id}')" placeholder="1–10">
+              <span id="dq_${id}_scorehint" style="font-size:11px;font-weight:700;color:${hintColor}">${hintText}</span>
+            </div>
+            <textarea id="dq_${id}_h3fu" style="${taStyle}" onblur="saveDiscoveryAnswer('${id}','h3fu')" placeholder="${fuPlaceholder}">${esc(ans['h3fu']||'')}</textarea>
+          </div>`;
+      }
+      return `
+        <div style="${qWrap}">
+          <label style="${lblStyle}">${i+1}. ${esc(q.label)}</label>
+          <textarea id="dq_${id}_${q.key}" style="${taStyle}" onblur="saveDiscoveryAnswer('${id}','${q.key}')" placeholder="Their answer…">${esc(ans[q.key]||'')}</textarea>
+        </div>`;
+    }).join('');
+  }
+
+  const emptyMsg = !type ? `<div style="color:#94a3b8;font-size:12px;font-style:italic">Select a prospect type above to load the question set.</div>` : '';
+
+  return `<div class="card">
+    <div class="sec-title">🎯 Discovery Questions</div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Prospect Type</label>
+      <select onchange="setDiscoveryType('${id}', this.value)"
+        style="border:1.5px solid #e2e8f0;border-radius:7px;padding:8px 12px;font-size:13px;font-weight:600;color:#1e293b;background:#fff;outline:none;width:100%;max-width:340px;cursor:pointer">
+        <option value="" ${!type?'selected':''}>— Select type —</option>
+        <option value="no_insurance" ${type==='no_insurance'?'selected':''}>🔵 No Health Insurance (First-Time Buyer)</option>
+        <option value="has_insurance" ${type==='has_insurance'?'selected':''}>🟢 Has Health Insurance</option>
+      </select>
+    </div>
+    ${emptyMsg}
+    ${questionsHtml}
+  </div>`;
+}
+
+function renderDetail() {
+  const panel = document.getElementById('detail');
+  if(!selId){panel.innerHTML=`<div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>or click + Add Lead to get started</p></div>`;return;}
+  const lead = leads.find(l=>l.id===selId);
+  if(!lead){selId=null;renderDetail();return;}
+  const st = gS(lead.stageId), idx = gSI(lead.stageId), fu = fuSt(lead);
+  const checks = getChecks(lead, lead.stageId);
+
+  // Stage track (compact)
+  let track = '';
+  STAGES.forEach((s,i)=>{
+    const dc = i<idx?'done':i===idx?'current':'future';
+    const lc = i<idx?'done':i===idx?'current':'';
+    const num = i<idx?'✓':(i+1);
+    if(i>0) track += `<div class="st-conn-wrap"><div class="st-conn ${i<=idx?'done':''}"></div></div>`;
+    track += `<div class="st-step" onclick="jumpS('${s.id}')" title="${s.label}" style="cursor:pointer">
+      <div class="st-dot ${dc}">${num}</div>
+      <div class="st-lbl ${lc}">${s.short}</div>
+    </div>`;
+  });
+
+  // Info row
+  const locationStr = [lead.city, lead.state].filter(Boolean).join(', ');
+  const info = [
+    lead.phone?`📞 ${esc(lead.phone)}`:'',
+    lead.email?`✉️ ${esc(lead.email)}`:'',
+    locationStr?`📍 ${esc(locationStr)}`:'',
+    lead.company?`🏢 ${esc(lead.company)}`:'',
+    lead.website?`🌐 <a href="${esc(lead.website)}" target="_blank" style="color:#2563eb;text-decoration:none">${esc(lead.website.replace(/^https?:\/\//,''))}</a>`:'',
+    lead.industry?`${esc(lead.industry)}`:'',
+    lead.employees?`👥 ${esc(lead.employees)} employees`:'',
+    lead.source?`📌 ${esc(lead.source)}`:'',
+    lead.decisionMaker?`👤 DM: ${esc(lead.decisionMaker)}`:'',
+    lead.referredBy?`🤝 Ref: ${esc(lead.referredBy)}`:'',
+    lead.carrier || lead.planType ? `📋 ${lead.carrier||''} ${lead.planType?'('+lead.planType+')':''}`:'',
+    lead.renewalDate?`🔄 Renews ${fmtD(lead.renewalDate)}`:'',
+  ].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
+
+  // Tasks HTML
+  let tasksHtml = '';
+  if(st.tasks.length){
+    const allDone = checks.every(Boolean);
+    tasksHtml = `<div class="card">
+      <div class="sec-title">✅ Today's Tasks${allDone?' — All Done! 🎉':''}</div>
+      <div class="task-list">
+        ${st.tasks.map((t,i)=>`
+          <div class="task-item ${checks[i]?'done-task':''}" onclick="toggleTask('${lead.id}','${lead.stageId}',${i})">
+            <span class="task-icon">${t.icon}</span>
+            <div class="task-check">${checks[i]?'✓':''}</div>
+            <span class="task-label">${esc(t.label)}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Scripts HTML
+  let scriptsHtml = '';
+  if(st.scripts.length){
+    // In default (non-live-call) mode, only show Email, Text, and Voicemail scripts
+    const isVisible = sc => !sc.isCallScript && (sc.tab.includes('📬') || sc.tab.includes('💬') || sc.tab.includes('📱'));
+    const scriptCards = st.scripts.map((sc,si)=>{
+      if(sc.isCallScript) return ''; // shown only via live call dropdown
+      if(!isVisible(sc)) return ''; // hide LinkedIn, call scripts etc.
+
+      const skey = `s|${lead.stageId}|${si}`;
+      const bodyText = getScriptBody(skey, sc.body);
+      const edited = isEdited(skey);
+      const subjectKey = `s|${lead.stageId}|${si}|subject`;
+      const subjectText = getScriptBody(subjectKey, sc.subject||'');
+      const editedSubject = isEdited(subjectKey);
+      const objHtml = sc.objections ? `<div style="margin-top:12px">
+        <div class="call-sec-title">⚡ Objection Handlers</div>
+        ${sc.objections.map((o,qi)=>{
+          const okey=`s|${lead.stageId}|${si}|obj|${qi}`;
+          const oText=getScriptBody(okey,o.a);
+          const oEdited=isEdited(okey);
+          return `<div class="objection" id="qo_${si}_${qi}">
+            <div class="obj-q" onclick="toggleObj('qo_${si}_${qi}')">
+              <span>${esc(o.q)}${oEdited?'<span class="edited-badge">✏️ Edited</span>':''}</span>
+              <div style="display:flex;align-items:center;gap:6px">
+                <button class="btn bg" style="font-size:10px;padding:2px 7px;z-index:2" onclick="event.stopPropagation();startObjEdit('${okey}','qo_${si}_${qi}')">✏️</button>
+                <span class="obj-arrow">▼</span>
+              </div>
+            </div>
+            <div class="obj-a" id="qo_body_${si}_${qi}">${escPre(oText)}</div>
+          </div>`;
+        }).join('')}
+      </div>` : '';
+      return `<div class="script-section" id="ss_${si}">
+        <div class="script-header" onclick="toggleScriptCollapse(${si})">
+          <div style="flex:1;min-width:0">
+            <div class="script-header-title" style="display:flex;align-items:center;gap:4px">
+              <span class="script-chevron">▼</span>
+              ${esc(sc.tab)} — ${esc(sc.title)}${edited?'<span class="edited-badge">✏️ Edited</span>':''}
+            </div>
+            ${sc.subject?`<div class="script-subject" id="subj_${si}" style="margin-left:14px">${esc(subjectText)}${editedSubject?' ✏️':''}</div>`:''}
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0">
+            <button class="btn bg copy-btn" onclick="event.stopPropagation();copyScript(${si},'${lead.id}')" style="font-size:10px;padding:3px 8px">📋 Copy</button>
+            ${sc.subject !== undefined ? `<button class="btn bg" onclick="event.stopPropagation();sendEmail(${si},'${lead.id}')" style="font-size:10px;padding:3px 8px;background:#eff6ff;color:#2563eb">📧 Send</button>` : ''}
+            <button class="btn bg" onclick="event.stopPropagation();startStageEdit('${skey}',${si},'${lead.stageId}')" style="font-size:10px;padding:3px 8px">✏️ Edit</button>
+          </div>
+        </div>
+        <div class="script-body-wrap" id="sb_${si}" style="display:none">
+          <div class="script-body" id="sb_text_${si}">${renderScriptBody(bodyText)}</div>
+          ${sc.note?`<div class="script-note">💡 ${esc(sc.note)}</div>`:''}
+          ${sc.tip?`<div class="script-tip">${esc(sc.tip)}</div>`:''}
+          ${objHtml}
+        </div>
+      </div>`;
+    }).join('');
+    const cvVal = lead.convStage || '';
+    const cvStg = cvVal ? CONV_STAGES.find(s=>s.id===cvVal) : null;
+    const selectorHtml = `<div class="conv-stage-bar">
+      <label>📞 I'm on a call:</label>
+      <select class="conv-stage-select" onchange="setConvStage('${lead.id}',this.value)">
+        ${CONV_STAGES.map(s=>`<option value="${s.id}" ${cvVal===s.id?'selected':''}>${esc(s.label)}</option>`).join('')}
+      </select>
+    </div>`;
+
+    if (cvVal && cvStg) {
+      // LIVE CALL MODE — show only the relevant script, full width, no clutter
+      const liveContent = renderLiveCallScript(cvStg);
+      scriptsHtml = `<div class="card">
+        <div class="sec-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>📞 LIVE CALL SCRIPT</span>
+          <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;background:#0369a1;color:white">${esc(cvStg.label)}</span>
+        </div>
+        ${selectorHtml}
+        <div style="margin-top:10px">${liveContent}</div>
+      </div>`;
+    } else {
+      // DEFAULT — show outreach scripts (emails, texts, LinkedIn) collapsed
+      scriptsHtml = `<div class="card">
+        <div class="sec-title">📋 Outreach Scripts</div>
+        ${selectorHtml}
+        <div style="margin-top:10px">${scriptCards}</div>
+      </div>`;
+    }
+  }
+
+  // Notes
+  const notesHtml = (lead.notes||[]).length
+    ? [...(lead.notes||[])].reverse().map(n => {
+        const isAI = n.text.startsWith('🔍 AI Research:');
+        const borderColor = isAI ? '#0369a1' : '#2563eb';
+        const bg = isAI ? '#f0f9ff' : '#f8fafc';
+        const label = isAI ? '<span style="font-size:9px;font-weight:800;background:#0369a1;color:white;padding:1px 6px;border-radius:10px;margin-left:6px">AI RESEARCH</span>' : '';
+        const bodyText = isAI ? n.text.replace('🔍 AI Research:\n','') : n.text;
+        return `<div class="note-item" style="border-left-color:${borderColor};background:${bg}">
+          <div class="note-meta">${fmtDT(n.at)}${label}</div>
+          <div style="white-space:pre-wrap">${esc(bodyText)}</div>
+        </div>`;
+      }).join('')
+    : '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px">No notes yet.</div>';
+
+  // Activity
+  const actHtml = (lead.activity||[]).length
+    ? (lead.activity||[]).slice().reverse().map(a=>`<div class="act-item"><div class="act-dot" style="background:${a.col||'#2563eb'}"></div><div><div class="act-txt">${esc(a.txt)}</div><div class="act-time">${fmtDT(a.at)}</div></div></div>`).join('')
+    : '<div style="color:#94a3b8;font-size:11px">No activity yet.</div>';
+
+  const dayCount = daysInStage(lead);
+  const stuckMsg = dayCount > 7 && !['won','lost','unqualified'].includes(lead.stageId) ? `<div style="font-size:11px;color:#f59e0b;font-weight:700;margin-top:6px">⚠️ In this stage for ${dayCount} days — consider moving forward</div>` : '';
+
+  panel.innerHTML = `
+    <div class="dh">
+      <div>
+        <div class="dh-name">${esc(lead.firstName)} ${esc(lead.lastName)}</div>
+        <div class="dh-info">${info}</div>
+        ${lead.leadDate?`<div style="font-size:10px;color:#94a3b8;margin-top:4px">Lead received: ${fmtD(lead.leadDate)}</div>`:''}
+        ${stuckMsg}
+      </div>
+      <div class="dh-actions">
+        <button class="btn bg" onclick="openEdit('${lead.id}')">✏️ Edit</button>
+        <button class="btn" style="background:#f0f9ff;color:#0369a1;border:none;padding:6px 11px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer" onclick="researchLead('${lead.id}')" title="Open Claude AI to research this lead">🔍 Research</button>
+        <button class="btn bd" onclick="delLead('${lead.id}')">🗑️</button>
+      </div>
+    </div>
+
+    <div class="fu-bar">
+      <label>📅 Next Follow-Up:</label>
+      <input type="date" class="fu-input" value="${lead.nextFU||''}" onchange="setFU('${lead.id}',this.value)">
+      ${fu?`<span class="fu-status ${fu.cls}">${fu.label}</span>`:''}
+      <div style="flex:1"></div>
+      <button class="btn bg" style="font-size:10px;padding:3px 8px" onclick="setFU('${lead.id}','${addDays(1)}')">+1d</button>
+      <button class="btn bg" style="font-size:10px;padding:3px 8px" onclick="setFU('${lead.id}','${addDays(3)}')">+3d</button>
+      <button class="btn bg" style="font-size:10px;padding:3px 8px" onclick="setFU('${lead.id}','${addDays(7)}')">+1wk</button>
+    </div>
+
+    <div class="call-outcomes">
+      <button class="call-outcome-btn" onclick="logCallOutcome('${lead.id}','connected')">🤝 Connected</button>
+      <button class="call-outcome-btn" onclick="requestCallback('${lead.id}')">📅 Callback Requested</button>
+      <button class="call-outcome-btn" onclick="logCallOutcome('${lead.id}','not_interested')">🚫 Not Interested</button>
+    </div>
+
+    <div class="stage-card">
+      <div class="sec-title">📊 Outreach Pipeline — ${STAGES.length} Steps Over 30 Days</div>
+      ${st.theme?`<div class="theme-badge" style="background:${st.bg};color:${st.text}">${st.theme}</div>`:''}
+      <div class="stage-track">${track}</div>
+      <div class="stage-btns">
+        ${idx>0?`<button class="btn bg" onclick="moveS('${lead.id}',-1)">← Back</button>`:''}
+        <span class="stage-cur" style="background:${st.bg};color:${st.text}">${st.label}</span>
+        ${idx<STAGES.length-1?`<button class="btn bp" onclick="moveS('${lead.id}',1)">Next Stage →</button>`:''}
+        ${!['quoted','won','lost','unqualified'].includes(lead.stageId)?`<button class="btn" style="background:#7c3aed;color:white;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer" onclick="jumpS('quoted')">📋 Move to Quoting</button>`:''}
+        ${lead.stageId!=='won'?`<button class="btn bs" onclick="jumpS('won')">✓ Mark Won</button>`:''}
+        <div style="display:flex;gap:6px;margin-left:auto">
+          ${lead.stageId!=='lost'?`<button class="btn bw" onclick="jumpS('lost')">Mark Lost</button>`:''}
+          ${lead.stageId!=='unqualified'?`<button class="btn" style="background:#f5f3ff;color:#5b21b6;border:1.5px solid #ddd6fe;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer" onclick="jumpS('unqualified')">🚫 Unqualified</button>`:''}
+        </div>
+      </div>
+    </div>
+
+    ${tasksHtml}
+    ${scriptsHtml}
+    ${renderDiscoveryHtml(lead)}
+
+    <div class="card">
+      <div class="sec-title">📝 Notes</div>
+      <div class="notes-list">${notesHtml}</div>
+      <div class="note-add">
+        <textarea class="note-input" id="ni_${lead.id}" placeholder="Add a note…"></textarea>
+        <button class="btn bp" onclick="addNote('${lead.id}')">Add</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">🕐 Activity Log</div>
+      ${actHtml}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════
+function selLead(id){selId=id;renderList();renderDetail();if(activeTab==='overview')renderOverview();}
+function onSearch(v){searchQ=v;renderList();}
+function setF(f,btn){activeFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderList();}
+function moveS(leadId,dir){
+  const l=leads.find(x=>x.id===leadId);if(!l)return;
+  const i=gSI(l.stageId),ni=Math.max(0,Math.min(STAGES.length-1,i+dir));
+  if(ni===i)return;
+  const old=gS(l.stageId);l.stageId=STAGES[ni].id;const nw=gS(l.stageId);
+  if(nw.followDays>0)l.nextFU=addDays(nw.followDays);
+  log(l,`Stage: ${old.label} → ${nw.label}`,nw.color);
+  save();renderList();renderDetail();
+  if(activeTab==='queue')renderQueue();
+}
+function jumpS(stageId){
+  if(!selId)return;
+  const l=leads.find(x=>x.id===selId);if(!l)return;
+  const old=gS(l.stageId);l.stageId=stageId;const nw=gS(stageId);
+  if(nw.followDays>0)l.nextFU=addDays(nw.followDays);
+  if(stageId==='lost') l.reContactDate=addDays(90);
+  log(l,`Stage: ${old.label} → ${nw.label}`,nw.color);
+  save();renderList();renderDetail();
+  if(activeTab==='queue')renderQueue();
+}
+function setFU(leadId,date){
+  const l=leads.find(x=>x.id===leadId);if(!l)return;
+  const safe=skipWeekend(date);
+  if(safe!==date) showToast(`📅 Moved to ${fmtD(safe)} — no weekends!`);
+  l.nextFU=safe;log(l,`Follow-up set to ${fmtD(safe)}`,'#f59e0b');
+  save();renderList();renderDetail();
+  if(activeTab==='queue')renderQueue();
+}
+function addNote(leadId){
+  const inp=document.getElementById('ni_'+leadId);
+  if(!inp||!inp.value.trim())return;
+  const l=leads.find(x=>x.id===leadId);if(!l)return;
+  l.notes=l.notes||[];l.notes.push({text:inp.value.trim(),at:new Date().toISOString()});
+  log(l,'Note added','#64748b');save();renderDetail();
+}
+function copyScript(si, leadId){
+  const l=leads.find(x=>x.id===leadId);if(!l)return;
+  const st=gS(l.stageId);const sc=st.scripts[si];if(!sc||!sc.body)return;
+  const skey=`s|${l.stageId}|${si}`;
+  const subjectKey=`s|${l.stageId}|${si}|subject`;
+  let rawBody=getScriptBody(skey,sc.body);
+  let rawSubj=getScriptBody(subjectKey,sc.subject||'');
+  // Strip HTML from rich-edited content
+  rawBody=getPlainText(rawBody);
+  rawSubj=getPlainText(rawSubj);
+  let txt=(rawSubj?rawSubj+'\n\n':'')+rawBody;
+  const areaStr = [l.city, l.state].filter(Boolean).join(', ') || '[area]';
+  txt=txt.replace(/\[Name\]/g,l.firstName||'[Name]').replace(/\[Prospect's Name\]/g,l.firstName||'[Name]')
+         .replace(/\[Company\]/g,l.company||'[Company]')
+         .replace(/\[area\]/g,areaStr)
+         .replace(/\[X\]\+/g,(l.employees||'[X]')+'+');
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Copied!')).catch(()=>{});
+}
+function toggleCS(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+function toggleObj(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+function toggleScriptBody(id){const el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'':'none';}
+function delLead(leadId){
+  if(!confirm('Delete this lead? This cannot be undone.'))return;
+  leads=leads.filter(l=>l.id!==leadId);selId=null;save();renderList();renderDetail();
+}
+
+function researchLead(leadId) {
+  const l = leads.find(x => x.id === leadId);
+  if (!l) return;
+  const name = [l.firstName, l.lastName].filter(Boolean).join(' ');
+  const company = l.company || '';
+  const website = l.website || '';
+  const industry = l.industry || '';
+  const city = [l.city, l.state].filter(Boolean).join(', ');
+  const employees = l.employees ? `~${l.employees} employees` : '';
+
+  const contextParts = [
+    company && `Company: ${company}`,
+    website && `Website: ${website}`,
+    industry && `Industry: ${industry}`,
+    city && `Location: ${city}`,
+    employees,
+  ].filter(Boolean).join('\n');
+
+  const prompt = `I'm a health insurance broker preparing for a cold outreach call. Please research this lead and give me a quick briefing:
+
+Contact: ${name}
+${contextParts}
+
+Please tell me:
+1. What does this company do and who do they serve?
+2. Approximate company size and any recent news or changes
+3. Who is likely the decision-maker for employee health benefits?
+4. What pain points around health insurance might they have?
+5. A specific, personalized opening line I could use to start the call
+
+Keep it concise — I need this in under 2 minutes before I dial.`;
+
+  const url = 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
+  window.open(url, '_blank');
+
+  // Show paste-back panel in the detail view
+  const existingPanel = document.getElementById('research_panel_' + leadId);
+  if (existingPanel) { existingPanel.querySelector('.research-textarea').focus(); return; }
+
+  const panel = document.createElement('div');
+  panel.className = 'research-panel';
+  panel.id = 'research_panel_' + leadId;
+  panel.innerHTML = `
+    <div class="research-panel-title">🔍 AI Research — ${esc(name)}${company ? ' · ' + esc(company) : ''}</div>
+    <div class="research-panel-sub">Claude opened in a new tab. Once you have the research, paste it below and click <strong>Save to Notes</strong>.</div>
+    <textarea class="research-textarea" id="research_ta_${leadId}" placeholder="Paste Claude's research response here…"></textarea>
+    <div class="research-panel-actions">
+      <button class="btn bp" style="font-size:12px" onclick="saveResearchNote('${leadId}')">💾 Save to Notes</button>
+      <button class="btn bg" style="font-size:12px" onclick="dismissResearch('${leadId}')">Dismiss</button>
+    </div>`;
+
+  // Insert just above the Notes card
+  const detail = document.getElementById('detail');
+  if (detail) {
+    const notesCard = [...detail.querySelectorAll('.card')].find(c => c.textContent.includes('📝 Notes'));
+    if (notesCard) notesCard.parentNode.insertBefore(panel, notesCard);
+    else detail.querySelector('.detail') ? detail.querySelector('.detail').prepend(panel) : detail.prepend(panel);
+  }
+  setTimeout(() => panel.querySelector('.research-textarea').focus(), 100);
+}
+
+function saveResearchNote(leadId) {
+  const ta = document.getElementById('research_ta_' + leadId);
+  if (!ta || !ta.value.trim()) { showToast('Paste the research first.'); return; }
+  const l = leads.find(x => x.id === leadId);
+  if (!l) return;
+  l.notes = l.notes || [];
+  l.notes.push({ text: '🔍 AI Research:\n' + ta.value.trim(), at: new Date().toISOString() });
+  log(l, 'AI research saved to notes', '#0369a1');
+  save();
+  dismissResearch(leadId);
+  renderDetail();
+  showToast('✅ Research saved to notes!');
+}
+
+function dismissResearch(leadId) {
+  const panel = document.getElementById('research_panel_' + leadId);
+  if (panel) panel.remove();
+}
+
+// ═══════════════════════════════
+//  CALL OUTCOMES & DAYS IN STAGE
+// ═══════════════════════════════
+function daysInStage(lead) {
+  if (!lead.activity || !lead.activity.length) {
+    const createdDate = new Date(lead.createdAt);
+    const today_d = new Date();
+    return Math.floor((today_d - createdDate) / 86400000);
+  }
+  // Find the most recent "Stage:" activity entry
+  const stageChangeActivities = lead.activity.filter(a => a.txt && a.txt.includes('Stage:'));
+  if (stageChangeActivities.length > 0) {
+    const mostRecent = stageChangeActivities[stageChangeActivities.length - 1];
+    const changeDate = new Date(mostRecent.at);
+    const today_d = new Date();
+    return Math.floor((today_d - changeDate) / 86400000);
+  }
+  // Fallback to created date
+  const createdDate = new Date(lead.createdAt);
+  const today_d = new Date();
+  return Math.floor((today_d - createdDate) / 86400000);
+}
+
+function logCallOutcome(leadId, outcome) {
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  switch (outcome) {
+    case 'no_answer':
+      log(lead, 'No Answer', '#ef4444');
+      lead.nextFU = addDays(1);
+      break;
+    case 'vm_left':
+      log(lead, 'Voicemail Left', '#f59e0b');
+      lead.nextFU = addDays(2);
+      break;
+    case 'connected':
+      log(lead, 'Connected — live call', '#10b981');
+      const st = gS(lead.stageId);
+      const old = st;
+      lead.stageId = 'live';
+      const nw = gS('live');
+      if (nw.followDays > 0) lead.nextFU = addDays(nw.followDays);
+      break;
+    case 'not_interested':
+      log(lead, 'Not Interested — marked lost', '#6b7280');
+      lead.stageId = 'lost';
+      lead.reContactDate = addDays(90);
+      break;
+  }
+  save(); renderList(); renderDetail();
+  if (activeTab === 'queue') renderQueue();
+}
+
+function requestCallback(leadId) {
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  // Show inline date picker
+  const modal = document.getElementById('modal');
+  if (!modal) return;
+
+  const dateInput = document.createElement('input');
+  dateInput.type = 'date';
+  dateInput.value = today();
+  dateInput.style.cssText = 'padding:8px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px';
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.5);display:flex;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(3px)';
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+
+  const dialog = document.createElement('div');
+  dialog.style.cssText = 'background:white;border-radius:12px;padding:20px;width:360px;box-shadow:0 24px 60px rgba(0,0,0,0.2)';
+  dialog.innerHTML = `
+    <h3 style="font-size:15px;font-weight:800;margin-bottom:12px;color:#1e293b">📅 Callback Date</h3>
+    <div style="margin-bottom:16px"></div>
+  `;
+  dialog.querySelector('div').appendChild(dateInput);
+
+  const btnContainer = document.createElement('div');
+  btnContainer.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid #f1f5f9';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn bg';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = () => overlay.remove();
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.className = 'btn bp';
+  confirmBtn.textContent = 'Set Callback';
+  confirmBtn.onclick = () => {
+    const date = dateInput.value;
+    if (!date) return;
+    log(lead, `Callback requested for ${fmtD(date)}`, '#2563eb');
+    lead.nextFU = skipWeekend(date);
+    save(); renderList(); renderDetail();
+    if (activeTab === 'queue') renderQueue();
+    overlay.remove();
+  };
+
+  btnContainer.appendChild(cancelBtn);
+  btnContainer.appendChild(confirmBtn);
+  dialog.appendChild(btnContainer);
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  dateInput.focus();
+}
+
+function renderQueue() {
+  const container = document.getElementById('queueInner');
+  if (!container) return;
+
+  const t = today();
+  const queueLeads = leads.filter(l => {
+    if (['won','lost','unqualified'].includes(l.stageId)) return false;
+    if (!l.nextFU || l.nextFU > t) return false;
+    return true;
+  });
+
+  // Sort: overdue first (oldest nextFU first), then today's leads
+  queueLeads.sort((a, b) => {
+    const aOver = a.nextFU < t;
+    const bOver = b.nextFU < t;
+    if (aOver && !bOver) return -1;
+    if (!aOver && bOver) return 1;
+    return a.nextFU.localeCompare(b.nextFU);
+  });
+
+  if (!queueLeads.length) {
+    container.innerHTML = `<div style="text-align:center;padding:40px 20px;color:#94a3b8">
+      <div style="font-size:32px;margin-bottom:10px">✅</div>
+      <h3 style="font-size:14px;color:#64748b;margin-bottom:4px">All caught up!</h3>
+      <p style="font-size:12px">No leads due for follow-up today.</p>
+    </div>`;
+    return;
+  }
+
+  const cards = queueLeads.map(l => {
+    const st = gS(l.stageId);
+    const lastNoteIdx = l.notes && l.notes.length ? l.notes.length - 1 : -1;
+    const lastNote = lastNoteIdx >= 0 ? l.notes[lastNoteIdx].text : '';
+    const noteSnippet = lastNote ? lastNote.substring(0, 60) + (lastNote.length > 60 ? '...' : '') : '';
+
+    const fu = fuSt(l);
+    const overdue = l.nextFU < t;
+
+    return `<div class="queue-card" style="${overdue ? 'border-left-color:#ef4444;' : ''}">
+      <div class="queue-card-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
+      <div class="queue-card-meta">
+        <span>🏢 ${esc(l.company || '—')}</span>
+        <span>📞 ${esc(l.phone)}</span>
+        <span style="background:${st.bg};color:${st.text};padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700">${st.short}</span>
+        <span>${fu ? fu.label : ''}</span>
+        ${noteSnippet ? `<span style="color:#64748b;font-style:italic">💬 ${esc(noteSnippet)}</span>` : ''}
+      </div>
+      <div class="queue-card-actions">
+        <button class="btn bg" style="font-size:10px;padding:5px 10px" onclick="logCallOutcome('${l.id}','no_answer')">📵 No Answer</button>
+        <button class="btn bg" style="font-size:10px;padding:5px 10px" onclick="logCallOutcome('${l.id}','vm_left')">📣 VM Left</button>
+        <button class="btn bg" style="font-size:10px;padding:5px 10px" onclick="goToLead('${l.id}')">Open →</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:14px">📋 Daily Call Queue</div>
+    <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.6px">${queueLeads.length} lead${queueLeads.length !== 1 ? 's' : ''} due today</div>
+    ${cards}
+  `;
+}
+
+// ═══════════════════════════════
+//  MODAL
+// ═══════════════════════════════
+function clearF(){['fF','fL','fP','fE','fCity','fSt','fWeb','fCo','fInd','fEmp','fLD','fN','fSrc','fDM','fRef','fCarrier','fPlan','fRenew'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
+function openAdd(){
+  editId=null;
+  document.getElementById('mtitle').textContent='➕ Add New Lead';
+  document.getElementById('mSave').textContent='Add Lead';
+  document.getElementById('mSave').onclick=saveLead;
+  clearF();
+  document.getElementById('fLD').value=today();
+  document.getElementById('modal').style.display='flex';
+}
+function openEdit(leadId){
+  const l=leads.find(x=>x.id===leadId);if(!l)return;
+  editId=leadId;
+  document.getElementById('mtitle').textContent='✏️ Edit Lead';
+  document.getElementById('mSave').textContent='Save Changes';
+  document.getElementById('mSave').onclick=saveLead;
+  document.getElementById('fF').value=l.firstName||'';
+  document.getElementById('fL').value=l.lastName||'';
+  document.getElementById('fP').value=l.phone||'';
+  document.getElementById('fE').value=l.email||'';
+  document.getElementById('fCity').value=l.city||'';
+  document.getElementById('fSt').value=l.state||'';
+  document.getElementById('fWeb').value=l.website||'';
+  document.getElementById('fCo').value=l.company||'';
+  document.getElementById('fInd').value=l.industry||'';
+  document.getElementById('fDM').value=l.decisionMaker||'';
+  document.getElementById('fEmp').value=l.employees||'';
+  document.getElementById('fLD').value=l.leadDate||'';
+  document.getElementById('fSrc').value=l.source||'';
+  document.getElementById('fRef').value=l.referredBy||'';
+  document.getElementById('fCarrier').value=l.carrier||'';
+  document.getElementById('fPlan').value=l.planType||'';
+  document.getElementById('fRenew').value=l.renewalDate||'';
+  document.getElementById('fN').value='';
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';editId=null;}
+function saveLead(){
+  const fn=document.getElementById('fF').value.trim();
+  const ln=document.getElementById('fL').value.trim();
+  const ph=document.getElementById('fP').value.trim();
+  if(!fn||!ln||!ph){alert('First Name, Last Name, and Phone are required.');return;}
+  if(editId){
+    const l=leads.find(x=>x.id===editId);if(!l)return;
+    l.firstName=fn;l.lastName=ln;l.phone=ph;
+    l.email=document.getElementById('fE').value.trim();
+    l.city=document.getElementById('fCity').value.trim();
+    l.state=document.getElementById('fSt').value.trim().toUpperCase();
+    l.website=document.getElementById('fWeb').value.trim();
+    l.company=document.getElementById('fCo').value.trim();
+    l.industry=document.getElementById('fInd').value.trim();
+    l.decisionMaker=document.getElementById('fDM').value.trim();
+    l.employees=document.getElementById('fEmp').value;
+    l.leadDate=document.getElementById('fLD').value;
+    l.source=document.getElementById('fSrc').value;
+    l.referredBy=document.getElementById('fRef').value.trim();
+    l.carrier=document.getElementById('fCarrier').value.trim();
+    l.planType=document.getElementById('fPlan').value.trim();
+    l.renewalDate=document.getElementById('fRenew').value;
+    log(l,'Lead info updated','#64748b');
+    save();closeModal();renderList();renderDetail();
+  }else{
+    const note=document.getElementById('fN').value.trim();
+    const l={
+      id:uid(),firstName:fn,lastName:ln,phone:ph,
+      email:document.getElementById('fE').value.trim(),
+      city:document.getElementById('fCity').value.trim(),
+      state:document.getElementById('fSt').value.trim().toUpperCase(),
+      website:document.getElementById('fWeb').value.trim(),
+      company:document.getElementById('fCo').value.trim(),
+      industry:document.getElementById('fInd').value.trim(),
+      decisionMaker:document.getElementById('fDM').value.trim(),
+      employees:document.getElementById('fEmp').value,
+      leadDate:document.getElementById('fLD').value,
+      source:document.getElementById('fSrc').value,
+      referredBy:document.getElementById('fRef').value.trim(),
+      carrier:document.getElementById('fCarrier').value.trim(),
+      planType:document.getElementById('fPlan').value.trim(),
+      renewalDate:document.getElementById('fRenew').value,
+      stageId:'new',nextFU:today(),taskChecks:{},
+      notes:note?[{text:note,at:new Date().toISOString()}]:[],
+      activity:[{txt:'Lead added to CRM',col:'#3b82f6',at:new Date().toISOString()}],
+      createdAt:new Date().toISOString()
+    };
+    leads.unshift(l);save();closeModal();selId=l.id;renderList();renderDetail();
+  }
+}
+document.addEventListener('keydown',e=>{if(document.getElementById('modal').style.display!=='none'&&e.key==='Escape')closeModal();});
+
+// ═══════════════════════════════
+//  RICH TEXT HELPERS
+// ═══════════════════════════════
+function fmtRich(cmd, val) {
+  document.execCommand(cmd, false, val || null);
+  const ed = document.activeElement;
+  if (ed) ed.focus();
+}
+function buildRichToolbar() {
+  return `<div class="rich-toolbar">
+    <button class="rtb" title="Bold" onmousedown="event.preventDefault();fmtRich('bold')"><b>B</b></button>
+    <button class="rtb" title="Underline" onmousedown="event.preventDefault();fmtRich('underline')"><u style="text-underline-offset:2px">U</u></button>
+    <button class="rtb" title="Italic" onmousedown="event.preventDefault();fmtRich('italic')"><i>I</i></button>
+    <div class="rtb-sep"></div>
+    <button class="rtb rtb-wide" title="Bullet list" onmousedown="event.preventDefault();fmtRich('insertUnorderedList')">• List</button>
+    <button class="rtb rtb-wide" title="Numbered list" onmousedown="event.preventDefault();fmtRich('insertOrderedList')">1. List</button>
+    <div class="rtb-sep"></div>
+    <button class="rtb rtb-wide" title="Clear formatting" onmousedown="event.preventDefault();fmtRich('removeFormat')" style="font-size:10px;color:#94a3b8">✕ Clear</button>
+  </div>`;
+}
+function getPlainText(html) {
+  // Strip HTML tags for copy/mailto, preserve newlines
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  // Convert block elements to newlines
+  tmp.querySelectorAll('p,br,li,div').forEach(el => {
+    if (el.tagName === 'BR') el.replaceWith('\n');
+    else el.insertAdjacentText('beforeend', '\n');
+  });
+  tmp.querySelectorAll('li').forEach(el => el.insertAdjacentText('afterbegin', '• '));
+  return (tmp.textContent || '').replace(/\n{3,}/g, '\n\n').trim();
+}
+function toRichHtml(text) {
+  // Convert plain text to safe HTML for contenteditable initial load
+  if (!text) return '';
+  if (/<[a-zA-Z]/.test(text)) return text; // already HTML
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function getRichVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.innerHTML : '';
+}
+function renderScriptBody(text) {
+  if (!text) return '';
+  // If content has HTML tags (saved from rich editor), render as HTML
+  if (/<[a-zA-Z]/.test(text)) return text;
+  // Otherwise render as escaped pre-formatted plain text
+  return escPre(text);
+}
+
+// ═══════════════════════════════
+//  INLINE SCRIPT EDITING
+// ═══════════════════════════════
+
+// --- Stage script body editing ---
+function startStageEdit(key, si, stageId) {
+  const bodyEl = document.getElementById('sb_text_' + si);
+  const wrap = document.getElementById('sb_' + si);
+  if (!bodyEl || !wrap || wrap.querySelector('.rich-edit-area')) return;
+  // Expand if collapsed
+  if (wrap.style.display === 'none') {
+    wrap.style.display = '';
+    const section = document.getElementById('ss_' + si);
+    if (section) section.classList.add('open');
+  }
+  const st = gS(stageId);
+  const defaultText = st.scripts[si] ? st.scripts[si].body : '';
+  const current = getScriptBody(key, defaultText);
+  bodyEl.style.display = 'none';
+  const editDiv = document.createElement('div');
+  editDiv.id = 'edit_ui_' + si;
+  editDiv.innerHTML = `${buildRichToolbar()}
+    <div class="rich-edit-area" id="edit_re_${si}" contenteditable="true">${toRichHtml(current)}</div>
+    <div class="script-edit-actions">
+      <button class="btn bs" onclick="saveStageEdit('${key}',${si},'${stageId}')">💾 Save</button>
+      <button class="btn bg" onclick="cancelStageEdit(${si})">Cancel</button>
+      ${isEdited(key)?`<button class="btn bw" onclick="resetStageEdit('${key}',${si},'${stageId}')" style="margin-left:auto">↩ Reset to Default</button>`:''}
+    </div>`;
+  bodyEl.after(editDiv);
+  const re = document.getElementById('edit_re_' + si);
+  if (re) re.focus();
+}
+function saveStageEdit(key, si, stageId) {
+  const html = getRichVal('edit_re_' + si);
+  if (html === null) return;
+  scriptOverrides[key] = html;
+  saveScriptOverrides();
+  showToast('✅ Script saved!');
+  renderDetail();
+}
+function cancelStageEdit(si) {
+  const editDiv = document.getElementById('edit_ui_' + si);
+  const bodyEl = document.getElementById('sb_text_' + si);
+  if (editDiv) editDiv.remove();
+  if (bodyEl) bodyEl.style.display = '';
+}
+function resetStageEdit(key, si, stageId) {
+  if (!confirm('Reset this script to the default text?')) return;
+  delete scriptOverrides[key];
+  saveScriptOverrides();
+  showToast('↩ Reset to default');
+  renderDetail();
+}
+
+// --- Call script section editing ---
+function startCallEdit(key, i, sectionId) {
+  const bodyEl = document.getElementById('cs_body_' + i);
+  const block = document.getElementById('cs_' + i);
+  if (!bodyEl || !block || block.querySelector('.rich-edit-area')) return;
+  const sec = CALL_SCRIPT.find(s => s.id === sectionId);
+  const defaultText = sec ? sec.body : '';
+  const current = getScriptBody(key, defaultText);
+  bodyEl.style.display = 'none';
+  block.classList.add('open');
+  const editDiv = document.createElement('div');
+  editDiv.id = 'call_edit_ui_' + i;
+  editDiv.innerHTML = `${buildRichToolbar()}
+    <div class="rich-edit-area" id="call_re_${i}" contenteditable="true">${toRichHtml(current)}</div>
+    <div class="call-edit-actions">
+      <button class="btn bs" onclick="saveCallEdit('${key}',${i})">💾 Save</button>
+      <button class="btn bg" onclick="cancelCallEdit(${i})">Cancel</button>
+      ${isEdited(key)?`<button class="btn bw" onclick="resetCallEdit('${key}',${i})" style="margin-left:auto">↩ Reset to Default</button>`:''}
+    </div>`;
+  bodyEl.after(editDiv);
+  const re = document.getElementById('call_re_' + i);
+  if (re) re.focus();
+}
+function saveCallEdit(key, i) {
+  const html = getRichVal('call_re_' + i);
+  if (html === null) return;
+  scriptOverrides[key] = html;
+  saveScriptOverrides();
+  showToast('✅ Script saved!');
+  renderDetail();
+}
+function cancelCallEdit(i) {
+  const editDiv = document.getElementById('call_edit_ui_' + i);
+  const bodyEl = document.getElementById('cs_body_' + i);
+  if (editDiv) editDiv.remove();
+  if (bodyEl) bodyEl.style.display = '';
+}
+function resetCallEdit(key, i) {
+  if (!confirm('Reset this section to the default text?')) return;
+  delete scriptOverrides[key];
+  saveScriptOverrides();
+  showToast('↩ Reset to default');
+  renderDetail();
+}
+
+// --- Objection answer editing (shared for both call and stage objections) ---
+function startObjEdit(key, blockId) {
+  const bodyId = blockId.replace('cso_', 'cso_body_').replace('qo_', 'qo_body_').replace('lobj_', 'lobj_') + (blockId.startsWith('lobj_') ? '_body' : '');
+  const bodyEl = document.getElementById(bodyId);
+  const block = document.getElementById(blockId);
+  if (!bodyEl || !block || block.querySelector('.rich-edit-area')) return;
+  const current = getScriptBody(key, bodyEl.textContent);
+  bodyEl.style.display = 'none';
+  block.classList.add('open');
+  const editDiv = document.createElement('div');
+  editDiv.id = 'obj_edit_' + blockId;
+  editDiv.innerHTML = `${buildRichToolbar()}
+    <div class="rich-edit-area" id="obj_re_${blockId}" contenteditable="true" style="min-height:80px">${toRichHtml(current)}</div>
+    <div class="call-edit-actions">
+      <button class="btn bs" onclick="saveObjEdit('${key}','${blockId}')">💾 Save</button>
+      <button class="btn bg" onclick="cancelObjEdit('${blockId}')">Cancel</button>
+      ${isEdited(key)?`<button class="btn bw" onclick="resetObjEdit('${key}','${blockId}')" style="margin-left:auto">↩ Reset to Default</button>`:''}
+    </div>`;
+  bodyEl.after(editDiv);
+  const re = document.getElementById('obj_re_' + blockId);
+  if (re) re.focus();
+}
+function saveObjEdit(key, blockId) {
+  const html = getRichVal('obj_re_' + blockId);
+  if (html === null) return;
+  scriptOverrides[key] = html;
+  saveScriptOverrides();
+  showToast('✅ Saved!');
+  renderDetail();
+}
+function cancelObjEdit(blockId) {
+  const editDiv = document.getElementById('obj_edit_' + blockId);
+  const bodyId = blockId.replace('cso_', 'cso_body_').replace('qo_', 'qo_body_');
+  const bodyEl = document.getElementById(bodyId);
+  if (editDiv) editDiv.remove();
+  if (bodyEl) bodyEl.style.display = '';
+}
+function resetObjEdit(key, blockId) {
+  if (!confirm('Reset to the default response?')) return;
+  delete scriptOverrides[key];
+  saveScriptOverrides();
+  showToast('↩ Reset to default');
+  renderDetail();
+}
+
+// Escape for textarea value (avoids breaking the HTML attribute)
+function escForVal(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════
+function exportCSV() {
+  const headers = ['First Name', 'Last Name', 'Phone', 'Email', 'Company', 'City', 'State', 'Website', 'Industry', 'Employees', 'Lead Source', 'Referred By', 'Decision Maker', 'Carrier', 'Plan Type', 'Renewal Date', 'Lead Date', 'Stage', 'Next Follow-Up', 'Created At'];
+
+  const rows = leads.map(l => [
+    l.firstName || '',
+    l.lastName || '',
+    l.phone || '',
+    l.email || '',
+    l.company || '',
+    l.city || '',
+    l.state || '',
+    l.website || '',
+    l.industry || '',
+    l.employees || '',
+    l.source || '',
+    l.referredBy || '',
+    l.decisionMaker || '',
+    l.carrier || '',
+    l.planType || '',
+    l.renewalDate || '',
+    l.leadDate || '',
+    (gS(l.stageId) || {}).label || '',
+    l.nextFU || '',
+    l.createdAt || ''
+  ]);
+
+  // Escape CSV fields
+  const csvRows = [headers, ...rows].map(row => {
+    return row.map(cell => {
+      const str = String(cell);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    }).join(',');
+  }).join('\n');
+
+  const blob = new Blob([csvRows], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  const today_d = new Date();
+  const dateStr = today_d.getFullYear() + '-' + String(today_d.getMonth() + 1).padStart(2, '0') + '-' + String(today_d.getDate()).padStart(2, '0');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `leads-export-${dateStr}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('📥 CSV exported!');
+}
+
+// ═══════════════════════════════
+//  BULK IMPORT
+// ═══════════════════════════════
+const IMPORT_COLS = ['firstName','lastName','phone','company','industry','state','employees','leadDate'];
+const IMPORT_PLACEHOLDERS = ['John','Smith','(555) 123-4567','Acme Dental','Dental','CA','8',''];
+
+function makeImportRow(vals) {
+  vals = vals || [];
+  const tr = document.createElement('tr');
+  IMPORT_COLS.forEach((col, i) => {
+    const td = document.createElement('td');
+    const inp = document.createElement('input');
+    inp.type = col === 'leadDate' ? 'date' : 'text';
+    inp.placeholder = IMPORT_PLACEHOLDERS[i] || '';
+    inp.value = vals[i] || '';
+    if (col === 'leadDate' && !inp.value) inp.value = today();
+    inp.dataset.col = col;
+    inp.oninput = updateImportCount;
+    td.appendChild(inp);
+    tr.appendChild(td);
+  });
+  // delete button
+  const delTd = document.createElement('td');
+  delTd.className = 'del-col';
+  const delBtn = document.createElement('button');
+  delBtn.className = 'del-row-btn';
+  delBtn.textContent = '✕';
+  delBtn.title = 'Remove row';
+  delBtn.onclick = () => { tr.remove(); updateImportCount(); };
+  delTd.appendChild(delBtn);
+  tr.appendChild(delTd);
+  return tr;
+}
+
+function addImportRow(vals) {
+  const tbody = document.getElementById('importBody');
+  tbody.appendChild(makeImportRow(vals));
+  updateImportCount();
+}
+
+function updateImportCount() {
+  const rows = document.querySelectorAll('#importBody tr');
+  let filled = 0;
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const fn = inputs[0]?.value.trim();
+    const ln = inputs[1]?.value.trim();
+    const ph = inputs[2]?.value.trim();
+    if (fn && ln && ph) filled++;
+    // highlight missing required fields
+    [inputs[0], inputs[1], inputs[2]].forEach(inp => {
+      if (inp) {
+        if (!inp.value.trim()) inp.classList.add('err');
+        else inp.classList.remove('err');
+      }
+    });
+  });
+  // only show errors if some rows have data
+  const anyData = [...rows].some(row => {
+    const inputs = row.querySelectorAll('input');
+    return inputs[0]?.value.trim() || inputs[1]?.value.trim() || inputs[2]?.value.trim();
+  });
+  if (!anyData) {
+    document.querySelectorAll('#importBody input.err').forEach(el => el.classList.remove('err'));
+  }
+  const el = document.getElementById('importCount');
+  if (el) el.innerHTML = `<strong>${filled}</strong> lead${filled!==1?'s':''} ready to import (First Name, Last Name, Phone required)`;
+}
+
+function parsePaste() {
+  const raw = document.getElementById('pasteArea').value.trim();
+  if (!raw) return;
+
+  const lines = raw.split(/\r?\n/).filter(l => l.trim());
+  const rows = lines.map(line => {
+    // detect separator: tab or comma
+    const sep = line.includes('\t') ? '\t' : ',';
+    return line.split(sep).map(cell => cell.trim().replace(/^"|"$/g, ''));
+  });
+
+  // detect if first row is a header (no phone-number-like content)
+  const isHeader = row => row.some(c => /^(first|last|name|phone|company|industry|state|employee|date)/i.test(c));
+  let dataRows = rows;
+  let headerRow = null;
+  if (rows.length > 0 && isHeader(rows[0])) {
+    headerRow = rows[0].map(h => h.toLowerCase());
+    dataRows = rows.slice(1);
+  }
+
+  if (!dataRows.length) {
+    document.getElementById('importError').textContent = 'No data rows found. Make sure you have at least one data row.';
+    return;
+  }
+  document.getElementById('importError').textContent = '';
+
+  // Try to map columns by header, or fall back to positional
+  function mapRow(cells) {
+    if (!headerRow) {
+      // positional: firstName, lastName, phone, company, industry, state, employees, leadDate
+      return cells.slice(0, 8);
+    }
+    // header-based mapping
+    const mapped = IMPORT_COLS.map(col => {
+      const aliases = {
+        firstName: ['first','first name','firstname','given name','fname'],
+        lastName: ['last','last name','lastname','surname','lname'],
+        phone: ['phone','phone number','cell','mobile','tel'],
+        company: ['company','business','employer','organization','org'],
+        industry: ['industry','type','sector'],
+        state: ['state','st'],
+        employees: ['employees','# employees','emp','headcount','size'],
+        leadDate: ['lead date','date','received','date received']
+      };
+      const keys = aliases[col] || [col.toLowerCase()];
+      const idx = headerRow.findIndex(h => keys.some(k => h.includes(k)));
+      return idx >= 0 ? (cells[idx] || '') : '';
+    });
+    return mapped;
+  }
+
+  // Clear existing rows and repopulate
+  document.getElementById('importBody').innerHTML = '';
+  dataRows.forEach(row => {
+    if (row.every(c => !c)) return; // skip blank rows
+    addImportRow(mapRow(row));
+  });
+
+  // Clear paste area
+  document.getElementById('pasteArea').value = '';
+  updateImportCount();
+}
+
+function doImport() {
+  const rows = document.querySelectorAll('#importBody tr');
+  const toImport = [];
+  let hasError = false;
+
+  rows.forEach((row, ri) => {
+    const inputs = row.querySelectorAll('input');
+    const fn = inputs[0]?.value.trim();
+    const ln = inputs[1]?.value.trim();
+    const ph = inputs[2]?.value.trim();
+    if (!fn && !ln && !ph) return; // skip fully blank rows
+    if (!fn || !ln || !ph) {
+      hasError = true;
+      [inputs[0], inputs[1], inputs[2]].forEach(inp => {
+        if (inp && !inp.value.trim()) inp.classList.add('err');
+      });
+      return;
+    }
+    const vals = {};
+    inputs.forEach(inp => { if (inp.dataset.col) vals[inp.dataset.col] = inp.value.trim(); });
+    toImport.push(vals);
+  });
+
+  if (hasError) {
+    document.getElementById('importError').textContent = '⚠️ Some rows are missing First Name, Last Name, or Phone. Please fill them in or remove the row.';
+    return;
+  }
+  if (!toImport.length) {
+    document.getElementById('importError').textContent = '⚠️ No leads to import. Add at least one row with First Name, Last Name, and Phone.';
+    return;
+  }
+
+  const t = today();
+  toImport.forEach(v => {
+    const lead = {
+      id: uid(),
+      firstName: v.firstName, lastName: v.lastName, phone: v.phone,
+      email: v.email || '',
+      state: (v.state || '').toUpperCase(),
+      company: v.company || '',
+      industry: v.industry || '',
+      employees: v.employees || '',
+      leadDate: v.leadDate || t,
+      stageId: 'new', nextFU: t, taskChecks: {},
+      notes: [],
+      activity: [{ txt: 'Lead imported via bulk import', col: '#2563eb', at: new Date().toISOString() }],
+      createdAt: new Date().toISOString()
+    };
+    leads.unshift(lead);
+  });
+
+  save();
+  closeImport();
+  renderList();
+  // select the first imported lead
+  if (toImport.length > 0) {
+    selId = leads[0].id;
+    renderDetail();
+  }
+
+  // show brief success toast
+  showToast(`✅ ${toImport.length} lead${toImport.length!==1?'s':''} imported!`);
+}
+
+function openImport() {
+  document.getElementById('importBody').innerHTML = '';
+  document.getElementById('pasteArea').value = '';
+  document.getElementById('importError').textContent = '';
+  // pre-fill 3 blank rows
+  for (let i = 0; i < 3; i++) addImportRow();
+  document.getElementById('importModal').style.display = 'flex';
+}
+function closeImport() { document.getElementById('importModal').style.display = 'none'; }
+
+// ═══════════════════════════════
+//  TOAST NOTIFICATION
+// ═══════════════════════════════
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:white;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2800);
+}
+
+// ═══════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tab-' + tab);
+  if (btn) btn.classList.add('active');
+  document.getElementById('view-leads').style.display    = tab === 'leads'    ? 'flex' : 'none';
+  const ov = document.getElementById('view-overview');
+  if (ov) { ov.style.display = tab === 'overview' ? 'flex' : 'none'; }
+  const kv = document.getElementById('view-kanban');
+  if (kv) { kv.style.display = tab === 'kanban' ? 'flex' : 'none'; }
+  const qv = document.getElementById('view-queue');
+  if (qv) { qv.style.display = tab === 'queue' ? 'flex' : 'none'; }
+  const em = document.getElementById('view-email');
+  if (em) { em.style.display = tab === 'email' ? 'flex' : 'none'; }
+  const lt = document.getElementById('view-lost');
+  if (lt) { lt.style.display = tab === 'lost' ? 'flex' : 'none'; }
+  if (tab === 'overview') renderOverview();
+  if (tab === 'kanban') renderKanban();
+  if (tab === 'queue') renderQueue();
+  if (tab === 'lost') renderLost();
+}
+
+function goToLead(id) {
+  switchTab('leads');
+  selId = id;
+  renderList();
+  renderDetail();
+}
+
+// ═══════════════════════════════
+//  LOST LEADS
+// ═══════════════════════════════
+function setReContact(id, date) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  lead.reContactDate = date;
+  save();
+  renderLost();
+}
+
+function reengageLead(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  lead.stageId = 'day1';
+  lead.followDays = 1;
+  lead.nextFU = addDays(1);
+  delete lead.reContactDate;
+  lead.activity = lead.activity || [];
+  lead.activity.unshift({ txt: 'Re-engaged — moved back to Day 1', col: '#f59e0b', at: new Date().toISOString() });
+  save();
+  renderLost();
+  renderList();
+}
+
+function renderLost() {
+  const container = document.getElementById('lostInner');
+  if (!container) return;
+  const t = today();
+  const lostLeads   = leads.filter(l => l.stageId === 'lost');
+  const unqualLeads = leads.filter(l => l.stageId === 'unqualified');
+
+  if (!lostLeads.length && !unqualLeads.length) {
+    container.innerHTML = `<div class="lost-empty">
+      <div class="lei">🎉</div>
+      <h3>No lost or unqualified leads</h3>
+      <p>All caught up — no one has been marked lost or unqualified yet.</p>
+    </div>`;
+    return;
+  }
+
+  // Auto-set reContactDate for lost leads that don't have one yet
+  let migrated = false;
+  lostLeads.forEach(l => {
+    if (!l.reContactDate) { l.reContactDate = addDays(90); migrated = true; }
+  });
+  if (migrated) save();
+
+  const daysUntil = dateStr => {
+    if (!dateStr) return null;
+    return Math.ceil((new Date(dateStr + 'T12:00:00') - new Date(t + 'T12:00:00')) / 86400000);
+  };
+
+  // ── LOST CARDS ──
+  const sortedLost = [...lostLeads].sort((a, b) =>
+    (a.reContactDate || '9999-99-99').localeCompare(b.reContactDate || '9999-99-99'));
+
+  const lostCards = sortedLost.map(l => {
+    const rc = l.reContactDate, du = daysUntil(rc);
+    let badgeLabel = '', badgeStyle = '';
+    if (rc) {
+      if (du < 0)       { badgeLabel = `Overdue · ${fmtD(rc)}`;   badgeStyle = 'background:#fef2f2;color:#dc2626'; }
+      else if (du === 0){ badgeLabel = `Today · ${fmtD(rc)}`;     badgeStyle = 'background:#fef9c3;color:#92400e'; }
+      else if (du <= 7) { badgeLabel = `In ${du}d · ${fmtD(rc)}`; badgeStyle = 'background:#fef9c3;color:#92400e'; }
+      else              { badgeLabel = fmtD(rc);                   badgeStyle = 'background:#f1f5f9;color:#475569'; }
+    } else {
+      badgeLabel = 'Set re-contact date'; badgeStyle = 'background:#f1f5f9;color:#94a3b8;font-style:italic';
+    }
+    const note = l.notes && l.notes.length ? l.notes[l.notes.length - 1].text : '';
+    return `<div class="lost-card">
+      <div class="lost-card-info">
+        <div class="lost-card-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
+        <div class="lost-card-company">${esc(l.company || '')}${l.company && l.phone ? ' · ' : ''}${esc(l.phone || '')}</div>
+        <div class="lost-card-meta">
+          <span>📞 ${esc(l.phone || '')}</span>
+          <span>📬 ${esc(l.email || 'No email')}</span>
+          ${note ? `<span style="color:#64748b;font-style:italic;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">💬 ${esc(note)}</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:5px">
+          <span style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px">Re-contact</span>
+          <div class="cold-badge" style="${badgeStyle};font-size:10px">${badgeLabel}</div>
+          <input type="date" value="${rc||''}" style="font-size:10px;border:1px solid #e2e8f0;border-radius:6px;padding:2px 5px;color:#475569;cursor:pointer;background:white" onchange="setReContact('${l.id}',this.value)">
+        </div>
+        <div class="lost-card-actions">
+          <button class="btn bg" style="font-size:11px;padding:5px 10px" onclick="reengageLead('${l.id}')">🔄 Re-engage</button>
+          <button class="btn bg" style="font-size:11px;padding:5px 10px" onclick="goToLead('${l.id}')">Open →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── UNQUALIFIED CARDS ──
+  const unqualCards = unqualLeads.map(l => {
+    const note = l.notes && l.notes.length ? l.notes[l.notes.length - 1].text : '';
+    return `<div class="lost-card" style="border-left-color:#7c3aed">
+      <div class="lost-card-info">
+        <div class="lost-card-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
+        <div class="lost-card-company">${esc(l.company || '')}${l.company && l.phone ? ' · ' : ''}${esc(l.phone || '')}</div>
+        <div class="lost-card-meta">
+          <span>📞 ${esc(l.phone || '')}</span>
+          <span>📬 ${esc(l.email || 'No email')}</span>
+          ${note ? `<span style="color:#64748b;font-style:italic;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">💬 ${esc(note)}</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+        <div class="lost-card-actions">
+          <button class="btn" style="font-size:11px;padding:5px 10px;background:#f5f3ff;color:#5b21b6;border:1.5px solid #ddd6fe;border-radius:7px;cursor:pointer;font-weight:700" onclick="reengageLead('${l.id}')">🔄 Move to Pipeline</button>
+          <button class="btn bg" style="font-size:11px;padding:5px 10px" onclick="goToLead('${l.id}')">Open →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const reachOutTips = [
+    'Try a completely new angle — mention a recent industry change or compliance update.',
+    'Send a short "just checking in" text. No pitch, just a human touch.',
+    'A referral angle can work well: "Do you know anyone who might benefit from a quick benefits review?"',
+    'Open benefits enrollment season is a natural re-entry point.',
+    'Share a brief case study or Google review relevant to their industry.',
+  ];
+  const tip = reachOutTips[Math.floor(Math.random() * reachOutTips.length)];
+
+  const lostSection = lostLeads.length ? `
+    <div style="font-size:13px;font-weight:800;color:#1e293b;margin:0 0 10px;display:flex;align-items:center;gap:8px">
+      ❄️ Lost Leads
+      <span style="font-size:10px;font-weight:700;background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:10px">${lostLeads.length}</span>
+    </div>
+    <div class="lost-banner">
+      <div class="lost-banner-icon">💡</div>
+      <div class="lost-banner-body">
+        <div class="lost-banner-title">Re-engagement Tip</div>
+        <div class="lost-banner-text">${tip} Hit <strong>🔄 Re-engage</strong> to move anyone back to Day 1.</div>
+      </div>
+    </div>
+    <div class="lost-grid">${lostCards}</div>
+  ` : '';
+
+  const unqualSection = unqualLeads.length ? `
+    <div style="font-size:13px;font-weight:800;color:#1e293b;margin:${lostLeads.length ? '28px' : '0'} 0 8px;display:flex;align-items:center;gap:8px">
+      🚫 Unqualified Leads
+      <span style="font-size:10px;font-weight:700;background:#f5f3ff;color:#5b21b6;padding:2px 8px;border-radius:10px">${unqualLeads.length}</span>
+    </div>
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">Didn't meet criteria. Use <strong style="color:#5b21b6">🔄 Move to Pipeline</strong> if circumstances change.</div>
+    <div class="lost-grid">${unqualCards}</div>
+  ` : '';
+
+  container.innerHTML = `
+    <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:18px">❄️ Lost & Unqualified</div>
+    ${lostSection}
+    ${unqualSection}
+  `;
+}
+
+// ═══════════════════════════════
+//  PIPELINE OVERVIEW
+// ═══════════════════════════════
+function renderOverview() {
+  const container = document.getElementById('overviewInner');
+  if (!container) return;
+
+  const t = today();
+  // Active = in pipeline but NOT quoting/won/lost
+  const totalActive     = leads.filter(l => !['quoted','won','lost','unqualified'].includes(l.stageId)).length;
+  const totalQuoting    = leads.filter(l => l.stageId === 'quoted').length;
+  const totalLost       = leads.filter(l => l.stageId === 'lost').length;
+  const totalWon        = leads.filter(l => l.stageId === 'won').length;
+  const totalUnqualified = leads.filter(l => l.stageId === 'unqualified').length;
+
+  const statsHtml = `<div class="ov-stats">
+    <div class="ov-stat" style="background:#eff6ff">
+      <div class="ov-stat-val" style="color:#2563eb">${totalActive}</div>
+      <div class="ov-stat-lbl" style="color:#2563eb">Active</div>
+    </div>
+    <div class="ov-stat" style="background:#fefce8">
+      <div class="ov-stat-val" style="color:#ca8a04">${totalQuoting}</div>
+      <div class="ov-stat-lbl" style="color:#ca8a04">Quoting</div>
+    </div>
+    <div class="ov-stat" style="background:#fef2f2">
+      <div class="ov-stat-val" style="color:#dc2626">${totalLost}</div>
+      <div class="ov-stat-lbl" style="color:#dc2626">Lost</div>
+    </div>
+    <div class="ov-stat" style="background:#f5f3ff">
+      <div class="ov-stat-val" style="color:#7c3aed">${totalUnqualified}</div>
+      <div class="ov-stat-lbl" style="color:#7c3aed">Unqualified</div>
+    </div>
+    <div class="ov-stat" style="background:#d1fae5">
+      <div class="ov-stat-val" style="color:#10b981">${totalWon}</div>
+      <div class="ov-stat-lbl" style="color:#10b981">Won</div>
+    </div>
+  </div>`;
+
+  // Monthly breakdown — keyed by leadDate (user-specified received date), falling back to createdAt
+  const monthKey = iso => (iso || '').slice(0, 7); // 'YYYY-MM'
+  const fmtMonth = key => {
+    if (!key || key === 'unknown') return 'Unknown Date';
+    const [y, m] = key.split('-');
+    return new Date(+y, +m - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+  const byMonth = {};
+  leads.forEach(l => {
+    // Use leadDate first (user-set received date), then createdAt
+    const dateStr = l.leadDate || (l.createdAt ? l.createdAt.split('T')[0] : '');
+    const key = monthKey(dateStr) || 'unknown';
+    if (!byMonth[key]) byMonth[key] = { active: 0, lost: 0, won: 0 };
+    if (l.stageId === 'won') byMonth[key].won++;
+    else if (l.stageId === 'lost') byMonth[key].lost++;
+    else byMonth[key].active++;
+  });
+  const months = Object.keys(byMonth).filter(k => k !== 'unknown').sort().reverse();
+  if (byMonth['unknown']) months.push('unknown');
+
+  const monthRows = months.length
+    ? months.map(key => {
+        const d = byMonth[key];
+        const av = (n, cls) => `<div class="mb-val ${cls}${n===0?' zero':''}">${n}</div>`;
+        return `<div class="mb-row">
+          <div class="mb-month">${fmtMonth(key)}</div>
+          ${av(d.active,'active')}
+          ${av(d.lost,'lost')}
+          ${av(d.won,'won')}
+        </div>`;
+      }).join('')
+    : `<div style="padding:12px 8px;font-size:12px;color:#94a3b8">No leads yet — add your first lead to see monthly stats.</div>`;
+
+  const monthBreakdownHtml = `<div class="month-breakdown">
+    <div class="mb-title">📅 Monthly Breakdown <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:10px">(based on date lead was added)</span></div>
+    <div class="mb-head">
+      <span>Month</span>
+      <span class="mb-h-active">Active</span>
+      <span class="mb-h-lost">Lost</span>
+      <span class="mb-h-won">Won</span>
+    </div>
+    ${monthRows}
+  </div>`;
+
+  // WEEKLY SUMMARY — resets every Monday at midnight local time
+  const weekStart = new Date();
+  const dow = weekStart.getDay(); // 0=Sun, 1=Mon … 6=Sat
+  weekStart.setDate(weekStart.getDate() - (dow === 0 ? 6 : dow - 1));
+  weekStart.setHours(0, 0, 0, 0);
+  let newLeadsWeek = 0, dialsWeek = 0, apptsWeek = 0, lostUnqualWeek = 0;
+
+  // New leads added this week
+  leads.forEach(l => {
+    if (l.createdAt && new Date(l.createdAt) >= weekStart) newLeadsWeek++;
+  });
+
+  // Dials, appointments, lost/unqualified from activity logs
+  leads.forEach(l => {
+    (l.activity || []).forEach(a => {
+      if (new Date(a.at) >= weekStart) {
+        // Dials = any call attempt logged
+        if (a.txt.includes('No Answer') || a.txt.includes('Voicemail') || a.txt.includes('Connected') || a.txt.includes('Callback') || a.txt.includes('Not Interested')) dialsWeek++;
+        // Appointments = callback requests (scheduled follow-up)
+        if (a.txt.includes('Callback requested')) apptsWeek++;
+        // Lost or unqualified this week
+        if (a.txt.includes('marked lost') || a.txt.includes('→ Unqualified') || a.txt.includes('→ Closed – Lost')) lostUnqualWeek++;
+      }
+    });
+  });
+
+  const weeklyHtml = `<div class="weekly-card" style="display:flex;gap:16px;margin-bottom:18px;flex-wrap:wrap">
+    <div class="ov-stat" style="background:#f0f9ff;flex:1;min-width:120px">
+      <div class="ov-stat-val" style="color:#2563eb">${newLeadsWeek}</div>
+      <div class="ov-stat-lbl" style="color:#2563eb">New Leads Added</div>
+    </div>
+    <div class="ov-stat" style="background:#f0fdf4;flex:1;min-width:120px">
+      <div class="ov-stat-val" style="color:#10b981">${dialsWeek}</div>
+      <div class="ov-stat-lbl" style="color:#10b981">Dials Made</div>
+    </div>
+    <div class="ov-stat" style="background:#fefce8;flex:1;min-width:120px">
+      <div class="ov-stat-val" style="color:#ca8a04">${apptsWeek}</div>
+      <div class="ov-stat-lbl" style="color:#ca8a04">Appointments Set</div>
+    </div>
+    <div class="ov-stat" style="background:#fef2f2;flex:1;min-width:120px">
+      <div class="ov-stat-val" style="color:#dc2626">${lostUnqualWeek}</div>
+      <div class="ov-stat-lbl" style="color:#dc2626">Lost / Unqualified</div>
+    </div>
+  </div>`;
+
+  // CONVERSION BY SOURCE
+  const bySource = {};
+  leads.forEach(l => {
+    const src = l.source || 'Untracked';
+    if (src === 'Untracked') return;
+    if (!bySource[src]) bySource[src] = { total: 0, won: 0, lost: 0 };
+    bySource[src].total++;
+    if (l.stageId === 'won') bySource[src].won++;
+    if (l.stageId === 'lost') bySource[src].lost++;
+  });
+
+  const sourceRows = Object.keys(bySource).length > 0
+    ? Object.keys(bySource).sort().map(src => {
+        const d = bySource[src];
+        const winRate = d.won + d.lost > 0 ? Math.round((d.won / (d.won + d.lost)) * 100) : '—';
+        return `<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;align-items:center;padding:10px 8px;border-bottom:1px solid #f1f5f9">
+          <div style="font-size:13px;font-weight:700;color:#1e293b">${esc(src)}</div>
+          <div style="font-size:14px;font-weight:800;text-align:center;color:#64748b">${d.total}</div>
+          <div style="font-size:14px;font-weight:800;text-align:center;color:#10b981">${d.won}</div>
+          <div style="font-size:13px;font-weight:700;text-align:center;color:#2563eb">${winRate}${winRate !== '—' ? '%' : ''}</div>
+        </div>`;
+      }).join('')
+    : '<div style="padding:10px 8px;font-size:12px;color:#94a3b8;text-align:center">No leads with tracked sources yet.</div>';
+
+  const sourceBreakdownHtml = Object.keys(bySource).length > 0 ? `<div class="source-breakdown" style="background:white;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+    <div class="mb-title">📊 Conversion by Source</div>
+    <div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:0;margin-bottom:8px;align-items:center">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b">Source</div>
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:center">Total</div>
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#10b981;text-align:center">Won</div>
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#2563eb;text-align:center">Rate</div>
+    </div>
+    ${sourceRows}
+  </div>` : '';
+
+  container.innerHTML = `
+    <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:14px">📊 Pipeline Overview</div>
+    <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px">This Week <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:10px">(Mon ${fmtD(weekStart.toISOString().split('T')[0])} – now)</span></div>
+    ${weeklyHtml}
+    ${sourceBreakdownHtml}
+    ${statsHtml}
+    ${monthBreakdownHtml}
+  `;
+}
+
+// ═══════════════════════════════
+//  KANBAN BOARD
+// ═══════════════════════════════
+function renderKanban() {
+  const container = document.getElementById('kanbanInner');
+  if (!container) return;
+
+  const cols = STAGES.filter(st => !['won','lost','unqualified'].includes(st.id)).map(st => {
+    const stLeads = leads.filter(l => l.stageId === st.id);
+    const cardsHtml = stLeads.length
+      ? stLeads.map(l => {
+          const fu = fuSt(l);
+          return `<div class="pipeline-card"
+            draggable="true"
+            id="kcard_${l.id}"
+            ondragstart="kanbanDragStart(event,'${l.id}')"
+            ondragend="kanbanDragEnd(event)"
+            onclick="goToLead('${l.id}')">
+            <div class="pc-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
+            <div class="pc-sub">${esc(l.company||l.phone)}</div>
+            ${fu ? `<div class="pc-due ${fu.cls}">${fu.label}</div>` : ''}
+          </div>`;
+        }).join('')
+      : `<div class="col-empty">Drop here</div>`;
+    return `<div class="pipeline-col">
+      <div class="pipeline-col-header" style="background:${st.bg};color:${st.text}">
+        <span>${st.short}</span>
+        <span class="pcnt">${stLeads.length}</span>
+      </div>
+      <div class="pipeline-col-body"
+        id="kcol_${st.id}"
+        ondragover="kanbanDragOver(event,'${st.id}')"
+        ondragleave="kanbanDragLeave(event,'${st.id}')"
+        ondrop="kanbanDrop(event,'${st.id}')">
+        ${cardsHtml}
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#1e293b">🗂 Kanban Board</div>
+        <div style="font-size:11px;font-weight:700;color:#64748b;margin-top:3px;text-transform:uppercase;letter-spacing:0.6px">Drag cards to move · click to open</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button
+          onmousedown="kanbanScrollStart(-1)" onmouseup="kanbanScrollStop()" onmouseleave="kanbanScrollStop()" ontouchstart="kanbanScrollStart(-1)" ontouchend="kanbanScrollStop()"
+          style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:background 0.15s;user-select:none"
+          onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'"
+          title="Scroll left">◀</button>
+        <button
+          onmousedown="kanbanScrollStart(1)" onmouseup="kanbanScrollStop()" onmouseleave="kanbanScrollStop()" ontouchstart="kanbanScrollStart(1)" ontouchend="kanbanScrollStop()"
+          style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:background 0.15s;user-select:none"
+          onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'"
+          title="Scroll right">▶</button>
+      </div>
+    </div>
+    <div id="kanbanBoard" style="flex:1;overflow-x:auto;overflow-y:auto;padding-bottom:8px">
+      <div class="pipeline-board">${cols}</div>
+    </div>
+  `;
+}
+
+let _kanbanScrollTimer = null;
+function kanbanScrollStart(dir) {
+  kanbanScrollStop();
+  const board = document.getElementById('kanbanBoard');
+  if (!board) return;
+  // Immediate first scroll + hold-to-scroll
+  function step() { board.scrollLeft += dir * 220; }
+  step();
+  _kanbanScrollTimer = setInterval(step, 180);
+}
+function kanbanScrollStop() {
+  if (_kanbanScrollTimer) { clearInterval(_kanbanScrollTimer); _kanbanScrollTimer = null; }
+}
+
+// ═══════════════════════════════
+//  KANBAN DRAG AND DROP
+// ═══════════════════════════════
+let dragLeadId = null;
+
+function kanbanDragStart(e, leadId) {
+  dragLeadId = leadId;
+  const card = document.getElementById('kcard_' + leadId);
+  if (card) { setTimeout(() => card.classList.add('dragging'), 0); }
+  e.dataTransfer.effectAllowed = 'move';
+}
+function kanbanDragEnd(e) {
+  if (dragLeadId) {
+    const card = document.getElementById('kcard_' + dragLeadId);
+    if (card) card.classList.remove('dragging');
+  }
+  document.querySelectorAll('.pipeline-col-body').forEach(c => c.classList.remove('drag-over'));
+}
+function kanbanDragOver(e, stageId) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const col = document.getElementById('kcol_' + stageId);
+  if (col) col.classList.add('drag-over');
+}
+function kanbanDragLeave(e, stageId) {
+  const col = document.getElementById('kcol_' + stageId);
+  if (col) col.classList.remove('drag-over');
+}
+function kanbanDrop(e, stageId) {
+  e.preventDefault();
+  document.querySelectorAll('.pipeline-col-body').forEach(c => c.classList.remove('drag-over'));
+  if (!dragLeadId) return;
+  const l = leads.find(x => x.id === dragLeadId);
+  if (!l || l.stageId === stageId) { dragLeadId = null; return; }
+  const old = gS(l.stageId);
+  l.stageId = stageId;
+  const nw = gS(stageId);
+  if (nw.followDays > 0) l.nextFU = addDays(nw.followDays);
+  log(l, `Stage: ${old.label} → ${nw.label} (moved via board)`, nw.color);
+  save();
+  renderList();
+  if (selId === dragLeadId) renderDetail();
+  dragLeadId = null;
+  renderKanban();
+}
+
+// ═══════════════════════════════
+//  COLLAPSIBLE SCRIPTS
+// ═══════════════════════════════
+function toggleScriptCollapse(si) {
+  const section = document.getElementById('ss_' + si);
+  const body = document.getElementById('sb_' + si);
+  if (!section || !body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  if (isOpen) section.classList.remove('open');
+  else section.classList.add('open');
+}
+
+// ═══════════════════════════════
+//  CONVERSATION STAGE
+// ═══════════════════════════════
+// scriptIds maps to CALL_SCRIPT section ids; 'objections' renders CALL_OBJECTIONS
+const CONV_STAGES = [
+  { id: '', label: '📋 Show email / text / outreach scripts' },
+  { id: 'dialing',     label: '🚪 Getting through gatekeeper',      scriptIds: ['gatekeeper'] },
+  { id: 'dm_connected',label: '🤝 Connected — deliver opener',       scriptIds: ['opener1','opener2'] },
+  { id: 'denial',      label: '❌ They pushed back / denied pitch',  scriptIds: ['denial'] },
+  { id: 'pitch',       label: '🎯 Pitch / value proposition',        scriptIds: ['pitch'] },
+  { id: 'objections',  label: '⚡ Handling an objection',            scriptIds: ['__objections__'] },
+  { id: 'appointment', label: '📅 Moving to the appointment',        scriptIds: ['appt'] },
+  { id: 'lockin',      label: '🔒 Locking in the appointment',       scriptIds: ['lockin'] },
+  { id: 'completed',   label: '✓ Call completed',                    scriptIds: ['__done__'] },
+];
+
+function setConvStage(leadId, val) {
+  const l = leads.find(x => x.id === leadId); if (!l) return;
+  l.convStage = val;
+  if (val) {
+    const stg = CONV_STAGES.find(s => s.id === val);
+    log(l, `Live call: ${stg ? stg.label : val}`, '#0369a1');
+  }
+  save(); renderDetail();
+}
+
+// Render one or more call script sections by id for live-call mode
+function renderLiveCallScript(stg) {
+  if (!stg || !stg.scriptIds || !stg.scriptIds.length) return '';
+  let html = '';
+  stg.scriptIds.forEach(sid => {
+    if (sid === '__objections__') {
+      html += `<div class="call-sec-title" style="margin-bottom:8px">⚡ Objection Handlers — tap to expand</div>`;
+      CALL_OBJECTIONS.forEach((o, i) => {
+        const key = `co|${i}`;
+        const aText = getScriptBody(key, o.a);
+        const edited = isEdited(key);
+        html += `<div class="objection" id="lobj_${i}">
+          <div class="obj-q" onclick="toggleObj('lobj_${i}')">
+            <span>${esc(o.q)}${edited ? '<span class="edited-badge">✏️ Edited</span>' : ''}</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="btn bg" style="font-size:10px;padding:2px 7px;z-index:2" onclick="event.stopPropagation();startObjEdit('${key}','lobj_${i}')">✏️</button>
+              <span class="obj-arrow">▼</span>
+            </div>
+          </div>
+          <div class="obj-a" id="lobj_${i}_body">${renderScriptBody(aText)}</div>
+        </div>`;
+      });
+      return;
+    }
+    if (sid === '__done__') {
+      html += `<div style="text-align:center;padding:24px 16px">
+        <div style="font-size:32px;margin-bottom:10px">🎉</div>
+        <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:6px">Call Complete</div>
+        <div style="font-size:12px;color:#64748b;line-height:1.6">Log a note below, set your next follow-up date, and advance the lead to the next stage.</div>
+      </div>`;
+      return;
+    }
+    const idx = CALL_SCRIPT.findIndex(s => s.id === sid);
+    if (idx === -1) return;
+    const s = CALL_SCRIPT[idx];
+    const key = `c|${s.id}`;
+    const body = getScriptBody(key, s.body);
+    const edited = isEdited(key);
+    // Use the same cs_${idx} / cs_body_${idx} IDs so startCallEdit() works correctly
+    html += `<div class="call-block open" id="cs_${idx}" style="margin-bottom:10px">
+      <div class="call-block-q" style="cursor:default;background:#f8fafc">
+        <span style="font-size:13px;font-weight:800;color:#1e293b">${esc(s.title)}${edited ? '<span class="edited-badge" style="margin-left:6px">✏️ Edited</span>' : ''}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="btn bg" style="font-size:10px;padding:3px 8px;z-index:2" onclick="event.stopPropagation();navigator.clipboard.writeText(document.getElementById('cs_body_${idx}').textContent).then(()=>showToast('📋 Copied!'))">📋 Copy</button>
+          <button class="btn bg" style="font-size:10px;padding:3px 8px;z-index:2" onclick="event.stopPropagation();startCallEdit('${key}',${idx},'${s.id}')">✏️ Edit</button>
+        </div>
+      </div>
+      <div class="call-block-body" id="cs_body_${idx}" style="display:block;font-size:13px;line-height:1.85;padding:16px 18px">${renderScriptBody(body)}</div>
+    </div>`;
+  });
+  return html;
+}
+
+// ═══════════════════════════════
+//  SEND EMAIL (mailto)
+// ═══════════════════════════════
+function sendEmail(si, leadId) {
+  const l = leads.find(x => x.id === leadId); if (!l) return;
+  const st = gS(l.stageId);
+  const sc = st.scripts[si]; if (!sc) return;
+  const skey = `s|${l.stageId}|${si}`;
+  let bodyText = getPlainText(getScriptBody(skey, sc.body || ''));
+  const subjectKey = `s|${l.stageId}|${si}|subject`;
+  let subjectText = getPlainText(getScriptBody(subjectKey, sc.subject || ''));
+  // Personalize
+  const areaVal = [l.city, l.state].filter(Boolean).join(', ') || '[area]';
+  bodyText = bodyText
+    .replace(/\[Name\]/g, l.firstName||'[Name]')
+    .replace(/\[Prospect's Name\]/g, l.firstName||'[Name]')
+    .replace(/\[Company\]/g, l.company||'[Company]')
+    .replace(/\[area\]/g, areaVal)
+    .replace(/\[X\]\+/g, (l.employees||'[X]')+'+');
+  subjectText = subjectText
+    .replace(/\[Prospect's Name\]/g, l.firstName||'[Name]')
+    .replace(/\[Name\]/g, l.firstName||'[Name]');
+  const mailto = `mailto:${encodeURIComponent(l.email||'')}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
+  window.open(mailto, '_blank');
+  log(l, `Email draft opened: ${sc.title||sc.tab}`, '#2563eb');
+  save();
+}
+
+// INIT — fix any existing leads whose nextFU falls on a weekend
+(function fixWeekendDates() {
+  let changed = false;
+  leads.forEach(l => {
+    if (l.nextFU) {
+      const safe = skipWeekend(l.nextFU);
+      if (safe !== l.nextFU) { l.nextFU = safe; changed = true; }
+    }
+  });
+  if (changed) save();
+})();
+renderQueue();
+</script>
+</body>
+</html>
