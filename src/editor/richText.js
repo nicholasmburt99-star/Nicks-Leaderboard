@@ -1,3 +1,4 @@
+import { escPre } from '../utils/dom.js';
 
 export function fmtRich(cmd, val) {
   document.execCommand(cmd, false, val || null);
