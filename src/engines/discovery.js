@@ -9,7 +9,10 @@ export function setDiscoveryType(leadId, type) {
   if (!l.discovery) l.discovery = { type: null, answers: {} };
   l.discovery.type = type || null;
   save();
+  const panel = document.getElementById('detail');
+  const scrollPos = panel ? panel.scrollTop : 0;
   renderDetail();
+  if (panel) panel.scrollTop = scrollPos;
 }
 export function saveDiscoveryAnswer(leadId, key) {
   const l = state.leads.find(x => x.id === leadId);

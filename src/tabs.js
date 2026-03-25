@@ -11,24 +11,22 @@ export function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById('tab-' + tab);
   if (btn) btn.classList.add('active');
-  document.getElementById('view-leads').style.display    = tab === 'leads'    ? 'flex' : 'none';
+  document.getElementById('view-leads').style.display    = tab === 'queue'    ? 'flex' : 'none';
   const ov = document.getElementById('view-overview');
   if (ov) { ov.style.display = tab === 'overview' ? 'flex' : 'none'; }
   const kv = document.getElementById('view-kanban');
   if (kv) { kv.style.display = tab === 'kanban' ? 'flex' : 'none'; }
-  const qv = document.getElementById('view-queue');
-  if (qv) { qv.style.display = tab === 'queue' ? 'flex' : 'none'; }
   const em = document.getElementById('view-email');
   if (em) { em.style.display = tab === 'email' ? 'flex' : 'none'; }
   const lt = document.getElementById('view-lost');
   if (lt) { lt.style.display = tab === 'lost' ? 'flex' : 'none'; }
   if (tab === 'overview') renderOverview();
   if (tab === 'kanban') renderKanban();
-  if (tab === 'queue') renderQueue();
+  if (tab === 'queue') { renderList(); renderDetail(); }
   if (tab === 'lost') renderLost();
 }
 export function goToLead(id) {
-  switchTab('leads');
+  switchTab('queue');
   state.selId = id;
   renderList();
   renderDetail();

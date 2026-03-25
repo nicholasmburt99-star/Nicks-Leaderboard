@@ -51,9 +51,12 @@ export function renderOverview() {
     // Use leadDate first (user-set received date), then createdAt
     const dateStr = l.leadDate || (l.createdAt ? l.createdAt.split('T')[0] : '');
     const key = monthKey(dateStr) || 'unknown';
-    if (!byMonth[key]) byMonth[key] = { active: 0, lost: 0, won: 0 };
+    if (!byMonth[key]) byMonth[key] = { total: 0, active: 0, quoting: 0, lost: 0, won: 0 };
+    byMonth[key].total++;
     if (l.stageId === 'won') byMonth[key].won++;
     else if (l.stageId === 'lost') byMonth[key].lost++;
+    else if (l.stageId === 'quoted') byMonth[key].quoting++;
+    else if (l.stageId === 'unqualified') byMonth[key].lost++;
     else byMonth[key].active++;
   });
   const months = Object.keys(byMonth).filter(k => k !== 'unknown').sort().reverse();
@@ -65,7 +68,9 @@ export function renderOverview() {
         const av = (n, cls) => `<div class="mb-val ${cls}${n===0?' zero':''}">${n}</div>`;
         return `<div class="mb-row">
           <div class="mb-month">${fmtMonth(key)}</div>
+          ${av(d.total,'total')}
           ${av(d.active,'active')}
+          ${av(d.quoting,'quoting')}
           ${av(d.lost,'lost')}
           ${av(d.won,'won')}
         </div>`;
@@ -76,7 +81,9 @@ export function renderOverview() {
     <div class="mb-title">📅 Monthly Breakdown <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:10px">(based on date lead was added)</span></div>
     <div class="mb-head">
       <span>Month</span>
+      <span class="mb-h-total">Total</span>
       <span class="mb-h-active">Active</span>
+      <span class="mb-h-quoting">Quoting</span>
       <span class="mb-h-lost">Lost</span>
       <span class="mb-h-won">Won</span>
     </div>
