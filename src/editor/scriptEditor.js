@@ -1,6 +1,8 @@
 import { STAGES } from '../data/stages.js';
+import { gS } from '../data/stages.js';
+import { CALL_SCRIPT } from '../data/callScript.js';
 import { state, save, saveScriptOverrides, getScriptBody, isEdited } from '../store.js';
-import { esc, escPre } from '../utils/dom.js';
+import { esc, escPre, showToast } from '../utils/dom.js';
 import { renderScriptBody, buildRichToolbar, getRichVal, getPlainText, toRichHtml } from './richText.js';
 import { renderCallScript } from '../engines/callScript.js';
 import { renderDetail } from '../views/detail.js';
