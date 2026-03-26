@@ -20,7 +20,7 @@ import { startStageEdit, saveStageEdit, cancelStageEdit, resetStageEdit, startCa
 import { selLead, onSearch, setF, moveS, jumpS, setFU, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse } from './actions/pipeline.js';
 import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, researchLead, saveResearchNote, dismissResearch, sendEmail } from './actions/leads.js';
 import { daysInStage, logCallOutcome, requestCallback } from './actions/callOutcomes.js';
-import { exportCSV, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
+import { exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
 import { switchTab, goToLead } from './tabs.js';
 import { setReContact, reengageLead } from './views/lost.js';
 import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, kanbanDragOver, kanbanDragLeave, kanbanDrop } from './views/kanban.js';
@@ -31,7 +31,7 @@ Object.assign(window, {
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote,
   researchLead, saveResearchNote, dismissResearch,
   logCallOutcome, requestCallback,
-  exportCSV, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile,
+  exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile,
   setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, setConvStage,
   showToast,
   startStageEdit, saveStageEdit, cancelStageEdit, resetStageEdit,
