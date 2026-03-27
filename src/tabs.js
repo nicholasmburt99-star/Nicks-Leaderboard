@@ -20,7 +20,7 @@ export function switchTab(tab) {
   const pv = document.getElementById('view-pipeline');
   if (pv) pv.style.display = tab === 'pipeline' ? 'flex' : 'none';
   if (tab === 'overview') renderOverview();
-  if (tab === 'kanban') renderKanban();
+  if (tab === 'kanban') { renderKanban(); renderDetail(); }
   if (tab === 'pipeline') { renderPipeline(); renderDetail(); }
 }
 
@@ -28,12 +28,6 @@ export function goToLead(id) {
   const lead = state.leads.find(l => l.id === id);
   const pipelineStages = ['live', 'quoted', 'lost'];
   const tab = lead && pipelineStages.includes(lead.stageId) ? 'pipeline' : 'kanban';
-  switchTab(tab);
   state.selId = id;
-  if (tab === 'pipeline') {
-    renderPipeline();
-    renderDetail();
-  } else {
-    renderKanban();
-  }
+  switchTab(tab);
 }

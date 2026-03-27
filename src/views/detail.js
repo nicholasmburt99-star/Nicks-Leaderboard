@@ -10,7 +10,8 @@ import { getChecks } from '../actions/tasks.js';
 import { daysInStage } from '../actions/callOutcomes.js';
 
 export function renderDetail() {
-  const panel = document.getElementById(state.activeTab === 'pipeline' ? 'pipeline-detail' : 'detail');
+  const panelId = state.activeTab === 'pipeline' ? 'pipeline-detail' : state.activeTab === 'kanban' ? 'kanban-detail' : 'detail';
+  const panel = document.getElementById(panelId);
   if(!panel) return;
   if(!state.selId){panel.innerHTML=`<div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>Click a row to view details</p></div>`;return;}
   const lead = state.leads.find(l=>l.id===state.selId);

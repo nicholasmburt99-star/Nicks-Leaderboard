@@ -12,7 +12,7 @@ import { renderDetail } from './views/detail.js';
 import { renderOverview } from './views/overview.js';
 import { renderKanban } from './views/kanban.js';
 import { renderLost } from './views/lost.js';
-import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps } from './views/pipeline.js';
+import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineStage, setPipelineNextOutreach, setPipelineFilter } from './views/pipeline.js';
 import { renderCallScript, renderLiveCallScript, setConvStage } from './engines/callScript.js';
 import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscoveryHtml } from './engines/discovery.js';
 import { fmtRich, buildRichToolbar, getPlainText, toRichHtml, getRichVal, renderScriptBody } from './editor/richText.js';
@@ -29,6 +29,7 @@ Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab,
   renderList, renderDetail, renderOverview, renderKanban, renderLost, renderPipeline,
   selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
+  setPipelineStage, setPipelineNextOutreach, setPipelineFilter,
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote,
   researchLead, saveResearchNote, dismissResearch,
   logCallOutcome, requestCallback,
