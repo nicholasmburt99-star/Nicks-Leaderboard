@@ -10,8 +10,9 @@ import { getChecks } from '../actions/tasks.js';
 import { daysInStage } from '../actions/callOutcomes.js';
 
 export function renderDetail() {
-  const panel = document.getElementById('detail');
-  if(!state.selId){panel.innerHTML=`<div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>or click + Add Lead to get started</p></div>`;return;}
+  const panel = document.getElementById(state.activeTab === 'pipeline' ? 'pipeline-detail' : 'detail');
+  if(!panel) return;
+  if(!state.selId){panel.innerHTML=`<div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>Click a row to view details</p></div>`;return;}
   const lead = state.leads.find(l=>l.id===state.selId);
   if(!lead){state.selId=null;renderDetail();return;}
   const st = gS(lead.stageId), idx = gSI(lead.stageId), fu = fuSt(lead);

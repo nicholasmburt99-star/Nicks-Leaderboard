@@ -13,7 +13,7 @@ export function renderKanban() {
   const container = document.getElementById('kanbanInner');
   if (!container) return;
 
-  const cols = STAGES.filter(st => !['won','lost','unqualified'].includes(st.id)).map(st => {
+  const cols = STAGES.filter(st => !['live','quoted','won','lost','unqualified'].includes(st.id)).map(st => {
     const stLeads = state.leads.filter(l => l.stageId === st.id);
     const cardsHtml = stLeads.length
       ? stLeads.map(l => {

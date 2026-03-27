@@ -8,11 +8,11 @@ import { state, save, saveScriptOverrides, getScriptBody, isEdited } from './sto
 import { gS, gSI } from './data/stages.js';
 import { getChecks, toggleTask } from './actions/tasks.js';
 import { renderList } from './views/list.js';
-import { renderQueue } from './views/queue.js';
 import { renderDetail } from './views/detail.js';
 import { renderOverview } from './views/overview.js';
 import { renderKanban } from './views/kanban.js';
 import { renderLost } from './views/lost.js';
+import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps } from './views/pipeline.js';
 import { renderCallScript, renderLiveCallScript, setConvStage } from './engines/callScript.js';
 import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscoveryHtml } from './engines/discovery.js';
 import { fmtRich, buildRichToolbar, getPlainText, toRichHtml, getRichVal, renderScriptBody } from './editor/richText.js';
@@ -27,7 +27,8 @@ import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, ka
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab,
-  renderList, renderQueue, renderDetail, renderOverview, renderKanban, renderLost,
+  renderList, renderDetail, renderOverview, renderKanban, renderLost, renderPipeline,
+  selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote,
   researchLead, saveResearchNote, dismissResearch,
   logCallOutcome, requestCallback,
@@ -59,4 +60,4 @@ document.addEventListener('keydown', e => {
   });
   if (changed) save();
 })();
-renderQueue();
+renderKanban();
