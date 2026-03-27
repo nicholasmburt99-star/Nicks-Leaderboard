@@ -7,7 +7,7 @@ import { getPlainText } from '../editor/richText.js';
 import { getScriptBody } from '../store.js';
 import { renderList } from '../views/list.js';
 import { renderDetail } from '../views/detail.js';
-import { renderQueue } from '../views/queue.js';
+import { personalize } from './gmailApi.js';
 
 export function clearF(){['fF','fL','fP','fE','fCity','fSt','fWeb','fCo','fInd','fEmp','fLD','fN','fSrc','fDM','fRef','fCarrier','fPlan','fRenew'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
 export function openAdd(){
@@ -106,17 +106,9 @@ export function copyScript(si, leadId){
   const st=gS(l.stageId);const sc=st.scripts[si];if(!sc||!sc.body)return;
   const skey=`s|${l.stageId}|${si}`;
   const subjectKey=`s|${l.stageId}|${si}|subject`;
-  let rawBody=getScriptBody(skey,sc.body);
-  let rawSubj=getScriptBody(subjectKey,sc.subject||'');
-  // Strip HTML from rich-edited content
-  rawBody=getPlainText(rawBody);
-  rawSubj=getPlainText(rawSubj);
-  let txt=(rawSubj?rawSubj+'\n\n':'')+rawBody;
-  const areaStr = [l.city, l.state].filter(Boolean).join(', ') || '[area]';
-  txt=txt.replace(/\[Name\]/g,l.firstName||'[Name]').replace(/\[Prospect's Name\]/g,l.firstName||'[Name]')
-         .replace(/\[Company\]/g,l.company||'[Company]')
-         .replace(/\[area\]/g,areaStr)
-         .replace(/\[X\]\+/g,(l.employees||'[X]')+'+');
+  let rawBody=personalize(getPlainText(getScriptBody(skey,sc.body)),l);
+  let rawSubj=personalize(getPlainText(getScriptBody(subjectKey,sc.subject||'')),l);
+  const txt=(rawSubj?rawSubj+'\n\n':'')+rawBody;
   navigator.clipboard.writeText(txt).then(()=>showToast('📋 Copied!')).catch(()=>{});
 }
 export function addNote(leadId){
@@ -208,20 +200,9 @@ export function sendEmail(si, leadId) {
   const st = gS(l.stageId);
   const sc = st.scripts[si]; if (!sc) return;
   const skey = `s|${l.stageId}|${si}`;
-  let bodyText = getPlainText(getScriptBody(skey, sc.body || ''));
   const subjectKey = `s|${l.stageId}|${si}|subject`;
-  let subjectText = getPlainText(getScriptBody(subjectKey, sc.subject || ''));
-  // Personalize
-  const areaVal = [l.city, l.state].filter(Boolean).join(', ') || '[area]';
-  bodyText = bodyText
-    .replace(/\[Name\]/g, l.firstName||'[Name]')
-    .replace(/\[Prospect's Name\]/g, l.firstName||'[Name]')
-    .replace(/\[Company\]/g, l.company||'[Company]')
-    .replace(/\[area\]/g, areaVal)
-    .replace(/\[X\]\+/g, (l.employees||'[X]')+'+');
-  subjectText = subjectText
-    .replace(/\[Prospect's Name\]/g, l.firstName||'[Name]')
-    .replace(/\[Name\]/g, l.firstName||'[Name]');
+  const bodyText = personalize(getPlainText(getScriptBody(skey, sc.body || '')), l);
+  const subjectText = personalize(getPlainText(getScriptBody(subjectKey, sc.subject || '')), l);
   const mailto = `mailto:${encodeURIComponent(l.email||'')}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
   window.open(mailto, '_blank');
   log(l, `Email draft opened: ${sc.title||sc.tab}`, '#2563eb');

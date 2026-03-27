@@ -13,6 +13,7 @@ import { renderOverview } from './views/overview.js';
 import { renderKanban } from './views/kanban.js';
 import { renderLost } from './views/lost.js';
 import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineStage, setPipelineNextOutreach, setPipelineFilter } from './views/pipeline.js';
+import { openOutreachModal, closeOutreachModal, sendAllOutreach, saveGmailClientId } from './views/outreachModal.js';
 import { renderCallScript, renderLiveCallScript, setConvStage } from './engines/callScript.js';
 import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscoveryHtml } from './engines/discovery.js';
 import { fmtRich, buildRichToolbar, getPlainText, toRichHtml, getRichVal, renderScriptBody } from './editor/richText.js';
@@ -41,6 +42,7 @@ Object.assign(window, {
   startObjEdit, saveObjEdit, cancelObjEdit, resetObjEdit,
   fmtRich, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse,
   setReContact, reengageLead,
+  openOutreachModal, closeOutreachModal, sendAllOutreach, saveGmailClientId,
   getChecks, toggleTask,
   kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd,
   kanbanDragOver, kanbanDragLeave, kanbanDrop,
