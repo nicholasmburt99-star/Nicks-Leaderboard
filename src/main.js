@@ -63,4 +63,4 @@ document.addEventListener('keydown', e => {
   });
   if (changed) save();
 })();
-renderKanban();
+switchTab('kanban');

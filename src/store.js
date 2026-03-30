@@ -5,7 +5,7 @@ export const state = {
   editId: null,
   activeFilter: 'due',
   searchQ: '',
-  activeTab: 'queue',
+  activeTab: 'kanban',
 };
 export function save() { localStorage.setItem('bpcrm2_leads', JSON.stringify(state.leads)); }
 export function saveScriptOverrides() { localStorage.setItem('bpcrm2_scripts', JSON.stringify(state.scriptOverrides)); }
