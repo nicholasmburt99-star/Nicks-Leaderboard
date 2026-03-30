@@ -91,6 +91,7 @@ export function saveLead(){
       renewalDate:document.getElementById('fRenew').value,
       stageId:'new',nextFU:today(),taskChecks:{},
       notes:note?[{text:note,at:new Date().toISOString()}]:[],
+      research:'',lostReason:'',
       activity:[{txt:'Lead added to CRM',col:'#3b82f6',at:new Date().toISOString()}],
       createdAt:new Date().toISOString()
     };
@@ -183,13 +184,24 @@ export function saveResearchNote(leadId) {
   if (!ta || !ta.value.trim()) { showToast('Paste the research first.'); return; }
   const l = state.leads.find(x => x.id === leadId);
   if (!l) return;
-  l.notes = l.notes || [];
-  l.notes.push({ text: '🔍 AI Research:\n' + ta.value.trim(), at: new Date().toISOString() });
-  log(l, 'AI research saved to notes', '#0369a1');
+  l.research = ta.value.trim();
+  log(l, 'AI research saved', '#0369a1');
   save();
   dismissResearch(leadId);
   renderDetail();
-  showToast('✅ Research saved to notes!');
+  showToast('✅ Research saved!');
+}
+export function saveResearch(leadId, text) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  l.research = text;
+  save();
+}
+export function saveLostReason(leadId, text) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  l.lostReason = text;
+  save();
 }
 export function dismissResearch(leadId) {
   const panel = document.getElementById('research_panel_' + leadId);

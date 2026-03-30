@@ -185,7 +185,6 @@ export function renderDetail() {
       </div>
       <div class="dh-actions">
         <button class="btn bg" onclick="openEdit('${lead.id}')">✏️ Edit</button>
-        <button class="btn" style="background:#f0f9ff;color:#0369a1;border:none;padding:6px 11px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer" onclick="researchLead('${lead.id}')" title="Open Claude AI to research this lead">🔍 Research</button>
         <button class="btn bd" onclick="delLead('${lead.id}')">🗑️</button>
       </div>
     </div>
@@ -234,6 +233,27 @@ export function renderDetail() {
         <textarea class="note-input" id="ni_${lead.id}" placeholder="Add a note…"></textarea>
         <button class="btn bp" onclick="addNote('${lead.id}')">Add</button>
       </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title" style="color:#0369a1">🔍 AI Research</div>
+      <textarea id="research_ta_direct_${lead.id}" rows="5"
+        style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;margin-bottom:8px"
+        placeholder="Paste research about this company, key contacts, pain points, news…"
+        onblur="saveResearch('${lead.id}',this.value)">${esc(lead.research||'')}</textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn" style="background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer" onclick="researchLead('${lead.id}')">🔍 Research with Claude</button>
+        <button class="btn bp" style="font-size:12px" onclick="saveResearch('${lead.id}',document.getElementById('research_ta_direct_${lead.id}').value);showToast('✅ Research saved!')">Save</button>
+      </div>
+    </div>
+
+    <div class="card" style="${lead.stageId==='lost'?'border:1.5px solid #fecaca;':''}">
+      <div class="sec-title" style="color:${lead.stageId==='lost'?'#dc2626':'#64748b'}">❌ Lost Reason</div>
+      <textarea id="lost_reason_ta_${lead.id}" rows="3"
+        style="width:100%;box-sizing:border-box;border:1px solid ${lead.stageId==='lost'?'#fecaca':'#e2e8f0'};border-radius:8px;padding:8px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;margin-bottom:8px;background:${lead.stageId==='lost'?'#fef2f2':'white'}"
+        placeholder="Record why this lead was lost…"
+        onblur="saveLostReason('${lead.id}',this.value)">${esc(lead.lostReason||'')}</textarea>
+      <button class="btn bp" style="font-size:12px" onclick="saveLostReason('${lead.id}',document.getElementById('lost_reason_ta_${lead.id}').value);showToast('✅ Lost reason saved!')">Save</button>
     </div>
 
     <div class="card">
