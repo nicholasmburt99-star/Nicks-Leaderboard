@@ -114,10 +114,10 @@ export function copyScript(si, leadId){
 }
 export function addNote(leadId){
   const inp=document.getElementById('ni_'+leadId);
-  if(!inp||!inp.value.trim())return;
+  if(!inp||!inp.value.trim()){showToast('Type something first.');return;}
   const l=state.leads.find(x=>x.id===leadId);if(!l)return;
   l.notes=l.notes||[];l.notes.push({text:inp.value.trim(),at:new Date().toISOString()});
-  log(l,'Note added','#64748b');save();renderDetail();
+  log(l,'Note added','#64748b');save();renderDetail();showToast('📝 Note saved!');
 }
 export function deleteNote(leadId, noteIdx) {
   if (!confirm('Delete this note?')) return;
