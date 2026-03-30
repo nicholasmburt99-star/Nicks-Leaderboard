@@ -244,14 +244,29 @@ export function renderDetail() {
 
     <div class="card">
       <div class="sec-title" style="color:#0369a1">🔍 AI Research</div>
-      <textarea id="research_ta_direct_${lead.id}" rows="5"
-        style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;margin-bottom:8px"
-        placeholder="Paste research about this company, key contacts, pain points, news…"
-        onblur="saveResearch('${lead.id}',this.value)">${esc(lead.research||'')}</textarea>
-      <div style="display:flex;gap:8px">
-        <button class="btn" style="background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer" onclick="researchLead('${lead.id}')">🔍 Research with Claude</button>
-        <button class="btn bp" style="font-size:12px" onclick="saveResearch('${lead.id}',document.getElementById('research_ta_direct_${lead.id}').value);showToast('✅ Research saved!')">Save</button>
-      </div>
+      ${(()=>{
+        const rItems = Array.isArray(lead.research) ? lead.research : (lead.research ? [{text: lead.research, at: null}] : []);
+        const btnStyle = 'background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;padding:1px 4px;border-radius:4px';
+        const rHtml = rItems.length
+          ? [...rItems].map((r,realIdx)=>({r,realIdx})).reverse().map(({r,realIdx})=>
+              `<div class="note-item" style="border-left-color:#0369a1;background:#f0f9ff">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div class="note-meta">${r.at ? fmtDT(r.at) : 'Imported'}</div>
+                  <button style="${btnStyle}" title="Delete" onclick="deleteResearch('${lead.id}',${realIdx})">✕</button>
+                </div>
+                <div style="white-space:pre-wrap">${esc(r.text)}</div>
+              </div>`
+            ).join('')
+          : '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px">No research saved yet.</div>';
+        return `<div class="notes-list">${rHtml}</div>
+          <div class="note-add">
+            <textarea class="note-input" id="ri_${lead.id}" placeholder="Paste or type research…"></textarea>
+            <button class="btn bp" onclick="saveResearch('${lead.id}',document.getElementById('ri_${lead.id}').value)">Save</button>
+          </div>
+          <div style="margin-top:8px">
+            <button class="btn" style="background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer" onclick="researchLead('${lead.id}')">🔍 Research with Claude</button>
+          </div>`;
+      })()}
     </div>
 
     <div class="card" style="${lead.stageId==='lost'?'border:1.5px solid #fecaca;':''}">

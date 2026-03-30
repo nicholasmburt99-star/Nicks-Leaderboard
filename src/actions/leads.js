@@ -91,7 +91,7 @@ export function saveLead(){
       renewalDate:document.getElementById('fRenew').value,
       stageId:'new',nextFU:today(),taskChecks:{},
       notes:note?[{text:note,at:new Date().toISOString()}]:[],
-      research:'',lostReason:'',
+      research:[],lostReason:'',
       activity:[{txt:'Lead added to CRM',col:'#3b82f6',at:new Date().toISOString()}],
       createdAt:new Date().toISOString()
     };
@@ -215,7 +215,8 @@ export function saveResearchNote(leadId) {
   if (!ta || !ta.value.trim()) { showToast('Paste the research first.'); return; }
   const l = state.leads.find(x => x.id === leadId);
   if (!l) return;
-  l.research = ta.value.trim();
+  if (!Array.isArray(l.research)) l.research = l.research ? [{text: l.research, at: new Date().toISOString()}] : [];
+  l.research.push({text: ta.value.trim(), at: new Date().toISOString()});
   log(l, 'AI research saved', '#0369a1');
   save();
   dismissResearch(leadId);
@@ -223,10 +224,18 @@ export function saveResearchNote(leadId) {
   showToast('✅ Research saved!');
 }
 export function saveResearch(leadId, text) {
-  const l = state.leads.find(x => x.id === leadId);
-  if (!l) return;
-  l.research = text;
-  save();
+  if (!text.trim()) { showToast('Type something first.'); return; }
+  const l = state.leads.find(x => x.id === leadId); if (!l) return;
+  if (!Array.isArray(l.research)) l.research = l.research ? [{text: l.research, at: new Date().toISOString()}] : [];
+  l.research.push({text: text.trim(), at: new Date().toISOString()});
+  log(l, 'AI research added', '#0369a1');
+  save(); renderDetail(); showToast('🔍 Research saved!');
+}
+export function deleteResearch(leadId, idx) {
+  if (!confirm('Delete this research entry?')) return;
+  const l = state.leads.find(x => x.id === leadId); if (!l) return;
+  if (Array.isArray(l.research)) l.research.splice(idx, 1);
+  save(); renderDetail();
 }
 export function saveLostReason(leadId, text) {
   const l = state.leads.find(x => x.id === leadId);
