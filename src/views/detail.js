@@ -154,15 +154,22 @@ export function renderDetail() {
 
   // Notes
   const notesHtml = (lead.notes||[]).length
-    ? [...(lead.notes||[])].reverse().map(n => {
+    ? [...(lead.notes||[])].map((n,realIdx)=>({n,realIdx})).reverse().map(({n,realIdx}) => {
         const isAI = n.text.startsWith('🔍 AI Research:');
         const borderColor = isAI ? '#0369a1' : '#2563eb';
         const bg = isAI ? '#f0f9ff' : '#f8fafc';
         const label = isAI ? '<span style="font-size:9px;font-weight:800;background:#0369a1;color:white;padding:1px 6px;border-radius:10px;margin-left:6px">AI RESEARCH</span>' : '';
         const bodyText = isAI ? n.text.replace('🔍 AI Research:\n','') : n.text;
-        return `<div class="note-item" style="border-left-color:${borderColor};background:${bg}">
-          <div class="note-meta">${fmtDT(n.at)}${label}</div>
-          <div style="white-space:pre-wrap">${esc(bodyText)}</div>
+        const btnStyle = 'background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;padding:1px 4px;border-radius:4px';
+        return `<div class="note-item" id="note_${lead.id}_${realIdx}" style="border-left-color:${borderColor};background:${bg}">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="note-meta">${fmtDT(n.at)}${label}</div>
+            <div>
+              <button style="${btnStyle}" title="Edit" onclick="startNoteEdit('${lead.id}',${realIdx})">✏️</button>
+              <button style="${btnStyle}" title="Delete" onclick="deleteNote('${lead.id}',${realIdx})">✕</button>
+            </div>
+          </div>
+          <div id="note_body_${lead.id}_${realIdx}" style="white-space:pre-wrap">${esc(bodyText)}</div>
         </div>`;
       }).join('')
     : '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px">No notes yet.</div>';
