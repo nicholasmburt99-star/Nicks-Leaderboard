@@ -119,6 +119,37 @@ export function addNote(leadId){
   l.notes=l.notes||[];l.notes.push({text:inp.value.trim(),at:new Date().toISOString()});
   log(l,'Note added','#64748b');save();renderDetail();
 }
+export function deleteNote(leadId, noteIdx) {
+  if (!confirm('Delete this note?')) return;
+  const l = state.leads.find(x => x.id === leadId); if (!l) return;
+  l.notes.splice(noteIdx, 1);
+  log(l, 'Note deleted', '#64748b'); save(); renderDetail();
+}
+export function startNoteEdit(leadId, noteIdx) {
+  const l = state.leads.find(x => x.id === leadId); if (!l) return;
+  const note = l.notes[noteIdx]; if (!note) return;
+  const bodyDiv = document.getElementById('note_body_' + leadId + '_' + noteIdx);
+  if (!bodyDiv || bodyDiv.querySelector('textarea')) return; // already editing
+  const currentText = note.text;
+  bodyDiv.innerHTML = `
+    <textarea id="note_edit_ta_${leadId}_${noteIdx}" style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:12px;resize:vertical;font-family:inherit;min-height:60px">${currentText.replace(/</g,'&lt;')}</textarea>
+    <div style="display:flex;gap:6px;margin-top:4px">
+      <button onclick="saveNoteEdit('${leadId}',${noteIdx})" style="padding:3px 10px;border:none;border-radius:5px;background:#2563eb;color:white;font-size:11px;font-weight:700;cursor:pointer">Save</button>
+      <button onclick="renderDetail()" style="padding:3px 10px;border:1px solid #e2e8f0;border-radius:5px;background:white;font-size:11px;cursor:pointer">Cancel</button>
+    </div>`;
+  const ta = document.getElementById('note_edit_ta_' + leadId + '_' + noteIdx);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+export function saveNoteEdit(leadId, noteIdx) {
+  const ta = document.getElementById('note_edit_ta_' + leadId + '_' + noteIdx);
+  if (!ta) return;
+  const newText = ta.value.trim();
+  if (!newText) { showToast('Note cannot be empty.'); return; }
+  const l = state.leads.find(x => x.id === leadId); if (!l) return;
+  if (!l.notes[noteIdx]) return;
+  l.notes[noteIdx].text = newText;
+  save(); renderDetail();
+}
 export function researchLead(leadId) {
   const l = state.leads.find(x => x.id === leadId);
   if (!l) return;

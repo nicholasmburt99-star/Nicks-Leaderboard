@@ -19,7 +19,7 @@ import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscovery
 import { fmtRich, buildRichToolbar, getPlainText, toRichHtml, getRichVal, renderScriptBody } from './editor/richText.js';
 import { startStageEdit, saveStageEdit, cancelStageEdit, resetStageEdit, startCallEdit, saveCallEdit, cancelCallEdit, resetCallEdit, startObjEdit, saveObjEdit, cancelObjEdit, resetObjEdit, escForVal } from './editor/scriptEditor.js';
 import { selLead, onSearch, setF, moveS, jumpS, setFU, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse } from './actions/pipeline.js';
-import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, researchLead, saveResearchNote, dismissResearch, saveResearch, saveLostReason, sendEmail } from './actions/leads.js';
+import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, deleteNote, startNoteEdit, saveNoteEdit, researchLead, saveResearchNote, dismissResearch, saveResearch, saveLostReason, sendEmail } from './actions/leads.js';
 import { daysInStage, logCallOutcome, requestCallback } from './actions/callOutcomes.js';
 import { exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
 import { switchTab, goToLead } from './tabs.js';
@@ -31,7 +31,7 @@ Object.assign(window, {
   renderList, renderDetail, renderOverview, renderKanban, renderLost, renderPipeline,
   selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
   setPipelineStage, setPipelineNextOutreach, setPipelineFilter,
-  openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote,
+  openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote, deleteNote, startNoteEdit, saveNoteEdit,
   researchLead, saveResearchNote, dismissResearch, saveResearch, saveLostReason,
   logCallOutcome, requestCallback,
   exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile,
