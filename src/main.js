@@ -1,4 +1,6 @@
 import './style.css';
+import { onSnapshot } from 'firebase/firestore';
+import { CRM_DOC } from './firebase.js';
 import { CALL_SCRIPT, CALL_OBJECTIONS } from './data/callScript.js';
 import { DISC_NO_INS, DISC_HAS_INS, CONV_STAGES } from './data/discovery.js';
 import { STAGES } from './data/stages.js';
@@ -64,3 +66,24 @@ document.addEventListener('keydown', e => {
   if (changed) save();
 })();
 switchTab('kanban');
+
+// ── Firestore real-time sync ────────────────────────────────────────────────
+onSnapshot(CRM_DOC, (snap) => {
+  if (!snap.exists()) {
+    // First time opening — push local data up to Firestore
+    if (state.leads.length > 0) save();
+    return;
+  }
+  const data = snap.data();
+  if (!data.leads) return;
+  // Skip if this matches what's already in state (our own write came back)
+  if (data.leads === JSON.stringify(state.leads)) return;
+  // Remote change — update state and re-render
+  state.leads = JSON.parse(data.leads);
+  localStorage.setItem('bpcrm2_leads', data.leads);
+  if (data.scripts) {
+    state.scriptOverrides = JSON.parse(data.scripts);
+    localStorage.setItem('bpcrm2_scripts', data.scripts);
+  }
+  switchTab(state.activeTab);
+}, (err) => console.warn('Firestore listener error:', err));

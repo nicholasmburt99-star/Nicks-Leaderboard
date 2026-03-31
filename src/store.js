@@ -1,3 +1,6 @@
+import { db, CRM_DOC } from './firebase.js';
+import { setDoc } from 'firebase/firestore';
+
 export const state = {
   leads: JSON.parse(localStorage.getItem('bpcrm2_leads') || '[]'),
   scriptOverrides: JSON.parse(localStorage.getItem('bpcrm2_scripts') || '{}'),
@@ -7,7 +10,26 @@ export const state = {
   searchQ: '',
   activeTab: 'kanban',
 };
-export function save() { localStorage.setItem('bpcrm2_leads', JSON.stringify(state.leads)); }
-export function saveScriptOverrides() { localStorage.setItem('bpcrm2_scripts', JSON.stringify(state.scriptOverrides)); }
+
+// Debounced Firestore write — waits 1.5s after last change before writing
+let _fsTimer = null;
+function _writeToFirestore() {
+  if (_fsTimer) clearTimeout(_fsTimer);
+  _fsTimer = setTimeout(() => {
+    setDoc(CRM_DOC, {
+      leads: JSON.stringify(state.leads),
+      scripts: JSON.stringify(state.scriptOverrides),
+    }).catch(e => console.warn('Firestore save error:', e));
+  }, 1500);
+}
+
+export function save() {
+  localStorage.setItem('bpcrm2_leads', JSON.stringify(state.leads));
+  _writeToFirestore();
+}
+export function saveScriptOverrides() {
+  localStorage.setItem('bpcrm2_scripts', JSON.stringify(state.scriptOverrides));
+  _writeToFirestore();
+}
 export function getScriptBody(key, defaultText) { return state.scriptOverrides[key] !== undefined ? state.scriptOverrides[key] : defaultText; }
 export function isEdited(key) { return state.scriptOverrides[key] !== undefined; }
