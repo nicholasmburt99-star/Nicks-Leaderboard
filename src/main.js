@@ -6,7 +6,7 @@ import { DISC_NO_INS, DISC_HAS_INS, CONV_STAGES } from './data/discovery.js';
 import { STAGES } from './data/stages.js';
 import { today, skipWeekend, addDays, fmtD, fmtDT, fuSt } from './utils/date.js';
 import { uid, esc, escPre, log, showToast } from './utils/dom.js';
-import { state, save, saveScriptOverrides, getScriptBody, isEdited } from './store.js';
+import { state, save, saveScriptOverrides, getScriptBody, isEdited, setOnSave } from './store.js';
 import { gS, gSI } from './data/stages.js';
 import { getChecks, toggleTask } from './actions/tasks.js';
 import { renderList } from './views/list.js';
@@ -14,7 +14,7 @@ import { renderDetail } from './views/detail.js';
 import { renderOverview } from './views/overview.js';
 import { renderKanban } from './views/kanban.js';
 import { renderLost } from './views/lost.js';
-import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineStage, setPipelineNextOutreach, setPipelineFilter } from './views/pipeline.js';
+import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection } from './views/pipeline.js';
 import { openOutreachModal, closeOutreachModal, sendAllOutreach, saveGmailClientId } from './views/outreachModal.js';
 import { renderCallScript, renderLiveCallScript, setConvStage } from './engines/callScript.js';
 import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscoveryHtml } from './engines/discovery.js';
@@ -32,7 +32,7 @@ Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab,
   renderList, renderDetail, renderOverview, renderKanban, renderLost, renderPipeline,
   selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
-  setPipelineStage, setPipelineNextOutreach, setPipelineFilter,
+  setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection,
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote, deleteNote, startNoteEdit, saveNoteEdit,
   researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason,
   logCallOutcome, requestCallback,
@@ -65,6 +65,13 @@ document.addEventListener('keydown', e => {
   });
   if (changed) save();
 })();
+// Re-render the active tab after every save() to keep data fresh
+setOnSave(() => {
+  if (state.activeTab === 'overview') renderOverview();
+  if (state.activeTab === 'kanban') renderKanban();
+  if (state.activeTab === 'pipeline') renderPipeline();
+});
+
 switchTab('kanban');
 
 // ── Firestore real-time sync ────────────────────────────────────────────────

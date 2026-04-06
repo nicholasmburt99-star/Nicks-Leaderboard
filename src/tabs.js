@@ -15,8 +15,6 @@ export function switchTab(tab) {
   if (ov) ov.style.display = tab === 'overview' ? 'flex' : 'none';
   const kv = document.getElementById('view-kanban');
   if (kv) kv.style.display = tab === 'kanban' ? 'flex' : 'none';
-  const em = document.getElementById('view-email');
-  if (em) em.style.display = tab === 'email' ? 'flex' : 'none';
   const pv = document.getElementById('view-pipeline');
   if (pv) pv.style.display = tab === 'pipeline' ? 'flex' : 'none';
   if (tab === 'overview') renderOverview();

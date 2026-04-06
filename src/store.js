@@ -23,9 +23,14 @@ function _writeToFirestore() {
   }, 1500);
 }
 
+// Callback invoked after every save — set in main.js to re-render active tab
+let _onSave = null;
+export function setOnSave(fn) { _onSave = fn; }
+
 export function save() {
   localStorage.setItem('bpcrm2_leads', JSON.stringify(state.leads));
   _writeToFirestore();
+  if (_onSave) _onSave();
 }
 export function saveScriptOverrides() {
   localStorage.setItem('bpcrm2_scripts', JSON.stringify(state.scriptOverrides));

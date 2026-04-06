@@ -5,9 +5,13 @@ import { renderDetail } from './detail.js';
 
 // Pipeline-specific stages (separate from outreach sequence)
 const PL_STAGES = [
-  { id: 'census',  label: 'Waiting on Census', bg: '#fef3c7', color: '#92400e' },
-  { id: 'quoted',  label: 'Quoted',             bg: '#e0e7ff', color: '#3730a3' },
-  { id: 'lost',    label: 'Lost',               bg: '#f3f4f6', color: '#374151' },
+  { id: 'census',      label: 'Waiting on Census',  bg: '#fef3c7', color: '#92400e', icon: '📋' },
+  { id: 'proposal',    label: 'Proposal Sent',      bg: '#e0f2fe', color: '#0369a1', icon: '📄' },
+  { id: 'quoted',      label: 'Quoted',              bg: '#e0e7ff', color: '#3730a3', icon: '💰' },
+  { id: 'negotiating', label: 'Negotiating',         bg: '#fce7f3', color: '#9d174d', icon: '🤝' },
+  { id: 'enrollment',  label: 'Enrollment',          bg: '#d1fae5', color: '#065f46', icon: '✅' },
+  { id: 'onboarding',  label: 'Onboarding',          bg: '#f0fdf4', color: '#14532d', icon: '🚀' },
+  { id: 'lost',        label: 'Lost',                bg: '#f3f4f6', color: '#374151', icon: '✕' },
 ];
 const PL_STAGE_MAP = Object.fromEntries(PL_STAGES.map(s => [s.id, s]));
 
@@ -18,9 +22,17 @@ const RISK_CYCLE = [null, 'green', 'yellow', 'red'];
 const RISK_COLORS = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444' };
 const RISK_LABELS = { green: 'Low', yellow: 'Medium', red: 'High' };
 const CATEGORIES = ['', 'Pipeline', 'Best Case', 'Commit'];
+const CAT_COLORS = {
+  'Pipeline':  { bg: '#eff6ff', color: '#2563eb' },
+  'Best Case': { bg: '#fefce8', color: '#ca8a04' },
+  'Commit':    { bg: '#d1fae5', color: '#065f46' },
+};
 
 // Module-level filter state
-let pFilter = { stage: '', risk: '', category: '' };
+let pFilter = { risk: '', category: '' };
+
+// Section collapse state — lost is collapsed by default
+let collapsed = { lost: true };
 
 // Auto-assign pipelineStage for leads entering Pipeline for the first time
 function ensureStage(l) {
@@ -31,23 +43,35 @@ function ensureStage(l) {
   }
 }
 
+function lastActivityAgo(l) {
+  if (!l.activity || !l.activity.length) return null;
+  const last = l.activity[l.activity.length - 1];
+  if (!last.at) return null;
+  const diff = Math.floor((Date.now() - new Date(last.at).getTime()) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return '1d ago';
+  return `${diff}d ago`;
+}
+
 function dueBadge(d) {
   if (!d) return '';
   const t = new Date(); t.setHours(0,0,0,0);
   const due = new Date(d + 'T00:00:00');
   const diff = Math.round((due - t) / 86400000);
-  if (diff < 0)  return `<div style="font-size:10px;font-weight:700;color:#dc2626;background:#fef2f2;padding:1px 5px;border-radius:4px;margin-top:2px;display:inline-block">⚠ ${Math.abs(diff)}d overdue</div>`;
-  if (diff === 0) return `<div style="font-size:10px;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;margin-top:2px;display:inline-block">Today</div>`;
-  if (diff <= 3)  return `<div style="font-size:10px;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;margin-top:2px;display:inline-block">In ${diff}d</div>`;
+  if (diff < 0)  return `<span class="pl-badge pl-badge-overdue">⚠ ${Math.abs(diff)}d overdue</span>`;
+  if (diff === 0) return `<span class="pl-badge pl-badge-today">Today</span>`;
+  if (diff <= 3)  return `<span class="pl-badge pl-badge-soon">In ${diff}d</span>`;
   return '';
 }
 
 function chip(label, active, onclick) {
-  const base = 'font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;';
-  const style = active
-    ? base + 'background:#1e293b;color:white;border-color:#1e293b'
-    : base + 'background:white;color:#64748b;border-color:#e2e8f0';
-  return `<button style="${style}" onclick="${onclick}">${label}</button>`;
+  return `<button class="pl-chip${active ? ' pl-chip-active' : ''}" onclick="${onclick}">${label}</button>`;
+}
+
+function stageOptionHtml(currentId) {
+  return PL_STAGES.map(s =>
+    `<option value="${s.id}" ${s.id === currentId ? 'selected' : ''}>${s.label}</option>`
+  ).join('');
 }
 
 export function renderPipeline() {
@@ -65,27 +89,13 @@ export function renderPipeline() {
   if (changed) save();
 
   let leads = state.leads.filter(l => PIPELINE_STAGEIDS.includes(l.stageId));
+  const totalAll = leads.length;
 
   // Apply filters
-  if (pFilter.stage)    leads = leads.filter(l => l.pipelineStage === pFilter.stage);
   if (pFilter.risk)     leads = leads.filter(l => (l.pipelineRisk || null) === pFilter.risk);
   if (pFilter.category) leads = leads.filter(l => (l.pipelineCategory || '') === pFilter.category);
 
-  // Sort: stage order, then company
-  const stageOrder = ['census', 'quoted', 'lost'];
-  leads.sort((a, b) => {
-    const ai = stageOrder.indexOf(a.pipelineStage || 'census');
-    const bi = stageOrder.indexOf(b.pipelineStage || 'census');
-    if (ai !== bi) return ai - bi;
-    return (a.company || '').localeCompare(b.company || '');
-  });
-
   // Filter chips
-  const stageChips = [
-    chip('All', !pFilter.stage, "setPipelineFilter('stage','')"),
-    ...PL_STAGES.map(s => chip(s.label, pFilter.stage === s.id, `setPipelineFilter('stage','${s.id}')`))
-  ].join('');
-
   const riskChips = [
     chip('All', !pFilter.risk, "setPipelineFilter('risk','')"),
     ...(['green','yellow','red'].map(r => {
@@ -96,119 +106,126 @@ export function renderPipeline() {
 
   const catChips = [
     chip('All', !pFilter.category, "setPipelineFilter('category','')"),
-    ...(['Pipeline','Best Case','Commit'].map(c => chip(c, pFilter.category === c, `setPipelineFilter('category','${c}')`)))
+    ...(['Pipeline','Best Case','Commit'].map(c => chip(c, pFilter.category === c, `setPipelineFilter('category','${esc(c)}')`)))
   ].join('');
 
-  const filterBar = `<div style="padding:12px 16px;border-bottom:1px solid #e2e8f0;display:flex;flex-direction:column;gap:8px;background:#f8fafc">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;min-width:60px">Stage</span>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${stageChips}</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;min-width:60px">Risk</span>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${riskChips}</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;min-width:60px">Category</span>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${catChips}</div>
-    </div>
-  </div>`;
-
-  const totalAll = state.leads.filter(l => PIPELINE_STAGEIDS.includes(l.stageId)).length;
-
-  if (!leads.length) {
-    container.innerHTML = `
-      <div style="padding:14px 20px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0">
-        <div style="font-size:15px;font-weight:800;color:#1e293b">📋 Pipeline</div>
-        <div style="font-size:12px;color:#94a3b8">${totalAll} lead${totalAll!==1?'s':''} total</div>
-      </div>
-      ${filterBar}
-      <div style="padding:60px;text-align:center;color:#94a3b8">
-        <div style="font-size:14px;font-weight:600;color:#64748b">${totalAll ? 'No leads match these filters' : 'No pipeline leads yet'}</div>
-        <div style="font-size:12px;margin-top:6px">${totalAll ? 'Try clearing a filter above' : 'Leads move here when marked as Connected, Quoted, or Lost'}</div>
-      </div>`;
-    return;
-  }
-
-  const rows = leads.map(l => {
-    const isSelected = state.selId === l.id;
+  // Group leads by pipelineStage
+  const groups = {};
+  PL_STAGES.forEach(s => { groups[s.id] = []; });
+  leads.forEach(l => {
     const ps = l.pipelineStage || 'census';
-    const psInfo = PL_STAGE_MAP[ps] || PL_STAGES[0];
-    const r = l.pipelineRisk || null;
-    const dotBg = r ? RISK_COLORS[r] : '#e2e8f0';
-    const ns = (l.pipelineNextSteps || '').replace(/"/g, '&quot;');
-    const outreachDate = l.pipelineNextOutreach || '';
-
-    const stageSelect = `<select onchange="setPipelineStage('${l.id}',this.value)" onclick="event.stopPropagation()"
-      style="font-size:11px;font-weight:700;border:none;border-radius:5px;padding:3px 6px;background:${psInfo.bg};color:${psInfo.color};cursor:pointer;outline:none;max-width:150px">
-      ${PL_STAGES.map(s => `<option value="${s.id}" ${ps===s.id?'selected':''}>${s.label}</option>`).join('')}
-    </select>`;
-
-    const catVal = l.pipelineCategory || '';
-    const catSelect = `<select onchange="setPipelineCategory('${l.id}',this.value)" onclick="event.stopPropagation()"
-      style="font-size:11px;border:1px solid #e2e8f0;border-radius:5px;padding:2px 4px;background:white;color:#1e293b;cursor:pointer;max-width:90px">
-      ${CATEGORIES.map(c => `<option value="${c}" ${c===catVal?'selected':''}>${c||'—'}</option>`).join('')}
-    </select>`;
-
-    return `<tr onclick="selectPipelineLead('${l.id}')"
-      style="cursor:pointer;${isSelected?'background:#eff6ff;':''}border-bottom:1px solid #f1f5f9"
-      onmouseover="if('${l.id}'!==window._plSel)this.style.background='#f8fafc'"
-      onmouseout="if('${l.id}'!==window._plSel)this.style.background=''">
-      <td style="padding:10px 14px;min-width:160px">
-        <div style="font-size:13px;font-weight:700;color:#1e293b">${esc(l.company||'—')}</div>
-        <div style="font-size:11px;color:#64748b">${esc(l.firstName)} ${esc(l.lastName)}</div>
-      </td>
-      <td style="padding:10px 8px;font-size:12px;color:#475569;text-align:center">${esc(l.employees||'—')}</td>
-      <td style="padding:10px 8px;font-size:12px;color:#475569;white-space:nowrap">${l.renewalDate?fmtD(l.renewalDate):'—'}</td>
-      <td style="padding:10px 8px;text-align:center" onclick="event.stopPropagation()">${stageSelect}</td>
-      <td style="padding:10px 8px;text-align:center" onclick="event.stopPropagation()">${catSelect}</td>
-      <td style="padding:10px 8px;text-align:center" onclick="event.stopPropagation()">
-        <button onclick="cyclePipelineRisk('${l.id}')" title="${r?'Risk: '+RISK_LABELS[r]+' — click to change':'Click to set risk'}"
-          style="width:14px;height:14px;border-radius:50%;background:${dotBg};border:none;cursor:pointer;display:block;margin:auto"></button>
-      </td>
-      <td style="padding:8px 10px;min-width:130px" onclick="event.stopPropagation()">
-        <input type="date" value="${outreachDate}"
-          onchange="setPipelineNextOutreach('${l.id}',this.value)"
-          onclick="event.stopPropagation()"
-          style="font-size:11px;border:1px solid #e2e8f0;border-radius:5px;padding:2px 4px;background:white;color:#1e293b;cursor:pointer;width:100%">
-        ${dueBadge(outreachDate)}
-      </td>
-      <td style="padding:10px 14px;min-width:160px" onclick="event.stopPropagation()">
-        <input type="text" value="${ns}" placeholder="Add next steps…"
-          onchange="setPipelineNextSteps('${l.id}',this.value)"
-          onclick="event.stopPropagation()"
-          style="font-size:11px;border:none;background:transparent;width:100%;color:#1e293b;outline:none"
-          onfocus="this.style.background='#f8fafc';this.style.borderBottom='1px solid #cbd5e1'"
-          onblur="this.style.background='transparent';this.style.borderBottom='none'">
-      </td>
-    </tr>`;
+    if (groups[ps]) groups[ps].push(l);
+    else groups['census'].push(l);
   });
 
+  // Sort within each group by company name
+  Object.values(groups).forEach(arr => {
+    arr.sort((a, b) => (a.company || '').localeCompare(b.company || ''));
+  });
+
+  // Build sections
+  const sections = PL_STAGES.map(stage => {
+    const groupLeads = groups[stage.id];
+    const count = groupLeads.length;
+    if (count === 0 && !pFilter.risk && !pFilter.category) return '';
+
+    const isCollapsed = collapsed[stage.id] || false;
+    const chevron = isCollapsed ? '▸' : '▾';
+
+    const cards = groupLeads.map(l => {
+      const isSelected = state.selId === l.id;
+      const r = l.pipelineRisk || null;
+      const dotBg = r ? RISK_COLORS[r] : '#e2e8f0';
+      const riskLabel = r ? RISK_LABELS[r] : '';
+      const cat = l.pipelineCategory || '';
+      const catStyle = CAT_COLORS[cat] || null;
+      const catBadge = cat && catStyle
+        ? `<span class="pl-cat-badge" style="background:${catStyle.bg};color:${catStyle.color}">${esc(cat)}</span>`
+        : '';
+      const lastAct = lastActivityAgo(l);
+      const lastActClass = (() => {
+        if (!l.activity || !l.activity.length) return '';
+        const last = l.activity[l.activity.length - 1];
+        if (!last.at) return '';
+        const diff = Math.floor((Date.now() - new Date(last.at).getTime()) / 86400000);
+        return diff >= 5 ? ' pl-stale' : '';
+      })();
+      const ns = (l.pipelineNextSteps || '').replace(/"/g, '&quot;');
+      const outreachDate = l.pipelineNextOutreach || '';
+
+      return `<div class="pl-card${isSelected ? ' pl-card-selected' : ''}" onclick="selectPipelineLead('${l.id}')">
+        <div class="pl-card-header">
+          <div class="pl-card-company">${esc(l.company || '—')}</div>
+          <button class="pl-risk-dot" onclick="event.stopPropagation();cyclePipelineRisk('${l.id}')"
+            title="${r ? 'Risk: ' + riskLabel + ' — click to change' : 'Click to set risk'}"
+            style="background:${dotBg}"></button>
+        </div>
+        <div class="pl-card-contact">${esc(l.firstName || '')} ${esc(l.lastName || '')}${l.employees ? ' · ' + esc(l.employees) + ' empl' : ''}</div>
+        <div class="pl-card-meta">
+          ${l.renewalDate ? `<span class="pl-meta-item">Renewal: ${fmtD(l.renewalDate)}</span>` : ''}
+          ${lastAct ? `<span class="pl-meta-item${lastActClass}">Last: ${lastAct}</span>` : '<span class="pl-meta-item pl-stale">No activity</span>'}
+        </div>
+        <div class="pl-card-row" onclick="event.stopPropagation()">
+          <div class="pl-card-outreach">
+            <input type="date" value="${outreachDate}"
+              onchange="setPipelineNextOutreach('${l.id}',this.value)"
+              class="pl-date-input">
+            ${dueBadge(outreachDate)}
+          </div>
+          ${catBadge}
+        </div>
+        <div class="pl-card-row" onclick="event.stopPropagation()">
+          <input type="text" value="${ns}" placeholder="Next steps..."
+            onchange="setPipelineNextSteps('${l.id}',this.value)"
+            class="pl-steps-input">
+        </div>
+        <div class="pl-card-row" onclick="event.stopPropagation()">
+          <select onchange="setPipelineStage('${l.id}',this.value)" class="pl-stage-select" style="background:${stage.bg};color:${stage.color}">
+            ${stageOptionHtml(l.pipelineStage || 'census')}
+          </select>
+          <select onchange="setPipelineCategory('${l.id}',this.value)" class="pl-cat-select">
+            ${CATEGORIES.map(c => `<option value="${c}" ${c === cat ? 'selected' : ''}>${c || '—'}</option>`).join('')}
+          </select>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="pl-section">
+      <div class="pl-section-header" onclick="togglePipelineSection('${stage.id}')">
+        <span class="pl-section-chevron">${chevron}</span>
+        <span class="pl-section-icon">${stage.icon}</span>
+        <span class="pl-section-label">${stage.label}</span>
+        <span class="pl-section-count">${count}</span>
+      </div>
+      ${!isCollapsed ? `<div class="pl-card-grid">${count > 0 ? cards : '<div class="pl-empty-section">No leads match filters</div>'}</div>` : ''}
+    </div>`;
+  }).join('');
+
   container.innerHTML = `
-    <div style="padding:14px 20px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0">
-      <div style="font-size:15px;font-weight:800;color:#1e293b">📋 Pipeline</div>
-      <div style="font-size:12px;color:#94a3b8">${leads.length}${leads.length!==totalAll?' of '+totalAll:''} lead${totalAll!==1?'s':''}</div>
+    <div class="pl-header">
+      <div class="pl-title">📋 Pipeline</div>
+      <div class="pl-count">${leads.length}${leads.length !== totalAll ? ' of ' + totalAll : ''} lead${totalAll !== 1 ? 's' : ''}</div>
     </div>
-    ${filterBar}
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="border-bottom:2px solid #e2e8f0">
-            <th style="padding:8px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:left">Company</th>
-            <th style="padding:8px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:center">Empl.</th>
-            <th style="padding:8px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:left">Renewal</th>
-            <th style="padding:8px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:center">Stage</th>
-            <th style="padding:8px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:center">Category</th>
-            <th style="padding:8px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:center">Risk</th>
-            <th style="padding:8px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:left">Next Outreach</th>
-            <th style="padding:8px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:left">Next Steps</th>
-          </tr>
-        </thead>
-        <tbody>${rows.join('')}</tbody>
-      </table>
+    <div class="pl-filters">
+      <div class="pl-filter-row">
+        <span class="pl-filter-label">Risk</span>
+        <div class="pl-filter-chips">${riskChips}</div>
+      </div>
+      <div class="pl-filter-row">
+        <span class="pl-filter-label">Category</span>
+        <div class="pl-filter-chips">${catChips}</div>
+      </div>
+    </div>
+    <div class="pl-sections">
+      ${sections || '<div style="padding:60px;text-align:center;color:#94a3b8"><div style="font-size:14px;font-weight:600;color:#64748b">No pipeline leads yet</div><div style="font-size:12px;margin-top:6px">Leads move here when marked as Connected, Quoted, or Lost</div></div>'}
     </div>`;
 
   window._plSel = state.selId;
+}
+
+export function togglePipelineSection(stageId) {
+  collapsed[stageId] = !collapsed[stageId];
+  renderPipeline();
 }
 
 export function setPipelineFilter(key, val) {
