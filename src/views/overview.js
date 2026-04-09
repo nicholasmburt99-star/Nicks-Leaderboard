@@ -194,7 +194,7 @@ export function renderOverview() {
 
     // Monthly loss trend
     const lostByMonth = {};
-    const CAT_SHORT = { price: 'Price', competitor: 'Comp', timing: 'Timing', covered: 'Covered', unresponsive: 'Ghost', census_ghosted: 'Census', no_response: 'No Resp', decision_maker: 'DM No', other: 'Other' };
+    const CAT_SHORT = { price: 'Price', competitor: 'Comp', timing: 'Timing', covered: 'Covered', unresponsive: 'Ghost', census_ghosted: 'Census', no_response: 'No Resp', decision_maker: 'DM No', unqualified: 'Unqual', other: 'Other' };
     lostLeads.forEach(l => {
       const dateStr = l.leadDate || (l.createdAt ? l.createdAt.split('T')[0] : '');
       const key = monthKey(dateStr) || 'unknown';
@@ -206,14 +206,14 @@ export function renderOverview() {
     });
     const lostMonths = Object.keys(lostByMonth).filter(k => k !== 'unknown').sort().reverse();
 
-    const trendHead = `<div style="display:grid;grid-template-columns:100px repeat(9, 1fr);gap:0;margin-bottom:4px;align-items:center">
+    const trendHead = `<div style="display:grid;grid-template-columns:100px repeat(10, 1fr);gap:0;margin-bottom:4px;align-items:center">
       <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;color:#64748b">Month</div>
       ${LOST_CATEGORIES.map(c => `<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.3px;color:#94a3b8;text-align:center">${CAT_SHORT[c.id]}</div>`).join('')}
     </div>`;
 
     const trendRows = lostMonths.length > 0 ? lostMonths.map(key => {
       const d = lostByMonth[key];
-      return `<div style="display:grid;grid-template-columns:100px repeat(9, 1fr);gap:0;padding:6px 0;border-bottom:1px solid #f1f5f9;align-items:center">
+      return `<div style="display:grid;grid-template-columns:100px repeat(10, 1fr);gap:0;padding:6px 0;border-bottom:1px solid #f1f5f9;align-items:center">
         <div style="font-size:11px;font-weight:600;color:#475569">${fmtMonth(key)}</div>
         ${LOST_CATEGORIES.map(c => {
           const n = d[c.id];

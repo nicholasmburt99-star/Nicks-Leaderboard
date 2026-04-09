@@ -7,5 +7,6 @@ export const LOST_CATEGORIES = [
   { id: 'census_ghosted', label: 'Waiting on Census, Ghosted',          icon: '📋' },
   { id: 'no_response',    label: 'Unresponsive',                       icon: '📵' },
   { id: 'decision_maker', label: 'Decision Maker Said No',             icon: '🚫' },
+  { id: 'unqualified',    label: 'Unqualified',                        icon: '❌' },
   { id: 'other',          label: 'Other',                              icon: '📝' },
 ];
