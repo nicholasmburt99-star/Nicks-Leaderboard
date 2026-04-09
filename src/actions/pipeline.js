@@ -22,6 +22,17 @@ export function markLost(leadId) {
   });
 }
 
+export function changeLostCategory(leadId) {
+  if (!leadId) return;
+  showLostReasonPicker(leadId, (category, note) => {
+    const l = state.leads.find(x => x.id === leadId);
+    if (!l) return;
+    l.lostCategory = category;
+    if (note) l.lostReason = note;
+    save(); renderList(); renderDetail();
+  });
+}
+
 export function selLead(id){state.selId=id;renderList();renderDetail();if(state.activeTab==='overview')renderOverview();}
 export function onSearch(v){state.searchQ=v;renderList();}
 export function setF(f,btn){state.activeFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderList();}
