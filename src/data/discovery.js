@@ -14,7 +14,7 @@ export const DISC_NO_INS = [
 ];
 
 export const DISC_HAS_INS = [
-  { key:'h2',  label:"What's your familiarity with health insurance — do you currently offer benefits or are you looking into it?" },
+  { key:'h2',  label:"Quick question. Most employers I speak with right now are dealing with one of two things. Either rising benefits costs they can't really control or employees not really using the benefits they're paying for. Which one's been more of a headache?" },
   { key:'h3',  label:'On a scale of 1–10, how happy are you with your current plan and broker?', isScore:true },
   { key:'h4',  label:"What's been your biggest frustration — is it the rising cost, lack of support, or employees not understanding what they have?" },
   { key:'h5',  label:'What is the most important goal you want to accomplish with your benefits in the next 90 days?' },

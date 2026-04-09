@@ -27,6 +27,8 @@ import { exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePas
 import { switchTab, goToLead } from './tabs.js';
 import { setReContact, reengageLead } from './views/lost.js';
 import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, kanbanDragOver, kanbanDragLeave, kanbanDrop } from './views/kanban.js';
+import { renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange } from './views/okr.js';
+import { addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget } from './actions/okr.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab,
@@ -48,6 +50,8 @@ Object.assign(window, {
   getChecks, toggleTask,
   kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd,
   kanbanDragOver, kanbanDragLeave, kanbanDrop,
+  renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange,
+  addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget,
 });
 
 document.addEventListener('keydown', e => {
@@ -70,6 +74,7 @@ setOnSave(() => {
   if (state.activeTab === 'overview') renderOverview();
   if (state.activeTab === 'kanban') renderKanban();
   if (state.activeTab === 'pipeline') renderPipeline();
+  if (state.activeTab === 'okr') renderOKR();
 });
 
 switchTab('kanban');
@@ -91,6 +96,10 @@ onSnapshot(CRM_DOC, (snap) => {
   if (data.scripts) {
     state.scriptOverrides = JSON.parse(data.scripts);
     localStorage.setItem('bpcrm2_scripts', data.scripts);
+  }
+  if (data.okrs) {
+    state.okrs = JSON.parse(data.okrs);
+    localStorage.setItem('bpcrm2_okrs', data.okrs);
   }
   switchTab(state.activeTab);
 }, (err) => console.warn('Firestore listener error:', err));

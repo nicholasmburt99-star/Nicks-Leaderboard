@@ -3,6 +3,7 @@ import { renderKanban } from './views/kanban.js';
 import { renderOverview } from './views/overview.js';
 import { renderDetail } from './views/detail.js';
 import { renderPipeline } from './views/pipeline.js';
+import { renderOKR } from './views/okr.js';
 
 export function switchTab(tab) {
   state.activeTab = tab;
@@ -17,9 +18,12 @@ export function switchTab(tab) {
   if (kv) kv.style.display = tab === 'kanban' ? 'flex' : 'none';
   const pv = document.getElementById('view-pipeline');
   if (pv) pv.style.display = tab === 'pipeline' ? 'flex' : 'none';
+  const ok = document.getElementById('view-okr');
+  if (ok) ok.style.display = tab === 'okr' ? 'flex' : 'none';
   if (tab === 'overview') renderOverview();
   if (tab === 'kanban') { renderKanban(); renderDetail(); }
   if (tab === 'pipeline') { renderPipeline(); renderDetail(); }
+  if (tab === 'okr') renderOKR();
 }
 
 export function goToLead(id) {

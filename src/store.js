@@ -4,6 +4,7 @@ import { setDoc } from 'firebase/firestore';
 export const state = {
   leads: JSON.parse(localStorage.getItem('bpcrm2_leads') || '[]'),
   scriptOverrides: JSON.parse(localStorage.getItem('bpcrm2_scripts') || '{}'),
+  okrs: JSON.parse(localStorage.getItem('bpcrm2_okrs') || '[]'),
   selId: null,
   editId: null,
   activeFilter: 'due',
@@ -19,6 +20,7 @@ function _writeToFirestore() {
     setDoc(CRM_DOC, {
       leads: JSON.stringify(state.leads),
       scripts: JSON.stringify(state.scriptOverrides),
+      okrs: JSON.stringify(state.okrs),
     }).catch(e => console.warn('Firestore save error:', e));
   }, 1500);
 }
@@ -35,6 +37,11 @@ export function save() {
 export function saveScriptOverrides() {
   localStorage.setItem('bpcrm2_scripts', JSON.stringify(state.scriptOverrides));
   _writeToFirestore();
+}
+export function saveOKRs() {
+  localStorage.setItem('bpcrm2_okrs', JSON.stringify(state.okrs));
+  _writeToFirestore();
+  if (_onSave) _onSave();
 }
 export function getScriptBody(key, defaultText) { return state.scriptOverrides[key] !== undefined ? state.scriptOverrides[key] : defaultText; }
 export function isEdited(key) { return state.scriptOverrides[key] !== undefined; }

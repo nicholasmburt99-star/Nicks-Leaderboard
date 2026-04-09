@@ -25,6 +25,7 @@
   <button class="tab-btn active" id="tab-kanban" onclick="switchTab('kanban')">🗂 Kanban</button>
   <button class="tab-btn" id="tab-pipeline" onclick="switchTab('pipeline')">📋 Pipeline</button>
   <button class="tab-btn" id="tab-overview" onclick="switchTab('overview')">📊 Pipeline Overview</button>
+  <button class="tab-btn" id="tab-okr" onclick="switchTab('okr')">🎯 OKRs</button>
 </div>
 
 <div class="main" id="view-leads" style="display:none">
@@ -73,6 +74,12 @@
   <div style="flex:1;overflow-y:auto;background:white" id="pipelineTable"></div>
   <div class="detail" id="pipeline-detail">
     <div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>Click a row to view details</p></div>
+  </div>
+</div>
+
+<div id="view-okr" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="okrInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading OKRs...</div>
   </div>
 </div>
 
