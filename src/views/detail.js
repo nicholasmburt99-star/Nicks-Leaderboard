@@ -8,6 +8,7 @@ import { renderDiscoveryHtml } from '../engines/discovery.js';
 import { renderScriptBody, buildRichToolbar } from '../editor/richText.js';
 import { getChecks } from '../actions/tasks.js';
 import { daysInStage } from '../actions/callOutcomes.js';
+import { LOST_CATEGORIES } from '../data/lostCategories.js';
 
 export function renderDetail() {
   const panelId = state.activeTab === 'pipeline' ? 'pipeline-detail' : state.activeTab === 'kanban' ? 'kanban-detail' : 'detail';
@@ -26,7 +27,7 @@ export function renderDetail() {
     const lc = i<idx?'done':i===idx?'current':'';
     const num = i<idx?'✓':(i+1);
     if(i>0) track += `<div class="st-conn-wrap"><div class="st-conn ${i<=idx?'done':''}"></div></div>`;
-    track += `<div class="st-step" onclick="jumpS('${s.id}')" title="${s.label}" style="cursor:pointer">
+    track += `<div class="st-step" onclick="${s.id === 'lost' ? `markLost('${lead.id}')` : `jumpS('${s.id}')`}" title="${s.label}" style="cursor:pointer">
       <div class="st-dot ${dc}">${num}</div>
       <div class="st-lbl ${lc}">${s.short}</div>
     </div>`;
@@ -223,7 +224,7 @@ export function renderDetail() {
         ${!['quoted','won','lost','unqualified'].includes(lead.stageId)?`<button class="btn" style="background:#7c3aed;color:white;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer" onclick="jumpS('quoted')">📋 Move to Quoting</button>`:''}
         ${lead.stageId!=='won'?`<button class="btn bs" onclick="jumpS('won')">✓ Mark Won</button>`:''}
         <div style="display:flex;gap:6px;margin-left:auto">
-          ${lead.stageId!=='lost'?`<button class="btn bw" onclick="jumpS('lost')">Mark Lost</button>`:''}
+          ${lead.stageId!=='lost'?`<button class="btn bw" onclick="markLost('${lead.id}')">Mark Lost</button>`:''}
           ${lead.stageId!=='unqualified'?`<button class="btn" style="background:#f5f3ff;color:#5b21b6;border:1.5px solid #ddd6fe;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer" onclick="jumpS('unqualified')">🚫 Unqualified</button>`:''}
         </div>
       </div>
@@ -271,9 +272,13 @@ export function renderDetail() {
 
     <div class="card" style="${lead.stageId==='lost'?'border:1.5px solid #fecaca;':''}">
       <div class="sec-title" style="color:${lead.stageId==='lost'?'#dc2626':'#64748b'}">❌ Lost Reason</div>
+      ${(()=>{
+        const cat = lead.lostCategory ? LOST_CATEGORIES.find(c=>c.id===lead.lostCategory) : null;
+        return cat ? `<div class="lost-cat-chip">${cat.icon} ${esc(cat.label)}</div>` : '';
+      })()}
       <textarea id="lost_reason_ta_${lead.id}" rows="3"
         style="width:100%;box-sizing:border-box;border:1px solid ${lead.stageId==='lost'?'#fecaca':'#e2e8f0'};border-radius:8px;padding:8px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;margin-bottom:8px;background:${lead.stageId==='lost'?'#fef2f2':'white'}"
-        placeholder="Record why this lead was lost…"
+        placeholder="Additional notes about why this lead was lost…"
         onblur="saveLostReason('${lead.id}',this.value)">${esc(lead.lostReason||'')}</textarea>
       <button class="btn bp" style="font-size:12px" onclick="saveLostReason('${lead.id}',document.getElementById('lost_reason_ta_${lead.id}').value);showToast('✅ Lost reason saved!')">Save</button>
     </div>

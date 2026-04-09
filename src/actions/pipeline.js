@@ -7,6 +7,20 @@ import { renderList } from '../views/list.js';
 import { renderDetail } from '../views/detail.js';
 import { renderOverview } from '../views/overview.js';
 import { renderQueue } from '../views/queue.js';
+import { showLostReasonPicker } from './lostReasonPicker.js';
+
+export function markLost(leadId) {
+  if (!leadId) leadId = state.selId;
+  if (!leadId) return;
+  showLostReasonPicker(leadId, (category, note) => {
+    const l = state.leads.find(x => x.id === leadId);
+    if (!l) return;
+    l.lostCategory = category;
+    if (note) l.lostReason = note;
+    state.selId = leadId;
+    jumpS('lost');
+  });
+}
 
 export function selLead(id){state.selId=id;renderList();renderDetail();if(state.activeTab==='overview')renderOverview();}
 export function onSearch(v){state.searchQ=v;renderList();}

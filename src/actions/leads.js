@@ -91,7 +91,7 @@ export function saveLead(){
       renewalDate:document.getElementById('fRenew').value,
       stageId:'new',nextFU:today(),taskChecks:{},
       notes:note?[{text:note,at:new Date().toISOString()}]:[],
-      research:[],lostReason:'',
+      research:[],lostReason:'',lostCategory:'',
       activity:[{txt:'Lead added to CRM',col:'#3b82f6',at:new Date().toISOString()}],
       createdAt:new Date().toISOString()
     };

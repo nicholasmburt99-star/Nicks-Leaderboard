@@ -20,7 +20,7 @@ import { renderCallScript, renderLiveCallScript, setConvStage } from './engines/
 import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscoveryHtml } from './engines/discovery.js';
 import { fmtRich, buildRichToolbar, getPlainText, toRichHtml, getRichVal, renderScriptBody } from './editor/richText.js';
 import { startStageEdit, saveStageEdit, cancelStageEdit, resetStageEdit, startCallEdit, saveCallEdit, cancelCallEdit, resetCallEdit, startObjEdit, saveObjEdit, cancelObjEdit, resetObjEdit, escForVal } from './editor/scriptEditor.js';
-import { selLead, onSearch, setF, moveS, jumpS, setFU, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse } from './actions/pipeline.js';
+import { selLead, onSearch, setF, moveS, jumpS, setFU, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse, markLost } from './actions/pipeline.js';
 import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, deleteNote, startNoteEdit, saveNoteEdit, researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, sendEmail } from './actions/leads.js';
 import { daysInStage, logCallOutcome, requestCallback } from './actions/callOutcomes.js';
 import { exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
@@ -31,7 +31,7 @@ import { renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR,
 import { addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget } from './actions/okr.js';
 
 Object.assign(window, {
-  selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab,
+  selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost,
   renderList, renderDetail, renderOverview, renderKanban, renderLost, renderPipeline,
   selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
   setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection,

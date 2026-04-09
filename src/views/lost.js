@@ -3,6 +3,7 @@ import { state, save } from '../store.js';
 import { gS } from '../data/stages.js';
 import { today, fmtD, fmtDT, fuSt, addDays } from '../utils/date.js';
 import { esc, log, showToast } from '../utils/dom.js';
+import { LOST_CATEGORIES } from '../data/lostCategories.js';
 import { renderDetail } from './detail.js';
 import { renderList } from './list.js';
 
@@ -70,10 +71,12 @@ export function renderLost() {
       badgeLabel = 'Set re-contact date'; badgeStyle = 'background:#f1f5f9;color:#94a3b8;font-style:italic';
     }
     const note = l.notes && l.notes.length ? l.notes[l.notes.length - 1].text : '';
+    const cat = l.lostCategory ? LOST_CATEGORIES.find(c=>c.id===l.lostCategory) : null;
     return `<div class="lost-card">
       <div class="lost-card-info">
         <div class="lost-card-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
         <div class="lost-card-company">${esc(l.company || '')}${l.company && l.phone ? ' · ' : ''}${esc(l.phone || '')}</div>
+        ${cat ? `<div class="lost-cat-chip">${cat.icon} ${esc(cat.label)}</div>` : ''}
         <div class="lost-card-meta">
           <span>📞 ${esc(l.phone || '')}</span>
           <span>📬 ${esc(l.email || 'No email')}</span>

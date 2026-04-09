@@ -3,6 +3,7 @@ import { state } from '../store.js';
 import { gS } from '../data/stages.js';
 import { today, fmtD, fmtDT } from '../utils/date.js';
 import { esc } from '../utils/dom.js';
+import { LOST_CATEGORIES } from '../data/lostCategories.js';
 
 export function renderOverview() {
   const container = document.getElementById('overviewInner');
@@ -146,36 +147,138 @@ export function renderOverview() {
     if (l.stageId === 'lost') bySource[src].lost++;
   });
 
-  const sourceRows = Object.keys(bySource).length > 0
+
+  // ── LOSS ANALYTICS ──────────────────────────────────────────────────────
+  const lostLeads = state.leads.filter(l => l.stageId === 'lost');
+  let lossAnalyticsHtml = '';
+
+  if (lostLeads.length > 0) {
+    // Reason breakdown
+    const reasonCounts = {};
+    LOST_CATEGORIES.forEach(c => { reasonCounts[c.id] = 0; });
+    let uncategorized = 0;
+    lostLeads.forEach(l => {
+      if (l.lostCategory && reasonCounts[l.lostCategory] !== undefined) reasonCounts[l.lostCategory]++;
+      else uncategorized++;
+    });
+    const maxCount = Math.max(...LOST_CATEGORIES.map(c => reasonCounts[c.id]), uncategorized, 1);
+
+    const reasonRows = LOST_CATEGORIES.map(c => {
+      const count = reasonCounts[c.id];
+      const pct = Math.round((count / maxCount) * 100);
+      return `<div style="display:grid;grid-template-columns:180px 1fr 40px;align-items:center;padding:6px 0;gap:10px">
+        <div style="font-size:12px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.icon} ${esc(c.label)}</div>
+        <div class="loss-bar-track"><div class="loss-bar-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:13px;font-weight:800;color:${count > 0 ? '#dc2626' : '#cbd5e1'};text-align:right">${count}</div>
+      </div>`;
+    }).join('');
+
+    const uncatRow = uncategorized > 0 ? `<div style="display:grid;grid-template-columns:180px 1fr 40px;align-items:center;padding:6px 0;gap:10px">
+      <div style="font-size:12px;font-weight:600;color:#94a3b8;font-style:italic">Uncategorized</div>
+      <div class="loss-bar-track"><div class="loss-bar-fill" style="width:${Math.round((uncategorized / maxCount) * 100)}%;background:#d1d5db"></div></div>
+      <div style="font-size:13px;font-weight:800;color:#94a3b8;text-align:right">${uncategorized}</div>
+    </div>` : '';
+
+    // Avg days before loss
+    let totalDaysToLoss = 0, countWithDates = 0;
+    lostLeads.forEach(l => {
+      const created = l.createdAt ? new Date(l.createdAt) : null;
+      const lostActivity = (l.activity || []).find(a =>
+        a.txt && (a.txt.includes('→ Closed – Lost') || a.txt.includes('marked lost')));
+      if (created && lostActivity) {
+        const days = Math.floor((new Date(lostActivity.at) - created) / 86400000);
+        if (days >= 0) { totalDaysToLoss += days; countWithDates++; }
+      }
+    });
+    const avgDays = countWithDates > 0 ? Math.round(totalDaysToLoss / countWithDates) : '—';
+
+    // Monthly loss trend
+    const lostByMonth = {};
+    const CAT_SHORT = { price: 'Price', competitor: 'Comp', timing: 'Timing', covered: 'Covered', unresponsive: 'Ghost', decision_maker: 'DM No', other: 'Other' };
+    lostLeads.forEach(l => {
+      const dateStr = l.leadDate || (l.createdAt ? l.createdAt.split('T')[0] : '');
+      const key = monthKey(dateStr) || 'unknown';
+      if (!lostByMonth[key]) {
+        lostByMonth[key] = {};
+        LOST_CATEGORIES.forEach(c => { lostByMonth[key][c.id] = 0; });
+      }
+      if (l.lostCategory && lostByMonth[key][l.lostCategory] !== undefined) lostByMonth[key][l.lostCategory]++;
+    });
+    const lostMonths = Object.keys(lostByMonth).filter(k => k !== 'unknown').sort().reverse();
+
+    const trendHead = `<div style="display:grid;grid-template-columns:100px repeat(7, 1fr);gap:0;margin-bottom:4px;align-items:center">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;color:#64748b">Month</div>
+      ${LOST_CATEGORIES.map(c => `<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.3px;color:#94a3b8;text-align:center">${CAT_SHORT[c.id]}</div>`).join('')}
+    </div>`;
+
+    const trendRows = lostMonths.length > 0 ? lostMonths.map(key => {
+      const d = lostByMonth[key];
+      return `<div style="display:grid;grid-template-columns:100px repeat(7, 1fr);gap:0;padding:6px 0;border-bottom:1px solid #f1f5f9;align-items:center">
+        <div style="font-size:11px;font-weight:600;color:#475569">${fmtMonth(key)}</div>
+        ${LOST_CATEGORIES.map(c => {
+          const n = d[c.id];
+          return `<div style="font-size:12px;font-weight:700;text-align:center;color:${n > 0 ? '#dc2626' : '#e2e8f0'}">${n}</div>`;
+        }).join('')}
+      </div>`;
+    }).join('') : '<div style="padding:8px;font-size:11px;color:#94a3b8;text-align:center">No categorized losses yet</div>';
+
+    lossAnalyticsHtml = `<div style="background:white;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06);border-left:4px solid #dc2626">
+      <div class="mb-title" style="color:#dc2626">❌ Loss Analytics</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div class="ov-stat" style="background:#fef2f2;flex:1;min-width:100px">
+          <div class="ov-stat-val" style="color:#dc2626">${lostLeads.length}</div>
+          <div class="ov-stat-lbl" style="color:#dc2626">Total Lost</div>
+        </div>
+        <div class="ov-stat" style="background:#fef2f2;flex:1;min-width:100px">
+          <div class="ov-stat-val" style="color:#dc2626">${avgDays}${avgDays !== '—' ? 'd' : ''}</div>
+          <div class="ov-stat-lbl" style="color:#dc2626">Avg Days to Loss</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Reason Breakdown</div>
+      <div style="margin-bottom:18px">${reasonRows}${uncatRow}</div>
+      <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Monthly Loss Trend</div>
+      ${trendHead}
+      ${trendRows}
+    </div>`;
+  }
+
+  // Extend source table to include Lost and Loss Rate columns
+  const sourceRowsExtended = Object.keys(bySource).length > 0
     ? Object.keys(bySource).sort().map(src => {
         const d = bySource[src];
         const winRate = d.won + d.lost > 0 ? Math.round((d.won / (d.won + d.lost)) * 100) : '—';
-        return `<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;align-items:center;padding:10px 8px;border-bottom:1px solid #f1f5f9">
+        const lossRate = d.won + d.lost > 0 ? Math.round((d.lost / (d.won + d.lost)) * 100) : '—';
+        return `<div style="display:grid;grid-template-columns:1fr 55px 55px 55px 55px 55px;align-items:center;padding:10px 8px;border-bottom:1px solid #f1f5f9">
           <div style="font-size:13px;font-weight:700;color:#1e293b">${esc(src)}</div>
           <div style="font-size:14px;font-weight:800;text-align:center;color:#64748b">${d.total}</div>
           <div style="font-size:14px;font-weight:800;text-align:center;color:#10b981">${d.won}</div>
-          <div style="font-size:13px;font-weight:700;text-align:center;color:#2563eb">${winRate}${winRate !== '—' ? '%' : ''}</div>
+          <div style="font-size:14px;font-weight:800;text-align:center;color:#dc2626">${d.lost}</div>
+          <div style="font-size:13px;font-weight:700;text-align:center;color:#10b981">${winRate}${winRate !== '—' ? '%' : ''}</div>
+          <div style="font-size:13px;font-weight:700;text-align:center;color:#dc2626">${lossRate}${lossRate !== '—' ? '%' : ''}</div>
         </div>`;
       }).join('')
-    : '<div style="padding:10px 8px;font-size:12px;color:#94a3b8;text-align:center">No leads with tracked sources yet.</div>';
+    : '';
 
-  const sourceBreakdownHtml = Object.keys(bySource).length > 0 ? `<div class="source-breakdown" style="background:white;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+  const sourceBreakdownExtHtml = Object.keys(bySource).length > 0 ? `<div class="source-breakdown" style="background:white;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
     <div class="mb-title">📊 Conversion by Source</div>
-    <div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:0;margin-bottom:8px;align-items:center">
+    <div style="display:grid;grid-template-columns:1fr 55px 55px 55px 55px 55px;gap:0;margin-bottom:8px;align-items:center">
       <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b">Source</div>
       <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;text-align:center">Total</div>
       <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#10b981;text-align:center">Won</div>
-      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#2563eb;text-align:center">Rate</div>
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#dc2626;text-align:center">Lost</div>
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#10b981;text-align:center">Win%</div>
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#dc2626;text-align:center">Loss%</div>
     </div>
-    ${sourceRows}
+    ${sourceRowsExtended}
   </div>` : '';
 
   container.innerHTML = `
     <div style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:14px">📊 Pipeline Overview</div>
     <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px">This Week <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:10px">(Mon ${fmtD(weekStart.toISOString().split('T')[0])} – now)</span></div>
     ${weeklyHtml}
-    ${sourceBreakdownHtml}
+    ${sourceBreakdownExtHtml}
     ${statsHtml}
     ${monthBreakdownHtml}
+    ${lossAnalyticsHtml}
   `;
 }

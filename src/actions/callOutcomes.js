@@ -6,6 +6,7 @@ import { log, showToast } from '../utils/dom.js';
 import { renderDetail } from '../views/detail.js';
 import { renderQueue } from '../views/queue.js';
 import { renderList } from '../views/list.js';
+import { showLostReasonPicker } from './lostReasonPicker.js';
 
 export function daysInStage(lead) {
   if (!lead.activity || !lead.activity.length) {
@@ -48,10 +49,16 @@ export function logCallOutcome(leadId, outcome) {
       if (nw.followDays > 0) lead.nextFU = addDays(nw.followDays);
       break;
     case 'not_interested':
-      log(lead, 'Not Interested — marked lost', '#6b7280');
-      lead.stageId = 'lost';
-      lead.reContactDate = addDays(90);
-      break;
+      showLostReasonPicker(leadId, (category, note) => {
+        lead.lostCategory = category;
+        if (note) lead.lostReason = note;
+        log(lead, 'Not Interested — marked lost', '#6b7280');
+        lead.stageId = 'lost';
+        lead.reContactDate = addDays(90);
+        save(); renderList(); renderDetail();
+        if (state.activeTab === 'queue') renderQueue();
+      });
+      return;
   }
   save(); renderList(); renderDetail();
   if (state.activeTab === 'queue') renderQueue();
