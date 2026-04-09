@@ -275,8 +275,7 @@ export function renderDetail() {
       ${(()=>{
         const cat = lead.lostCategory ? LOST_CATEGORIES.find(c=>c.id===lead.lostCategory) : null;
         if (cat) return `<div class="lost-cat-chip" style="cursor:pointer" onclick="changeLostCategory('${lead.id}')" title="Click to change category">${cat.icon} ${esc(cat.label)} <span style="font-size:9px;color:#94a3b8;margin-left:4px">✎</span></div>`;
-        if (lead.stageId === 'lost') return `<button class="btn" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:8px" onclick="changeLostCategory('${lead.id}')">+ Set Lost Category</button>`;
-        return '';
+        return `<button class="btn" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:8px" onclick="changeLostCategory('${lead.id}')">+ Set Lost Category</button>`;
       })()}
       <textarea id="lost_reason_ta_${lead.id}" rows="3"
         style="width:100%;box-sizing:border-box;border:1px solid ${lead.stageId==='lost'?'#fecaca':'#e2e8f0'};border-radius:8px;padding:8px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;margin-bottom:8px;background:${lead.stageId==='lost'?'#fef2f2':'white'}"
