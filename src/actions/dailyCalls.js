@@ -1,26 +1,14 @@
-import { state, saveDailyCalls } from '../store.js';
+import { state, save } from '../store.js';
+import { today } from '../utils/date.js';
+import { renderKanban } from '../views/kanban.js';
 
-export function getCurrentWeekDates() {
-  const now = new Date();
-  const day = now.getDay(); // 0=Sun … 6=Sat
-  const diff = day === 0 ? -6 : 1 - day; // offset to Monday
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diff);
-  const dates = [];
-  for (let i = 0; i < 5; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    dates.push(d.getFullYear() + '-' +
-      String(d.getMonth() + 1).padStart(2, '0') + '-' +
-      String(d.getDate()).padStart(2, '0'));
-  }
-  return dates;
-}
-
-export function toggleDailyCall(dateStr, idx) {
-  if (!state.dailyCalls[dateStr]) {
-    state.dailyCalls[dateStr] = [false, false, false];
-  }
-  state.dailyCalls[dateStr][idx] = !state.dailyCalls[dateStr][idx];
-  saveDailyCalls();
+export function toggleLeadCall(leadId, idx) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  const d = today();
+  if (!l.dailyCalls) l.dailyCalls = {};
+  if (!l.dailyCalls[d]) l.dailyCalls[d] = [false, false, false];
+  l.dailyCalls[d][idx] = !l.dailyCalls[d][idx];
+  save();
+  renderKanban();
 }

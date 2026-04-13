@@ -5,38 +5,9 @@ import { today, fuSt, addDays } from '../utils/date.js';
 import { esc, log } from '../utils/dom.js';
 import { renderList } from './list.js';
 import { renderDetail } from './detail.js';
-import { getCurrentWeekDates } from '../actions/dailyCalls.js';
 
 let _kanbanScrollTimer = null;
 let dragLeadId = null;
-
-function renderCallTracker() {
-  const weekDates = getCurrentWeekDates();
-  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-  const todayStr = today();
-  const days = weekDates.map((dateStr, di) => {
-    const checks = state.dailyCalls[dateStr] || [false, false, false];
-    const done = checks.filter(Boolean).length;
-    const isToday = dateStr === todayStr;
-    const checkboxes = checks.map((checked, ci) =>
-      `<div class="cc-check${checked ? ' cc-done' : ''}" onclick="toggleDailyCall('${dateStr}',${ci})">${checked ? '✓' : ''}</div>`
-    ).join('');
-    return `<div class="cc-day${isToday ? ' cc-today' : ''}${done === 3 ? ' cc-complete' : ''}">
-      <div class="cc-day-label">${dayNames[di]}</div>
-      <div class="cc-day-date">${parseInt(dateStr.split('-')[2])}</div>
-      <div class="cc-checks">${checkboxes}</div>
-      <div class="cc-count">${done}/3</div>
-    </div>`;
-  }).join('');
-  const totalDone = weekDates.reduce((sum, d) => sum + (state.dailyCalls[d] || []).filter(Boolean).length, 0);
-  return `<div class="cc-tracker">
-    <div class="cc-header">
-      <span class="cc-title">📞 Daily Cold Calls</span>
-      <span class="cc-weekly-total">${totalDone}/15 this week</span>
-    </div>
-    <div class="cc-week">${days}</div>
-  </div>`;
-}
 
 export function renderKanban() {
   const container = document.getElementById('kanbanInner');
@@ -44,9 +15,15 @@ export function renderKanban() {
 
   const cols = STAGES.filter(st => !['live','quoted','won','lost','unqualified'].includes(st.id)).map(st => {
     const stLeads = state.leads.filter(l => l.stageId === st.id);
+    const todayStr = today();
     const cardsHtml = stLeads.length
       ? stLeads.map(l => {
           const fu = fuSt(l);
+          const dc = (l.dailyCalls && l.dailyCalls[todayStr]) || [false, false, false];
+          const dcDone = dc.filter(Boolean).length;
+          const callChecks = dc.map((checked, ci) =>
+            `<div class="cc-check${checked ? ' cc-done' : ''}" onclick="event.stopPropagation();toggleLeadCall('${l.id}',${ci})">${checked ? '✓' : ''}</div>`
+          ).join('');
           return `<div class="pipeline-card"
             draggable="true"
             id="kcard_${l.id}"
@@ -56,6 +33,10 @@ export function renderKanban() {
             <div class="pc-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
             <div class="pc-sub">${esc(l.company||l.phone)}</div>
             ${fu ? `<div class="pc-due ${fu.cls}">${fu.label}</div>` : ''}
+            <div class="cc-card-row">
+              <div class="cc-checks">${callChecks}</div>
+              <span class="cc-card-count${dcDone === 3 ? ' cc-card-done' : ''}">${dcDone}/3</span>
+            </div>
           </div>`;
         }).join('')
       : `<div class="col-empty">Drop here</div>`;
@@ -93,7 +74,6 @@ export function renderKanban() {
           title="Scroll right">▶</button>
       </div>
     </div>
-    ${renderCallTracker()}
     <div id="kanbanBoard" style="flex:1;overflow-x:auto;overflow-y:auto;padding-bottom:8px">
       <div class="pipeline-board">${cols}</div>
     </div>
