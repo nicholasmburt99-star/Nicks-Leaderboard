@@ -29,6 +29,7 @@ import { setReContact, reengageLead } from './views/lost.js';
 import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, kanbanDragOver, kanbanDragLeave, kanbanDrop } from './views/kanban.js';
 import { renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange } from './views/okr.js';
 import { addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget } from './actions/okr.js';
+import { toggleDailyCall } from './actions/dailyCalls.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -52,6 +53,7 @@ Object.assign(window, {
   kanbanDragOver, kanbanDragLeave, kanbanDrop,
   renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange,
   addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget,
+  toggleDailyCall,
 });
 
 document.addEventListener('keydown', e => {
@@ -100,6 +102,10 @@ onSnapshot(CRM_DOC, (snap) => {
   if (data.okrs) {
     state.okrs = JSON.parse(data.okrs);
     localStorage.setItem('bpcrm2_okrs', data.okrs);
+  }
+  if (data.dailyCalls) {
+    state.dailyCalls = JSON.parse(data.dailyCalls);
+    localStorage.setItem('bpcrm2_dailyCalls', data.dailyCalls);
   }
   switchTab(state.activeTab);
 }, (err) => console.warn('Firestore listener error:', err));

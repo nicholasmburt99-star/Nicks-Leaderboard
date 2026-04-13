@@ -5,6 +5,7 @@ export const state = {
   leads: JSON.parse(localStorage.getItem('bpcrm2_leads') || '[]'),
   scriptOverrides: JSON.parse(localStorage.getItem('bpcrm2_scripts') || '{}'),
   okrs: JSON.parse(localStorage.getItem('bpcrm2_okrs') || '[]'),
+  dailyCalls: JSON.parse(localStorage.getItem('bpcrm2_dailyCalls') || '{}'),
   selId: null,
   editId: null,
   activeFilter: 'due',
@@ -21,6 +22,7 @@ function _writeToFirestore() {
       leads: JSON.stringify(state.leads),
       scripts: JSON.stringify(state.scriptOverrides),
       okrs: JSON.stringify(state.okrs),
+      dailyCalls: JSON.stringify(state.dailyCalls),
     }).catch(e => console.warn('Firestore save error:', e));
   }, 1500);
 }
@@ -40,6 +42,11 @@ export function saveScriptOverrides() {
 }
 export function saveOKRs() {
   localStorage.setItem('bpcrm2_okrs', JSON.stringify(state.okrs));
+  _writeToFirestore();
+  if (_onSave) _onSave();
+}
+export function saveDailyCalls() {
+  localStorage.setItem('bpcrm2_dailyCalls', JSON.stringify(state.dailyCalls));
   _writeToFirestore();
   if (_onSave) _onSave();
 }

@@ -153,6 +153,24 @@ body {
 .task-label { font-size: 12px; color: #374151; line-height: 1.4; }
 .task-item.done-task .task-label { text-decoration: line-through; color: #94a3b8; }
 .task-icon { font-size: 14px; flex-shrink: 0; margin-top: 0px; }
+/* Cold Call Daily Tracker */
+.cc-tracker { background:white;border-radius:10px;padding:10px 14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.cc-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px; }
+.cc-title { font-size:12px;font-weight:800;color:#1e293b;text-transform:uppercase;letter-spacing:0.5px; }
+.cc-weekly-total { font-size:11px;font-weight:700;color:#64748b; }
+.cc-week { display:flex;gap:8px; }
+.cc-day { flex:1;text-align:center;padding:6px 4px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;transition:all 0.12s; }
+.cc-day.cc-today { border-color:#2563eb;background:#eff6ff; }
+.cc-day.cc-complete { background:#f0fdf4;border-color:#bbf7d0; }
+.cc-day-label { font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px; }
+.cc-day-date { font-size:11px;font-weight:600;color:#94a3b8;margin:1px 0 4px; }
+.cc-today .cc-day-date { color:#2563eb;font-weight:800; }
+.cc-checks { display:flex;gap:4px;justify-content:center;margin-bottom:3px; }
+.cc-check { width:20px;height:20px;border-radius:5px;border:2px solid #cbd5e1;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.12s;font-size:10px;font-weight:700;color:transparent;user-select:none; }
+.cc-check:hover { border-color:#2563eb;background:#eff6ff; }
+.cc-check.cc-done { background:#10b981;border-color:#10b981;color:white; }
+.cc-count { font-size:9px;font-weight:700;color:#94a3b8; }
+.cc-complete .cc-count { color:#10b981; }
 /* Script sections */
 .script-section { margin-bottom: 14px; }
 .script-section:last-child { margin-bottom: 0; }
