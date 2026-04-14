@@ -30,6 +30,8 @@ import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, ka
 import { renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange } from './views/okr.js';
 import { addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget } from './actions/okr.js';
 import { toggleLeadCall } from './actions/dailyCalls.js';
+import { renderNetwork, setNetworkFilter, getOverdueCount } from './views/network.js';
+import { addPartner, editPartner, deletePartner, logInteraction, deleteInteraction, setPartnerStrength, setPartnerNextOutreach, setPartnerNotes, selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal } from './actions/network.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -54,6 +56,10 @@ Object.assign(window, {
   renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange,
   addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget,
   toggleLeadCall,
+  renderNetwork, setNetworkFilter,
+  addPartner, editPartner, deletePartner, logInteraction, deleteInteraction,
+  setPartnerStrength, setPartnerNextOutreach, setPartnerNotes,
+  selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal,
 });
 
 document.addEventListener('keydown', e => {
@@ -77,9 +83,27 @@ setOnSave(() => {
   if (state.activeTab === 'kanban') renderKanban();
   if (state.activeTab === 'pipeline') renderPipeline();
   if (state.activeTab === 'okr') renderOKR();
+  if (state.activeTab === 'network') renderNetwork();
+  updateNetworkBadge();
 });
 
+function updateNetworkBadge() {
+  const count = getOverdueCount();
+  const badge = document.getElementById('nw-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+}
+
 switchTab('kanban');
+
+// Overdue networking toast on app open
+setTimeout(() => {
+  updateNetworkBadge();
+  const oc = getOverdueCount();
+  if (oc > 0) showToast(`🤝 ${oc} networking partner${oc > 1 ? 's' : ''} overdue for check-in`);
+}, 500);
 
 // ── Firestore real-time sync ────────────────────────────────────────────────
 onSnapshot(CRM_DOC, (snap) => {
@@ -102,6 +126,10 @@ onSnapshot(CRM_DOC, (snap) => {
   if (data.okrs) {
     state.okrs = JSON.parse(data.okrs);
     localStorage.setItem('bpcrm2_okrs', data.okrs);
+  }
+  if (data.partners) {
+    state.partners = JSON.parse(data.partners);
+    localStorage.setItem('bpcrm2_partners', data.partners);
   }
   switchTab(state.activeTab);
 }, (err) => console.warn('Firestore listener error:', err));

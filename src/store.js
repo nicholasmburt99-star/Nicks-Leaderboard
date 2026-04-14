@@ -5,8 +5,11 @@ export const state = {
   leads: JSON.parse(localStorage.getItem('bpcrm2_leads') || '[]'),
   scriptOverrides: JSON.parse(localStorage.getItem('bpcrm2_scripts') || '{}'),
   okrs: JSON.parse(localStorage.getItem('bpcrm2_okrs') || '[]'),
+  partners: JSON.parse(localStorage.getItem('bpcrm2_partners') || '[]'),
   selId: null,
   editId: null,
+  networkSelId: null,
+  networkEditId: null,
   activeFilter: 'due',
   searchQ: '',
   activeTab: 'kanban',
@@ -21,6 +24,7 @@ function _writeToFirestore() {
       leads: JSON.stringify(state.leads),
       scripts: JSON.stringify(state.scriptOverrides),
       okrs: JSON.stringify(state.okrs),
+      partners: JSON.stringify(state.partners),
     }).catch(e => console.warn('Firestore save error:', e));
   }, 1500);
 }
@@ -40,6 +44,11 @@ export function saveScriptOverrides() {
 }
 export function saveOKRs() {
   localStorage.setItem('bpcrm2_okrs', JSON.stringify(state.okrs));
+  _writeToFirestore();
+  if (_onSave) _onSave();
+}
+export function savePartners() {
+  localStorage.setItem('bpcrm2_partners', JSON.stringify(state.partners));
   _writeToFirestore();
   if (_onSave) _onSave();
 }
