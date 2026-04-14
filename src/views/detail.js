@@ -55,7 +55,7 @@ export function renderDetail() {
   let tasksHtml = '';
   {
     const todayStr = today();
-    const dc = (lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false];
+    const dc = ((lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false]).slice(0, 2);
     const dcDone = dc.filter(Boolean).length;
     const callChecks = dc.map((checked, ci) =>
       `<div class="task-item ${checked?'done-task':''}" onclick="toggleLeadCall('${lead.id}',${ci})">
