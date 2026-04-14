@@ -55,17 +55,17 @@ export function renderDetail() {
   let tasksHtml = '';
   {
     const todayStr = today();
-    const dc = (lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false, false];
+    const dc = (lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false];
     const dcDone = dc.filter(Boolean).length;
     const callChecks = dc.map((checked, ci) =>
       `<div class="task-item ${checked?'done-task':''}" onclick="toggleLeadCall('${lead.id}',${ci})">
         <span class="task-icon">📞</span>
         <div class="task-check">${checked?'✓':''}</div>
-        <span class="task-label">Cold Call #${ci+1}</span>
+        <span class="task-label">Cold Call #${ci+2}</span>
       </div>`
     ).join('');
     const allStageTasksDone = st.tasks.length ? checks.every(Boolean) : true;
-    const allCallsDone = dcDone === 3;
+    const allCallsDone = dcDone === 2;
     const allDone = allStageTasksDone && allCallsDone && st.tasks.length > 0;
     tasksHtml = `<div class="card">
       <div class="sec-title">✅ Today's Tasks${allDone?' — All Done! 🎉':''}</div>
