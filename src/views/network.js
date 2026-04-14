@@ -228,6 +228,7 @@ function renderNetworkDetail() {
       <div class="nw-detail-header">
         <div>
           <div class="nw-detail-name">${esc(p.name)}</div>
+          ${p.title ? `<div style="font-size:12px;color:#475569;margin-top:1px">${esc(p.title)}</div>` : ''}
           ${p.company ? `<div class="nw-detail-company">${esc(p.company)}</div>` : ''}
           ${p.category ? `<div class="nw-detail-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</div>` : ''}
           <div class="nw-stars">${stars}</div>
@@ -261,6 +262,7 @@ function renderNetworkDetail() {
           <option value="event">🎪 Event</option>
           <option value="other">📌 Other</option>
         </select>
+        <input type="date" id="nw-int-date" value="${today()}" style="padding:7px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-family:inherit;outline:none">
         <textarea id="nw-int-text" class="note-input" placeholder="What happened?"></textarea>
         <button class="btn bp" onclick="logInteraction('${p.id}')">Log</button>
       </div>

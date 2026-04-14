@@ -8,6 +8,7 @@ export function addPartner() {
   const p = {
     id: uid(),
     name,
+    title: document.getElementById('np-title').value.trim(),
     company: document.getElementById('np-company').value.trim(),
     phone: document.getElementById('np-phone').value.trim(),
     email: document.getElementById('np-email').value.trim(),
@@ -36,6 +37,7 @@ export function editPartner(id) {
   const name = document.getElementById('np-name').value.trim();
   if (!name) { showToast('Name is required.'); return; }
   p.name = name;
+  p.title = document.getElementById('np-title').value.trim();
   p.company = document.getElementById('np-company').value.trim();
   p.phone = document.getElementById('np-phone').value.trim();
   p.email = document.getElementById('np-email').value.trim();
@@ -61,12 +63,14 @@ export function deletePartner(id) {
 
 export function logInteraction(partnerId) {
   const typeEl = document.getElementById('nw-int-type');
+  const dateEl = document.getElementById('nw-int-date');
   const textEl = document.getElementById('nw-int-text');
   if (!textEl || !textEl.value.trim()) { showToast('Describe what happened.'); return; }
   const p = state.partners.find(x => x.id === partnerId);
   if (!p) return;
+  const dateVal = dateEl && dateEl.value ? new Date(dateEl.value + 'T12:00:00').toISOString() : new Date().toISOString();
   p.interactions = p.interactions || [];
-  p.interactions.push({ id: uid(), type: typeEl.value, text: textEl.value.trim(), at: new Date().toISOString() });
+  p.interactions.push({ id: uid(), type: typeEl.value, text: textEl.value.trim(), at: dateVal });
   savePartners();
   renderNetwork();
   showToast('Interaction logged!');
@@ -115,7 +119,7 @@ export function openAddPartnerModal() {
   const btn = document.getElementById('pmSave');
   btn.textContent = 'Add Partner';
   btn.setAttribute('onclick', 'addPartner()');
-  ['np-name','np-company','np-phone','np-email','np-specialty','np-howmet','np-geo','np-mutual','np-notes'].forEach(id => {
+  ['np-name','np-title','np-company','np-phone','np-email','np-specialty','np-howmet','np-geo','np-mutual','np-notes'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('np-category').value = '';
@@ -131,6 +135,7 @@ export function openEditPartnerModal(id) {
   btn.textContent = 'Save Changes';
   btn.setAttribute('onclick', `editPartner('${id}')`);
   document.getElementById('np-name').value = p.name || '';
+  document.getElementById('np-title').value = p.title || '';
   document.getElementById('np-company').value = p.company || '';
   document.getElementById('np-phone').value = p.phone || '';
   document.getElementById('np-email').value = p.email || '';
