@@ -154,6 +154,11 @@ body {
 .task-item.done-task .task-label { text-decoration: line-through; color: #94a3b8; }
 .task-icon { font-size: 14px; flex-shrink: 0; margin-top: 0px; }
 /* Per-lead cold call checkboxes on Kanban cards */
+/* Insurance status badge on Kanban cards */
+.pc-ins { font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;display:inline-block;margin-top:3px; }
+.pc-ins-has { background:#d1fae5;color:#065f46; }
+.pc-ins-new { background:#fef3c7;color:#92400e; }
+.pc-ins-unk { background:#f3f4f6;color:#6b7280; }
 .cc-card-row { display:flex;align-items:center;gap:6px;margin-top:5px;padding-top:5px;border-top:1px solid #f1f5f9; }
 .cc-checks { display:flex;gap:3px; }
 .cc-check { width:18px;height:18px;border-radius:4px;border:2px solid #cbd5e1;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.12s;font-size:9px;font-weight:700;color:transparent;user-select:none; }

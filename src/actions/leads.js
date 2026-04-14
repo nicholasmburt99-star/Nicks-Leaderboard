@@ -9,7 +9,7 @@ import { renderList } from '../views/list.js';
 import { renderDetail } from '../views/detail.js';
 import { personalize } from './gmailApi.js';
 
-export function clearF(){['fF','fL','fP','fE','fCity','fSt','fWeb','fCo','fInd','fEmp','fLD','fN','fSrc','fDM','fRef','fCarrier','fPlan','fRenew'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
+export function clearF(){['fF','fL','fP','fE','fCity','fSt','fWeb','fCo','fInd','fEmp','fLD','fN','fSrc','fDM','fRef','fInsStatus','fCarrier','fPlan','fRenew'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
 export function openAdd(){
   state.editId=null;
   document.getElementById('mtitle').textContent='➕ Add New Lead';
@@ -40,6 +40,7 @@ export function openEdit(leadId){
   document.getElementById('fLD').value=l.leadDate||'';
   document.getElementById('fSrc').value=l.source||'';
   document.getElementById('fRef').value=l.referredBy||'';
+  document.getElementById('fInsStatus').value=l.insuranceStatus||'';
   document.getElementById('fCarrier').value=l.carrier||'';
   document.getElementById('fPlan').value=l.planType||'';
   document.getElementById('fRenew').value=l.renewalDate||'';
@@ -66,6 +67,7 @@ export function saveLead(){
     l.leadDate=document.getElementById('fLD').value;
     l.source=document.getElementById('fSrc').value;
     l.referredBy=document.getElementById('fRef').value.trim();
+    l.insuranceStatus=document.getElementById('fInsStatus').value;
     l.carrier=document.getElementById('fCarrier').value.trim();
     l.planType=document.getElementById('fPlan').value.trim();
     l.renewalDate=document.getElementById('fRenew').value;
@@ -86,6 +88,7 @@ export function saveLead(){
       leadDate:document.getElementById('fLD').value,
       source:document.getElementById('fSrc').value,
       referredBy:document.getElementById('fRef').value.trim(),
+      insuranceStatus:document.getElementById('fInsStatus').value,
       carrier:document.getElementById('fCarrier').value.trim(),
       planType:document.getElementById('fPlan').value.trim(),
       renewalDate:document.getElementById('fRenew').value,
