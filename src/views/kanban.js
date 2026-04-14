@@ -15,15 +15,9 @@ export function renderKanban() {
 
   const cols = STAGES.filter(st => !['live','quoted','won','lost','unqualified'].includes(st.id)).map(st => {
     const stLeads = state.leads.filter(l => l.stageId === st.id);
-    const todayStr = today();
     const cardsHtml = stLeads.length
       ? stLeads.map(l => {
           const fu = fuSt(l);
-          const dc = (l.dailyCalls && l.dailyCalls[todayStr]) || [false, false, false];
-          const dcDone = dc.filter(Boolean).length;
-          const callChecks = dc.map((checked, ci) =>
-            `<div class="cc-check${checked ? ' cc-done' : ''}" onclick="event.stopPropagation();toggleLeadCall('${l.id}',${ci})">${checked ? '✓' : ''}</div>`
-          ).join('');
           return `<div class="pipeline-card"
             draggable="true"
             id="kcard_${l.id}"
@@ -33,10 +27,6 @@ export function renderKanban() {
             <div class="pc-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
             <div class="pc-sub">${esc(l.company||l.phone)}</div>
             ${fu ? `<div class="pc-due ${fu.cls}">${fu.label}</div>` : ''}
-            <div class="cc-card-row">
-              <div class="cc-checks">${callChecks}</div>
-              <span class="cc-card-count${dcDone === 3 ? ' cc-card-done' : ''}">${dcDone}/3</span>
-            </div>
           </div>`;
         }).join('')
       : `<div class="col-empty">Drop here</div>`;

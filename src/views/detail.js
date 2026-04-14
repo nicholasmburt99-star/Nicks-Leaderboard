@@ -1,6 +1,7 @@
 import { STAGES, gS, gSI } from '../data/stages.js';
 import { state, getScriptBody, isEdited } from '../store.js';
 import { today, fmtD, fmtDT, fuSt, addDays } from '../utils/date.js';
+import { toggleLeadCall } from '../actions/dailyCalls.js';
 import { esc, escPre, log } from '../utils/dom.js';
 import { CONV_STAGES } from '../data/discovery.js';
 import { renderCallScript, renderLiveCallScript } from '../engines/callScript.js';
@@ -52,8 +53,20 @@ export function renderDetail() {
 
   // Tasks HTML
   let tasksHtml = '';
-  if(st.tasks.length){
-    const allDone = checks.every(Boolean);
+  {
+    const todayStr = today();
+    const dc = (lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false, false];
+    const dcDone = dc.filter(Boolean).length;
+    const callChecks = dc.map((checked, ci) =>
+      `<div class="task-item ${checked?'done-task':''}" onclick="toggleLeadCall('${lead.id}',${ci})">
+        <span class="task-icon">📞</span>
+        <div class="task-check">${checked?'✓':''}</div>
+        <span class="task-label">Cold Call #${ci+1}</span>
+      </div>`
+    ).join('');
+    const allStageTasksDone = st.tasks.length ? checks.every(Boolean) : true;
+    const allCallsDone = dcDone === 3;
+    const allDone = allStageTasksDone && allCallsDone && st.tasks.length > 0;
     tasksHtml = `<div class="card">
       <div class="sec-title">✅ Today's Tasks${allDone?' — All Done! 🎉':''}</div>
       <div class="task-list">
@@ -63,6 +76,7 @@ export function renderDetail() {
             <div class="task-check">${checks[i]?'✓':''}</div>
             <span class="task-label">${esc(t.label)}</span>
           </div>`).join('')}
+        ${callChecks}
       </div>
     </div>`;
   }
