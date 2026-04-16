@@ -4,7 +4,7 @@
 export const DISC_NO_INS = [
   { key:'q2',      label:"What's your familiarity with health insurance — have you looked into it at all? And how many W2 employees do you have?" },
   { key:'q3',      label:"What's driving the decision to offer benefits right now — is it keeping your team around, attracting new hires, or something else?" },
-  { key:'q5',      label:"What's the most important thing you want in place within the next 90 days — and when would you ideally want a benefits package to start?" },
+  { key:'q5',      label:"When would you ideally want benefits in place — and is there anything else you're hoping to have sorted around the same time?" },
   { key:'q8',      label:"So if we can find you an affordable health insurance plan — and you were paying somewhere around $200 to $500 per employee — would that return on investment make sense for keeping your team?" },
   { key:'q9',      label:"Who else would be involved in making this decision with you?" },
   { key:'qp',      label:"Would you like benefits to integrate into payroll? If so, who is your current payroll provider? And who are you offering 401k through?" },
