@@ -143,13 +143,6 @@ export function renderPipeline() {
         ? `<span class="pl-cat-badge" style="background:${catStyle.bg};color:${catStyle.color}">${esc(cat)}</span>`
         : '';
       const lastAct = lastActivityAgo(l);
-      const lastActClass = (() => {
-        if (!l.activity || !l.activity.length) return '';
-        const last = l.activity[l.activity.length - 1];
-        if (!last.at) return '';
-        const diff = Math.floor((Date.now() - new Date(last.at).getTime()) / 86400000);
-        return diff >= 5 ? ' pl-stale' : '';
-      })();
       const ns = (l.pipelineNextSteps || '').replace(/"/g, '&quot;');
       const outreachDate = l.pipelineNextOutreach || '';
 
@@ -163,7 +156,7 @@ export function renderPipeline() {
         <div class="pl-card-contact">${esc(l.firstName || '')} ${esc(l.lastName || '')}${l.employees ? ' · ' + esc(l.employees) + ' empl' : ''}</div>
         <div class="pl-card-meta">
           ${l.renewalDate ? `<span class="pl-meta-item">Renewal: ${fmtD(l.renewalDate)}</span>` : ''}
-          ${lastAct ? `<span class="pl-meta-item${lastActClass}">Last: ${lastAct}</span>` : '<span class="pl-meta-item pl-stale">No activity</span>'}
+          ${lastAct ? `<span class="pl-meta-item">Last: ${lastAct}</span>` : '<span class="pl-meta-item">No activity</span>'}
         </div>
         <div class="pl-card-row" onclick="event.stopPropagation()">
           <div class="pl-card-outreach">
