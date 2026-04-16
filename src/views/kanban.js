@@ -17,7 +17,6 @@ export function renderKanban() {
     const stLeads = state.leads.filter(l => l.stageId === st.id);
     const cardsHtml = stLeads.length
       ? stLeads.map(l => {
-          const fu = fuSt(l);
           return `<div class="pipeline-card"
             draggable="true"
             id="kcard_${l.id}"
@@ -27,7 +26,6 @@ export function renderKanban() {
             <div class="pc-name">${esc(l.firstName)} ${esc(l.lastName)}</div>
             <div class="pc-sub">${esc(l.company||l.phone)}</div>
             ${l.insuranceStatus ? `<span class="pc-ins ${l.insuranceStatus === 'has_insurance' ? 'pc-ins-has' : l.insuranceStatus === 'no_insurance' ? 'pc-ins-new' : 'pc-ins-unk'}">${l.insuranceStatus === 'has_insurance' ? '🛡️ Has Insurance' : l.insuranceStatus === 'no_insurance' ? '🆕 No Insurance' : '❓ Unknown'}</span>` : ''}
-            ${fu ? `<div class="pc-due ${fu.cls}">${fu.label}</div>` : ''}
           </div>`;
         }).join('')
       : `<div class="col-empty">Drop here</div>`;
