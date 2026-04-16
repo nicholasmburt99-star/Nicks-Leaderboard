@@ -98,11 +98,14 @@ function updateNetworkBadge() {
 
 switchTab('kanban');
 
-// Overdue networking toast on app open
+// Overdue toasts on app open
 setTimeout(() => {
   updateNetworkBadge();
   const oc = getOverdueCount();
   if (oc > 0) showToast(`🤝 ${oc} networking partner${oc > 1 ? 's' : ''} overdue for check-in`);
+  const t = today();
+  const lostDue = state.leads.filter(l => l.stageId === 'lost' && l.reContactDate && l.reContactDate <= t).length;
+  if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
 }, 500);
 
 // ── Firestore real-time sync ────────────────────────────────────────────────
