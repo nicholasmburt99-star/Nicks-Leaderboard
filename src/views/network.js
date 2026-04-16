@@ -12,6 +12,7 @@ const CATEGORIES = {
   carrier: { label: 'Carrier', bg: '#e0e7ff', color: '#3730a3' },
   tpa: { label: 'TPA', bg: '#f5f3ff', color: '#6d28d9' },
   payroll: { label: 'Payroll', bg: '#fef2f2', color: '#991b1b' },
+  retirement_401k: { label: '401(k)', bg: '#ecfdf5', color: '#047857' },
   other: { label: 'Other', bg: '#f3f4f6', color: '#374151' },
 };
 
