@@ -127,7 +127,6 @@ export function renderPipeline() {
   const sections = PL_STAGES.map(stage => {
     const groupLeads = groups[stage.id];
     const count = groupLeads.length;
-    if (count === 0 && !pFilter.risk && !pFilter.category) return '';
 
     const isCollapsed = collapsed[stage.id] || false;
     const chevron = isCollapsed ? '▸' : '▾';
