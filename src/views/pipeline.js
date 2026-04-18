@@ -7,7 +7,7 @@ import { renderDetail } from './detail.js';
 const PL_STAGES = [
   { id: 'census',      label: 'Waiting on Census',  bg: '#fef3c7', color: '#92400e', icon: '📋' },
   { id: 'proposal',    label: 'Proposal Sent',      bg: '#e0f2fe', color: '#0369a1', icon: '📄' },
-  { id: 'quoted',      label: 'Quoted',              bg: '#e0e7ff', color: '#3730a3', icon: '💰' },
+  { id: 'quoted',      label: 'Quoted, Waiting on Plan Confirmation', bg: '#e0e7ff', color: '#3730a3', icon: '💰' },
   { id: 'negotiating', label: 'Negotiating',         bg: '#fce7f3', color: '#9d174d', icon: '🤝' },
   { id: 'enrollment',  label: 'Enrollment',          bg: '#d1fae5', color: '#065f46', icon: '✅' },
   { id: 'onboarding',  label: 'Onboarding',          bg: '#f0fdf4', color: '#14532d', icon: '🚀' },
