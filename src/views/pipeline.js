@@ -172,11 +172,13 @@ export function renderPipeline() {
             class="pl-steps-input">
         </div>
         <div class="pl-card-row" onclick="event.stopPropagation()">
-          <select onchange="setPipelineStage('${l.id}',this.value)" class="pl-stage-select" style="background:${stage.bg};color:${stage.color}">
+          <select onchange="setPipelineStage('${l.id}',this.value)" class="pl-stage-select" style="background:${stage.bg};color:${stage.color};flex:1;min-width:0">
             ${stageOptionHtml(l.pipelineStage || 'census')}
           </select>
-          <select onchange="setPipelineCategory('${l.id}',this.value)" class="pl-cat-select">
-            ${CATEGORIES.map(c => `<option value="${c}" ${c === cat ? 'selected' : ''}>${c || '—'}</option>`).join('')}
+        </div>
+        <div class="pl-card-row" onclick="event.stopPropagation()">
+          <select onchange="setPipelineCategory('${l.id}',this.value)" class="pl-cat-select" style="flex:1;min-width:0">
+            ${CATEGORIES.map(c => `<option value="${c}" ${c === cat ? 'selected' : ''}>${c || '— Category —'}</option>`).join('')}
           </select>
         </div>
       </div>`;
