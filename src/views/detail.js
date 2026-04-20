@@ -35,11 +35,13 @@ export function renderDetail() {
   });
 
   // Info row
-  const locationStr = [lead.city, lead.state].filter(Boolean).join(', ');
+  const locationStr = lead.address || [lead.city, lead.state].filter(Boolean).join(', ');
+  const sosLabels = { active: '✅ SOS Active', suspended: '⚠️ SOS Suspended', forfeited: '⛔ SOS Forfeited', dissolved: '⛔ SOS Dissolved', not_found: '❓ SOS Not Found', not_checked: '🔍 SOS Not Checked' };
   const info = [
     lead.phone?`📞 ${esc(lead.phone)}`:'',
     lead.email?`✉️ ${esc(lead.email)}`:'',
     locationStr?`📍 ${esc(locationStr)}`:'',
+    lead.sosStatus?sosLabels[lead.sosStatus]||'':'',
     lead.company?`🏢 ${esc(lead.company)}`:'',
     lead.website?`🌐 <a href="${esc(lead.website)}" target="_blank" style="color:#2563eb;text-decoration:none">${esc(lead.website.replace(/^https?:\/\//,''))}</a>`:'',
     lead.industry?`${esc(lead.industry)}`:'',

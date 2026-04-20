@@ -9,7 +9,7 @@ import { renderList } from '../views/list.js';
 import { renderDetail } from '../views/detail.js';
 import { personalize } from './gmailApi.js';
 
-export function clearF(){['fF','fL','fP','fE','fCity','fSt','fWeb','fCo','fInd','fEmp','fLD','fN','fSrc','fDM','fRef','fInsStatus','fCarrier','fPlan','fRenew'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
+export function clearF(){['fF','fL','fP','fE','fAddr','fSOS','fWeb','fCo','fInd','fEmp','fLD','fN','fSrc','fDM','fRef','fInsStatus','fCarrier','fPlan','fRenew'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
 export function openAdd(){
   state.editId=null;
   document.getElementById('mtitle').textContent='➕ Add New Lead';
@@ -17,7 +17,6 @@ export function openAdd(){
   document.getElementById('mSave').onclick=saveLead;
   clearF();
   document.getElementById('fLD').value=today();
-  document.getElementById('fSt').value='CA';
   document.getElementById('modal').style.display='flex';
 }
 export function openEdit(leadId){
@@ -30,8 +29,8 @@ export function openEdit(leadId){
   document.getElementById('fL').value=l.lastName||'';
   document.getElementById('fP').value=l.phone||'';
   document.getElementById('fE').value=l.email||'';
-  document.getElementById('fCity').value=l.city||'';
-  document.getElementById('fSt').value=l.state||'';
+  document.getElementById('fAddr').value=l.address||'';
+  document.getElementById('fSOS').value=l.sosStatus||'';
   document.getElementById('fWeb').value=l.website||'';
   document.getElementById('fCo').value=l.company||'';
   document.getElementById('fInd').value=l.industry||'';
@@ -57,8 +56,8 @@ export function saveLead(){
     const l=state.leads.find(x=>x.id===state.editId);if(!l)return;
     l.firstName=fn;l.lastName=ln;l.phone=ph;
     l.email=document.getElementById('fE').value.trim();
-    l.city=document.getElementById('fCity').value.trim();
-    l.state=document.getElementById('fSt').value.trim().toUpperCase();
+    l.address=document.getElementById('fAddr').value.trim();
+    l.sosStatus=document.getElementById('fSOS').value;
     l.website=document.getElementById('fWeb').value.trim();
     l.company=document.getElementById('fCo').value.trim();
     l.industry=document.getElementById('fInd').value.trim();
@@ -78,8 +77,8 @@ export function saveLead(){
     const l={
       id:uid(),firstName:fn,lastName:ln,phone:ph,
       email:document.getElementById('fE').value.trim(),
-      city:document.getElementById('fCity').value.trim(),
-      state:document.getElementById('fSt').value.trim().toUpperCase(),
+      address:document.getElementById('fAddr').value.trim(),
+      sosStatus:document.getElementById('fSOS').value,
       website:document.getElementById('fWeb').value.trim(),
       company:document.getElementById('fCo').value.trim(),
       industry:document.getElementById('fInd').value.trim(),
@@ -160,7 +159,7 @@ export function researchLead(leadId) {
   const company = l.company || '';
   const website = l.website || '';
   const industry = l.industry || '';
-  const city = [l.city, l.state].filter(Boolean).join(', ');
+  const city = l.address || [l.city, l.state].filter(Boolean).join(', ');
   const employees = l.employees ? `~${l.employees} employees` : '';
 
   const contextParts = [

@@ -144,9 +144,17 @@
       <div class="fg"><label>Email</label><input id="fE" placeholder="john@email.com" type="email"></div>
     </div>
     <div class="fg"><label>Company / Business Name</label><input id="fCo" placeholder="Acme Dental"></div>
-    <div class="frow">
-      <div class="fg"><label>City</label><input id="fCity" placeholder="Modesto"></div>
-      <div class="fg"><label>State</label><input id="fSt" placeholder="CA" maxlength="2"></div>
+    <div class="fg"><label>Address</label><input id="fAddr" placeholder="123 Main St, Modesto, CA 95350"></div>
+    <div class="fg"><label>Secretary of State Status</label>
+      <select id="fSOS" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b">
+        <option value="">— Select —</option>
+        <option value="active">Active / In Good Standing</option>
+        <option value="suspended">Suspended</option>
+        <option value="forfeited">Forfeited</option>
+        <option value="dissolved">Dissolved</option>
+        <option value="not_found">Not Found</option>
+        <option value="not_checked">Not Checked Yet</option>
+      </select>
     </div>
     <div class="fg"><label>Business Website</label><input id="fWeb" placeholder="https://acmedental.com" type="url"></div>
     <div class="fg"><label>Industry</label><input id="fInd" placeholder="Dental, Restaurant, Construction…"></div>
