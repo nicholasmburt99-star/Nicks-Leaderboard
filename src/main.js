@@ -106,6 +106,9 @@ setTimeout(() => {
   const t = today();
   const lostDue = state.leads.filter(l => l.stageId === 'lost' && l.reContactDate && l.reContactDate <= t).length;
   if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
+  const excludeStages = ['live','quoted','won','lost','unqualified'];
+  const kanbanOverdue = state.leads.filter(l => !excludeStages.includes(l.stageId) && l.nextFU && l.nextFU <= t).length;
+  if (kanbanOverdue > 0) showToast(`🗂 ${kanbanOverdue} kanban lead${kanbanOverdue > 1 ? 's' : ''} past due`);
 }, 500);
 
 // ── Firestore real-time sync ────────────────────────────────────────────────
