@@ -56,11 +56,11 @@ export function renderDetail() {
   // Tasks HTML
   let tasksHtml = '';
   {
-    const isPipeline = ['live','quoted','lost'].includes(lead.stageId);
+    const hideCallChecks = ['live','quoted','lost','new'].includes(lead.stageId);
     const todayStr = today();
     const dc = ((lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false]).slice(0, 2);
     const dcDone = dc.filter(Boolean).length;
-    const callChecks = isPipeline ? '' : dc.map((checked, ci) =>
+    const callChecks = hideCallChecks ? '' : dc.map((checked, ci) =>
       `<div class="task-item ${checked?'done-task':''}" onclick="toggleLeadCall('${lead.id}',${ci})">
         <span class="task-icon">📞</span>
         <div class="task-check">${checked?'✓':''}</div>
@@ -68,7 +68,7 @@ export function renderDetail() {
       </div>`
     ).join('');
     const allStageTasksDone = st.tasks.length ? checks.every(Boolean) : true;
-    const allCallsDone = isPipeline || dcDone === 2;
+    const allCallsDone = hideCallChecks || dcDone === 2;
     const allDone = allStageTasksDone && allCallsDone && st.tasks.length > 0;
     tasksHtml = `<div class="card">
       <div class="sec-title">✅ Today's Tasks${allDone?' — All Done! 🎉':''}</div>
