@@ -195,11 +195,22 @@ export function renderPipeline() {
     </div>`;
   }).join('');
 
+  const tStr = today();
+  const overdueLeads = state.leads.filter(l => ['live','quoted','lost'].includes(l.stageId) && l.pipelineNextOutreach && l.pipelineNextOutreach < tStr);
+  const dueTodayLeads = state.leads.filter(l => ['live','quoted','lost'].includes(l.stageId) && l.pipelineNextOutreach === tStr);
+  const overdueBanner = (overdueLeads.length || dueTodayLeads.length) ? `
+    <div class="pl-overdue-banner">
+      ${overdueLeads.length ? `<span class="pl-overdue-pill pl-overdue-red">⚠ ${overdueLeads.length} overdue</span>` : ''}
+      ${dueTodayLeads.length ? `<span class="pl-overdue-pill pl-overdue-amber">📅 ${dueTodayLeads.length} due today</span>` : ''}
+      <span class="pl-overdue-text">Pipeline outreach needs attention</span>
+    </div>` : '';
+
   container.innerHTML = `
     <div class="pl-header">
       <div class="pl-title">📋 Pipeline</div>
       <div class="pl-count">${leads.length}${leads.length !== totalAll ? ' of ' + totalAll : ''} lead${totalAll !== 1 ? 's' : ''}</div>
     </div>
+    ${overdueBanner}
     <div class="pl-filters">
       <div class="pl-filter-row">
         <span class="pl-filter-label">Risk</span>

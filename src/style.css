@@ -550,6 +550,27 @@ body {
   font-size: 11px; font-weight: 800; color: #64748b; background: #e2e8f0;
   padding: 1px 8px; border-radius: 10px; min-width: 20px; text-align: center;
 }
+.pl-overdue-banner {
+  margin: 10px 16px 0;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pl-overdue-pill {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.pl-overdue-red { background: #fee2e2; color: #991b1b; }
+.pl-overdue-amber { background: #fef3c7; color: #92400e; }
+.pl-overdue-text { font-size: 12px; color: #7f1d1d; font-weight: 600; }
 .pl-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 10px 0 0; }
 .pl-empty-section { padding: 16px; text-align: center; font-size: 12px; color: #94a3b8; }
 .pl-card {
