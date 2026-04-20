@@ -106,9 +106,6 @@ setTimeout(() => {
   const t = today();
   const lostDue = state.leads.filter(l => l.stageId === 'lost' && l.reContactDate && l.reContactDate <= t).length;
   if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
-  const pipelineStages = ['live','quoted','lost'];
-  const pipelineOverdue = state.leads.filter(l => pipelineStages.includes(l.stageId) && l.pipelineNextOutreach && l.pipelineNextOutreach <= t).length;
-  if (pipelineOverdue > 0) showToast(`📊 ${pipelineOverdue} pipeline lead${pipelineOverdue > 1 ? 's' : ''} overdue for outreach`);
 }, 500);
 
 // ── Firestore real-time sync ────────────────────────────────────────────────
