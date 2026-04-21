@@ -143,7 +143,7 @@ export function renderPipeline() {
         : '';
       const lastAct = lastActivityAgo(l);
       const ns = (l.pipelineNextSteps || '').replace(/"/g, '&quot;');
-      const outreachDate = l.pipelineNextOutreach || '';
+      const outreachDate = l.nextFU || l.pipelineNextOutreach || '';
 
       return `<div class="pl-card${isSelected ? ' pl-card-selected' : ''}" onclick="selectPipelineLead('${l.id}')">
         <div class="pl-card-header">
@@ -196,8 +196,8 @@ export function renderPipeline() {
   }).join('');
 
   const tStr = today();
-  const overdueLeads = state.leads.filter(l => ['live','quoted','lost'].includes(l.stageId) && l.pipelineNextOutreach && l.pipelineNextOutreach < tStr);
-  const dueTodayLeads = state.leads.filter(l => ['live','quoted','lost'].includes(l.stageId) && l.pipelineNextOutreach === tStr);
+  const overdueLeads = state.leads.filter(l => { if (!['live','quoted','lost'].includes(l.stageId)) return false; const d = l.nextFU || l.pipelineNextOutreach; return d && d < tStr; });
+  const dueTodayLeads = state.leads.filter(l => { if (!['live','quoted','lost'].includes(l.stageId)) return false; const d = l.nextFU || l.pipelineNextOutreach; return d === tStr; });
   const overdueBanner = (overdueLeads.length || dueTodayLeads.length) ? `
     <div class="pl-overdue-banner">
       ${overdueLeads.length ? `<span class="pl-overdue-pill pl-overdue-red">⚠ ${overdueLeads.length} overdue</span>` : ''}
@@ -272,7 +272,8 @@ export function setPipelineCategory(id, val) {
 export function setPipelineNextOutreach(id, val) {
   const l = state.leads.find(l => l.id === id);
   if (!l) return;
-  l.pipelineNextOutreach = val;
+  l.nextFU = val;
+  l.pipelineNextOutreach = val; // keep in sync for legacy code paths
   save();
   renderPipeline();
 }
