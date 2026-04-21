@@ -3,7 +3,7 @@ import { gS } from '../data/stages.js';
 import { today } from '../utils/date.js';
 import { log, showToast, esc } from '../utils/dom.js';
 import { getPlainText } from '../editor/richText.js';
-import { personalize, needsReview, sendGmailMessage, getClientId, saveClientId } from '../actions/gmailApi.js';
+import { personalize, needsReview, sendGmailMessage, createGmailDraft, getClientId, saveClientId } from '../actions/gmailApi.js';
 
 // Each item: { lead, scriptIndex, sc, subject, body, needsReview }
 let _items = [];
@@ -90,30 +90,15 @@ function renderOutreachModal() {
   const noEmail     = _items.filter(i => !i.lead.email);
   const sendable    = _items.filter(i => i.lead.email);
 
-  const reviewCards = reviewItems.map((item, idx) => {
-    const ri = _items.indexOf(item);
+  const draftRows = reviewItems.map(item => {
     const hasNoEmail = !item.lead.email;
-    // Highlight remaining [brackets] in red
-    const highlightedBody = item.body.replace(/\[[^\]]+\]/g, m =>
-      `<mark style="background:#fef3c7;color:#92400e;border-radius:3px;padding:0 2px">${m}</mark>`);
-    return `
-      <div style="border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;background:white">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <span style="font-size:13px;font-weight:700;color:#1e293b">${esc(item.lead.firstName)} ${esc(item.lead.lastName)}</span>
-            <span style="font-size:11px;color:#64748b;margin-left:6px">${esc(item.lead.company||'')} · ${esc(item.sc.title||item.sc.tab)}</span>
-          </div>
-          ${hasNoEmail ? '<span style="font-size:10px;font-weight:700;color:#dc2626;background:#fef2f2;padding:2px 7px;border-radius:4px">No email — will skip</span>' : ''}
-        </div>
-        <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px">SUBJECT</div>
-        <input type="text" id="om_subj_${ri}" value="${item.subject.replace(/"/g,'&quot;')}"
-          style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:8px"
-          oninput="_omUpdate(${ri},'subject',this.value)">
-        <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px">BODY <span style="font-weight:400;color:#f59e0b">— fill in highlighted brackets</span></div>
-        <textarea id="om_body_${ri}" rows="6"
-          style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:12px;resize:vertical;font-family:inherit"
-          oninput="_omUpdate(${ri},'body',this.value)">${item.body}</textarea>
-      </div>`;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px">
+      <div>
+        <span style="font-weight:700;color:#1e293b">${esc(item.lead.firstName)} ${esc(item.lead.lastName)}</span>
+        <span style="color:#64748b;margin-left:6px">${esc(item.lead.company||'')} · ${esc(item.sc.title||item.sc.tab)}</span>
+      </div>
+      ${hasNoEmail ? '<span style="font-size:10px;font-weight:700;color:#dc2626">skip — no email</span>' : '<span style="color:#f59e0b;font-size:11px;font-weight:700">📝 will draft</span>'}
+    </div>`;
   }).join('');
 
   const readyRows = readyItems.map(item => {
@@ -128,7 +113,11 @@ function renderOutreachModal() {
   }).join('');
 
   const total = _items.length;
-  const sendCount = sendable.length;
+  const sendableReady = sendable.filter(i => !i.review).length;
+  const sendableDraft = sendable.filter(i => i.review).length;
+  const btnLabel = sendableDraft
+    ? `Send ${sendableReady} · Draft ${sendableDraft} →`
+    : `Send ${sendableReady} Email${sendableReady!==1?'s':''} →`;
 
   modal.innerHTML = `
     <div class="modal-box" style="max-width:620px;max-height:85vh;display:flex;flex-direction:column">
@@ -139,14 +128,15 @@ function renderOutreachModal() {
       <div style="font-size:12px;color:#64748b;margin-bottom:16px;flex-shrink:0">${total} lead${total!==1?'s':''} due today${noEmail.length?' · '+noEmail.length+' will be skipped (no email address)':''}</div>
 
       <div style="overflow-y:auto;flex:1;padding-right:4px">
-        ${reviewItems.length ? `
-          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#f59e0b;margin-bottom:8px">✏️ Needs Your Input (${reviewItems.length})</div>
-          ${reviewCards}
+        ${readyItems.length ? `
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#10b981;margin-bottom:8px">✅ Ready to Send (${readyItems.length})</div>
+          <div style="border:1px solid #e2e8f0;border-radius:10px;padding:4px 14px;background:white;margin-bottom:16px">${readyRows}</div>
         ` : ''}
 
-        ${readyItems.length ? `
-          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#10b981;margin-top:${reviewItems.length?'16px':'0'};margin-bottom:8px">✅ Ready to Send (${readyItems.length})</div>
-          <div style="border:1px solid #e2e8f0;border-radius:10px;padding:4px 14px;background:white">${readyRows}</div>
+        ${reviewItems.length ? `
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#f59e0b;margin-bottom:8px">📝 Will Become Gmail Drafts (${reviewItems.length})</div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:6px">These emails still have [brackets] — they'll be saved as drafts in your Gmail. Finish them from your inbox.</div>
+          <div style="border:1px solid #e2e8f0;border-radius:10px;padding:4px 14px;background:white">${draftRows}</div>
         ` : ''}
       </div>
 
@@ -154,7 +144,7 @@ function renderOutreachModal() {
         <button onclick="closeOutreachModal()" style="padding:9px 18px;border:1px solid #e2e8f0;border-radius:8px;background:white;cursor:pointer;font-size:13px;font-weight:600">Cancel</button>
         <button onclick="sendAllOutreach()" id="om-send-btn"
           style="padding:9px 20px;border:none;border-radius:8px;background:#2563eb;color:white;font-weight:700;cursor:pointer;font-size:13px">
-          Send ${sendCount} Email${sendCount!==1?'s':''} →
+          ${btnLabel}
         </button>
       </div>
     </div>`;
@@ -186,35 +176,51 @@ window._omUpdate = function(idx, field, val) {
 
 export async function sendAllOutreach() {
   const btn = document.getElementById('om-send-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  const origLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Working…'; }
 
-  const toSend = _items.filter(i => i.lead.email);
-  let sent = 0, failed = 0;
+  const toProcess = _items.filter(i => i.lead.email);
+  console.log('[outreach] Processing', toProcess.length, 'emails');
+  showToast(`📧 Starting outreach for ${toProcess.length}…`);
 
-  for (const item of toSend) {
+  let sent = 0, drafted = 0, failed = 0;
+
+  for (const item of toProcess) {
+    const action = item.review ? 'draft' : 'send';
     try {
-      await sendGmailMessage(item.lead.email, item.subject, item.body);
-      log(item.lead, `Email sent: ${item.sc.title || item.sc.tab}`, '#2563eb');
-      sent++;
+      if (item.review) {
+        await createGmailDraft(item.lead.email, item.subject, item.body);
+        log(item.lead, `Gmail draft created — finish in Gmail: ${item.sc.title || item.sc.tab}`, '#f59e0b');
+        console.log('[outreach] drafted', item.lead.email);
+        drafted++;
+      } else {
+        await sendGmailMessage(item.lead.email, item.subject, item.body);
+        log(item.lead, `Email sent via Gmail: ${item.sc.title || item.sc.tab}`, '#2563eb');
+        console.log('[outreach] sent', item.lead.email);
+        sent++;
+      }
     } catch (err) {
+      console.error('[outreach] failed', action, item.lead.email, err.message);
       if (err.message === 'NO_CLIENT_ID') {
         showToast('Gmail not connected — add your Client ID first');
-        if (btn) { btn.disabled = false; btn.textContent = `Send ${toSend.length} Emails →`; }
+        if (btn) { btn.disabled = false; btn.textContent = origLabel; }
         return;
       }
-      // popup closed / access denied
       if (err.message.includes('popup') || err.message.includes('access_denied')) {
         showToast('Gmail authorization cancelled');
-        if (btn) { btn.disabled = false; btn.textContent = `Send ${toSend.length} Emails →`; }
+        if (btn) { btn.disabled = false; btn.textContent = origLabel; }
         return;
       }
-      log(item.lead, `Email failed: ${item.sc.title || item.sc.tab} — ${err.message}`, '#dc2626');
+      log(item.lead, `Email ${action} failed: ${item.sc.title || item.sc.tab} — ${err.message}`, '#dc2626');
       failed++;
     }
   }
 
   save();
   closeOutreachModal();
-  if (failed) showToast(`📧 ${sent} sent, ${failed} failed — check activity logs`);
-  else showToast(`📧 ${sent} email${sent!==1?'s':''} sent!`);
+  const parts = [];
+  if (sent) parts.push(`📧 Sent ${sent}`);
+  if (drafted) parts.push(`📝 Drafted ${drafted}`);
+  if (failed) parts.push(`❌ Failed ${failed}`);
+  showToast(parts.join(' · ') || 'No emails to send');
 }

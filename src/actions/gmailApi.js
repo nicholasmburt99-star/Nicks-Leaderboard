@@ -49,7 +49,7 @@ export function requestAccessToken() {
   return loadGoogleScript().then(() => new Promise((resolve, reject) => {
     const client = window.google.accounts.oauth2.initTokenClient({
       client_id: clientId,
-      scope: 'https://www.googleapis.com/auth/gmail.send',
+      scope: 'https://www.googleapis.com/auth/gmail.compose',
       callback: (resp) => {
         if (resp.error) { reject(new Error(resp.error)); return; }
         _accessToken = resp.access_token;
@@ -83,6 +83,34 @@ export async function sendGmailMessage(to, subject, body) {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ raw: encoded }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── Create a Gmail Draft (for emails that need manual review) ───────────────
+
+export async function createGmailDraft(to, subject, body) {
+  const token = await requestAccessToken();
+  const message = [
+    'Content-Type: text/plain; charset="UTF-8"',
+    'MIME-Version: 1.0',
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    '',
+    body,
+  ].join('\r\n');
+
+  const encoded = btoa(unescape(encodeURIComponent(message)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: { raw: encoded } }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
