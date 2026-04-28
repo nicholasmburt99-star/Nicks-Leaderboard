@@ -5,6 +5,7 @@ import { renderDetail } from './views/detail.js';
 import { renderPipeline } from './views/pipeline.js';
 import { renderOKR } from './views/okr.js';
 import { renderNetwork } from './views/network.js';
+import { renderTasks } from './views/taskTracker.js';
 
 export function switchTab(tab) {
   state.activeTab = tab;
@@ -23,11 +24,14 @@ export function switchTab(tab) {
   if (ok) ok.style.display = tab === 'okr' ? 'flex' : 'none';
   const nw = document.getElementById('view-network');
   if (nw) nw.style.display = tab === 'network' ? 'flex' : 'none';
+  const tt = document.getElementById('view-tasks');
+  if (tt) tt.style.display = tab === 'tasks' ? 'flex' : 'none';
   if (tab === 'overview') renderOverview();
   if (tab === 'kanban') { renderKanban(); renderDetail(); }
   if (tab === 'pipeline') { renderPipeline(); renderDetail(); }
   if (tab === 'okr') renderOKR();
   if (tab === 'network') renderNetwork();
+  if (tab === 'tasks') renderTasks();
 }
 
 export function goToLead(id) {

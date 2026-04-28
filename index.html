@@ -27,6 +27,7 @@
   <button class="tab-btn" id="tab-overview" onclick="switchTab('overview')">📊 Pipeline Overview</button>
   <button class="tab-btn" id="tab-okr" onclick="switchTab('okr')">🎯 OKRs</button>
   <button class="tab-btn" id="tab-network" onclick="switchTab('network')">🤝 Networking <span id="nw-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
+  <button class="tab-btn" id="tab-tasks" onclick="switchTab('tasks')">✅ Tasks <span id="tt-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
 </div>
 
 <div class="main" id="view-leads" style="display:none">
@@ -81,6 +82,12 @@
 <div id="view-okr" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
   <div class="overview-inner" id="okrInner">
     <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading OKRs...</div>
+  </div>
+</div>
+
+<div id="view-tasks" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="tasksInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading tasks…</div>
   </div>
 </div>
 

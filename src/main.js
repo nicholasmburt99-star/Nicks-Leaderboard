@@ -32,6 +32,8 @@ import { addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateK
 import { toggleLeadCall } from './actions/dailyCalls.js';
 import { renderNetwork, setNetworkFilter, getOverdueCount } from './views/network.js';
 import { addPartner, editPartner, deletePartner, logInteraction, deleteInteraction, setPartnerStrength, setPartnerNextOutreach, setPartnerNotes, selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal } from './actions/network.js';
+import { renderTasks } from './views/taskTracker.js';
+import { addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter } from './actions/taskTracker.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -60,6 +62,7 @@ Object.assign(window, {
   addPartner, editPartner, deletePartner, logInteraction, deleteInteraction,
   setPartnerStrength, setPartnerNextOutreach, setPartnerNotes,
   selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal,
+  renderTasks, addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter,
 });
 
 document.addEventListener('keydown', e => {
@@ -84,8 +87,20 @@ setOnSave(() => {
   if (state.activeTab === 'pipeline') renderPipeline();
   if (state.activeTab === 'okr') renderOKR();
   if (state.activeTab === 'network') renderNetwork();
+  if (state.activeTab === 'tasks') renderTasks();
   updateNetworkBadge();
+  updateTasksBadge();
 });
+
+function updateTasksBadge() {
+  const t = today();
+  const count = state.tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
+  const badge = document.getElementById('tt-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+}
 
 function updateNetworkBadge() {
   const count = getOverdueCount();
@@ -101,11 +116,14 @@ switchTab('kanban');
 // Overdue toasts on app open
 setTimeout(() => {
   updateNetworkBadge();
+  updateTasksBadge();
   const oc = getOverdueCount();
   if (oc > 0) showToast(`🤝 ${oc} networking partner${oc > 1 ? 's' : ''} overdue for check-in`);
   const t = today();
   const lostDue = state.leads.filter(l => l.stageId === 'lost' && l.reContactDate && l.reContactDate <= t).length;
   if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
+  const taskDue = state.tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
+  if (taskDue > 0) showToast(`✅ ${taskDue} task${taskDue > 1 ? 's' : ''} due or overdue`);
 }, 500);
 
 // ── Firestore real-time sync ────────────────────────────────────────────────
@@ -133,6 +151,10 @@ onSnapshot(CRM_DOC, (snap) => {
   if (data.partners) {
     state.partners = JSON.parse(data.partners);
     localStorage.setItem('bpcrm2_partners', data.partners);
+  }
+  if (data.tasks) {
+    state.tasks = JSON.parse(data.tasks);
+    localStorage.setItem('bpcrm2_tasks', data.tasks);
   }
   switchTab(state.activeTab);
 }, (err) => console.warn('Firestore listener error:', err));
