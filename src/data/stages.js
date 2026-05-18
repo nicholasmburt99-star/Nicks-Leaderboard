@@ -13,7 +13,7 @@ export const STAGES = [
     id: 'day1', label: 'Day 1 – Launch', short: 'Day 1',
     color: '#2563eb', bg: '#dbeafe', text: '#1e3a8a', followDays: 2, theme: '📩 Theme 1: 1st Big Problem',
     tasks: [
-      { icon: '📬', label: 'Email/Text: Send personalized problem email or text' },
+      { icon: '💬', label: 'Text: Send personalized problem message' },
       { icon: '🤝', label: 'LinkedIn: Send blank connection request (no message)' },
       { icon: '☎️', label: 'Cold Call: Dial — NO voicemail if no answer' },
     ],
@@ -58,7 +58,7 @@ Blank requests have higher acceptance rates. Personalizing can trigger "sales al
     color: '#4f46e5', bg: '#e0e7ff', text: '#3730a3', followDays: 2, theme: '📩 Theme 1: 1st Big Problem',
     tasks: [
       { icon: '☎️', label: 'Cold Call: Leave Voicemail #1 (point to email)' },
-      { icon: '📬', label: 'Email/Text: Bubble-up — reply to Email 1 thread' },
+      { icon: '💬', label: 'Text: Bubble-up follow-up message' },
       { icon: '🤝', label: 'LinkedIn: Send context-only message (no pitch)' },
     ],
     scripts: [
@@ -119,7 +119,7 @@ Did you see my note by chance?`,
     color: '#6d28d9', bg: '#ddd6fe', text: '#4c1d95', followDays: 4, theme: '📩 Theme 1: 1st Big Problem',
     tasks: [
       { icon: '☎️', label: 'Cold Call: Leave Voicemail #2' },
-      { icon: '📬', label: 'Email/Text: "Make it Real" — share Google Business profile / case study' },
+      { icon: '💬', label: 'Text: "Make it Real" — share Google Business profile / case study' },
       { icon: '🤝', label: 'LinkedIn: Bubble-up message ("Any thoughts?")' },
     ],
     scripts: [
@@ -162,7 +162,7 @@ Open to a quick conversation?`,
     color: '#c026d3', bg: '#fae8ff', text: '#86198f', followDays: 4, theme: '📧 Theme 2: 2nd Big Problem',
     tasks: [
       { icon: '☎️', label: 'Cold Call: Dial — NO voicemail (phase out calls now)' },
-      { icon: '📬', label: 'Email/Text: New subject line — lead with 2nd biggest problem' },
+      { icon: '💬', label: 'Text: Lead with 2nd biggest problem' },
     ],
     scripts: [
       {
@@ -196,7 +196,7 @@ Open to a quick chat on why employers choose me as their benefits quarterback ov
     color: '#ea580c', bg: '#ffedd5', text: '#9a3412', followDays: 4, theme: '📧 Theme 2: 2nd Big Problem',
     tasks: [
       { icon: '☎️', label: 'Cold Call: Dial — NO voicemail' },
-      { icon: '📬', label: 'Email/Text: "Right person?" — ask if they\'re the correct contact' },
+      { icon: '💬', label: 'Text: "Right person?" — ask if they\'re the correct contact' },
     ],
     scripts: [
       {
@@ -221,7 +221,7 @@ Who would you recommend I reach out to?`,
     id: 'day19', label: 'Day 19 – Pushaway', short: 'Day 19',
     color: '#dc2626', bg: '#fee2e2', text: '#991b1b', followDays: 4, theme: '🔎 Theme 3: Get the Truth',
     tasks: [
-      { icon: '📬', label: 'Email/Text: Pushaway — thumbs up or thumbs down?' },
+      { icon: '💬', label: 'Text: Pushaway — thumbs up or thumbs down?' },
     ],
     scripts: [
       {
@@ -245,7 +245,7 @@ Mind reacting to this message with a thumbs-up or thumbs-down?`,
     id: 'day23', label: 'Day 23 – Final Pushaway', short: 'Day 23',
     color: '#b91c1c', bg: '#fecaca', text: '#7f1d1d', followDays: 30, theme: '🔎 Theme 3: Get the Truth',
     tasks: [
-      { icon: '📬', label: 'Email/Text: Final pushaway — let them know you\'ll reach back in 30 days' },
+      { icon: '💬', label: 'Text: Final pushaway — reach back in 30 days' },
     ],
     scripts: [
       {
@@ -289,7 +289,7 @@ Mind letting me know if I shouldn't reach back out?`,
     id: 'quoted', label: 'Quote Sent', short: 'Quoted',
     color: '#4f46e5', bg: '#e0e7ff', text: '#3730a3', followDays: 2, theme: null,
     tasks: [
-      { icon: '📬', label: 'Send quote / proposal via email' },
+      { icon: '📤', label: 'Send quote / proposal to lead' },
       { icon: '📅', label: 'Schedule follow-up call to walk through options together' },
     ],
     scripts: [
