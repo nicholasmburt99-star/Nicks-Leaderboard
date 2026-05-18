@@ -27,7 +27,10 @@
   <button class="tab-btn" id="tab-okr" onclick="switchTab('okr')">🎯 OKRs</button>
   <button class="tab-btn" id="tab-network" onclick="switchTab('network')">🤝 Networking <span id="nw-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
   <button class="tab-btn" id="tab-tasks" onclick="switchTab('tasks')">✅ Tasks <span id="tt-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
+  <button class="tab-btn" id="tab-daily" onclick="switchTab('daily')">🧠 Daily</button>
 </div>
+
+<div id="identityRibbon" class="identity-ribbon" onclick="switchTab('daily')"></div>
 
 <div class="main" id="view-leads" style="display:none">
   <div class="sidebar">
@@ -89,6 +92,14 @@
     <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading tasks…</div>
   </div>
 </div>
+
+<div id="view-daily" style="display:none;flex:1;overflow:auto;flex-direction:column;">
+  <div class="overview-inner" id="dailyInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading daily routine…</div>
+  </div>
+</div>
+
+<div class="overlay" id="callDebriefModal" style="display:none" onclick="if(event.target===this)skipCallDebrief()"></div>
 
 <div id="view-network" style="display:none;flex:1;overflow:hidden;">
   <div style="flex:1;overflow-y:auto;background:white" id="networkTable"></div>

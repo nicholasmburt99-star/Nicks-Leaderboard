@@ -151,12 +151,20 @@ export function renderDetail() {
     if (cvVal && cvStg) {
       // LIVE CALL MODE — show only the relevant script, full width, no clutter
       const liveContent = renderLiveCallScript(cvStg);
+      const preCallAnchor = `<div class="pre-call-anchor">
+        <div class="pca-title">🧘 Pre-Call Anchor — Remember</div>
+        <div class="pca-row"><span class="pca-num">①</span> The buyer's not rejecting you — they're protecting certainty.</div>
+        <div class="pca-row"><span class="pca-num">②</span> Your job isn't to persuade — it's to clarify.</div>
+        <div class="pca-row"><span class="pca-num">③</span> Control tone, control tempo, control trust.</div>
+        <div class="pca-reset">💡 Two-Second Reset: pause · inhale · exhale · reset tone</div>
+      </div>`;
       scriptsHtml = `<div class="card">
         <div class="sec-title" style="display:flex;justify-content:space-between;align-items:center">
           <span>📞 LIVE CALL SCRIPT</span>
           <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;background:#0369a1;color:white">${esc(cvStg.label)}</span>
         </div>
         ${selectorHtml}
+        ${preCallAnchor}
         <div style="margin-top:10px">${liveContent}</div>
       </div>`;
     } else {

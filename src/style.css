@@ -784,6 +784,54 @@ body {
   display: flex; gap: 7px; align-items: center; padding: 8px 12px;
   background: #eff6ff; border-top: 1px solid #dbeafe; flex-wrap: wrap;
 }
+/* ── IDENTITY RIBBON (under tab bar) ── */
+.identity-ribbon { padding:6px 20px;font-size:12px;color:#475569;background:linear-gradient(90deg,#ecfeff,#f0fdfa);border-bottom:1px solid #cffafe;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:28px;line-height:1.4;flex-shrink:0; }
+.identity-ribbon:hover { background:linear-gradient(90deg,#cffafe,#ccfbf1); }
+.identity-ribbon .ir-empty { color:#0891b2;font-weight:700; }
+.identity-ribbon .ir-id { font-style:italic;color:#0f766e;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.identity-ribbon .ir-theme { font-weight:700;color:#0f766e;padding-left:12px;border-left:1px solid #99f6e4;white-space:nowrap; }
+.identity-ribbon .ir-edit { font-size:10px;color:#0891b2;font-weight:700; }
+
+/* ── DAILY ROUTINE TAB ── */
+.dr-header { padding:18px 24px 8px;border-bottom:1px solid #e2e8f0; }
+.dr-title { font-size:17px;font-weight:800;color:#1e293b; }
+.dr-subtitle { font-size:12px;color:#94a3b8;margin-top:2px; }
+.dr-section { padding:14px 24px;border-bottom:1px solid #f1f5f9;background:white; }
+.dr-section-highlight { background:#fffbeb;border-left:3px solid #f59e0b; }
+.dr-section-head { display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:4px; }
+.dr-section-title { font-size:13px;font-weight:800;color:#1e293b; }
+.dr-helper { font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.4; }
+.dr-input { width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b; }
+.dr-input:focus { border-color:#2563eb; }
+.dr-textarea { width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:12px;font-family:inherit;outline:none;resize:vertical;color:#1e293b; }
+.dr-textarea:focus { border-color:#2563eb; }
+.dr-field { margin-bottom:8px; }
+.dr-field label { font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px; }
+.dr-done-btn { padding:5px 12px;border:1px solid #e2e8f0;border-radius:7px;background:white;cursor:pointer;font-size:11px;font-weight:700;color:#64748b;white-space:nowrap; }
+.dr-done-btn:hover { background:#f8fafc;border-color:#cbd5e1; }
+.dr-done-btn.dr-done { background:#d1fae5;border-color:#10b981;color:#065f46; }
+.dr-wins-list { display:flex;flex-direction:column;gap:8px; }
+.dr-win { background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #7c3aed;border-radius:8px;padding:8px 12px; }
+.dr-win-head { display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px; }
+.dr-win-time { font-size:11px;font-weight:700;color:#64748b; }
+.dr-win-lead { font-size:12px;font-weight:700;color:#2563eb;cursor:pointer;text-decoration:underline; }
+.dr-win-outcome { font-size:9px;font-weight:800;padding:1px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:0.4px; }
+.dr-win-outcome-connected { background:#d1fae5;color:#065f46; }
+.dr-win-outcome-not_interested { background:#f3f4f6;color:#6b7280; }
+.dr-win-row { font-size:11px;color:#475569;margin-top:2px;line-height:1.4; }
+.dr-empty { font-size:12px;color:#94a3b8;text-align:center;padding:20px;font-style:italic; }
+
+/* ── PRE-CALL ANCHOR CARD ── */
+.pre-call-anchor { background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fcd34d;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:12px;color:#78350f; }
+.pca-title { font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#92400e;margin-bottom:6px; }
+.pca-row { display:flex;gap:6px;line-height:1.5;margin-bottom:2px; }
+.pca-num { font-weight:800;color:#92400e;flex-shrink:0; }
+.pca-reset { margin-top:6px;padding-top:6px;border-top:1px solid #fcd34d;font-size:11px;font-style:italic;color:#92400e; }
+
+/* ── POST-CALL DEBRIEF MODAL ── */
+.cdb-textarea { width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:7px;padding:7px 10px;font-size:12px;font-family:inherit;outline:none;resize:vertical;color:#1e293b; }
+.cdb-textarea:focus { border-color:#2563eb; }
+
 /* ── TASKS TAB ── */
 .tt-header { display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px;border-bottom:1px solid #e2e8f0;gap:12px; }
 .tt-title-h { font-size:15px;font-weight:800;color:#1e293b; }

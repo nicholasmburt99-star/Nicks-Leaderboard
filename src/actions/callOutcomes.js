@@ -7,6 +7,7 @@ import { renderDetail } from '../views/detail.js';
 import { renderQueue } from '../views/queue.js';
 import { renderList } from '../views/list.js';
 import { showLostReasonPicker } from './lostReasonPicker.js';
+import { openCallDebrief } from '../views/callDebriefModal.js';
 
 export function daysInStage(lead) {
   if (!lead.activity || !lead.activity.length) {
@@ -47,7 +48,11 @@ export function logCallOutcome(leadId, outcome) {
       lead.stageId = 'live';
       const nw = gS('live');
       if (nw.followDays > 0) lead.nextFU = addDays(nw.followDays);
-      break;
+      save(); renderList(); renderDetail();
+      if (state.activeTab === 'queue') renderQueue();
+      // Open Post-Call Debrief modal to capture reflection
+      openCallDebrief(leadId, 'connected');
+      return;
     case 'not_interested':
       showLostReasonPicker(leadId, (category, note) => {
         lead.lostCategory = category;
@@ -57,6 +62,7 @@ export function logCallOutcome(leadId, outcome) {
         lead.reContactDate = addDays(90);
         save(); renderList(); renderDetail();
         if (state.activeTab === 'queue') renderQueue();
+        openCallDebrief(leadId, 'not_interested');
       });
       return;
   }

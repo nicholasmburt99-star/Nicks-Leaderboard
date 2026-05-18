@@ -34,6 +34,9 @@ import { renderNetwork, setNetworkFilter, getOverdueCount } from './views/networ
 import { addPartner, editPartner, deletePartner, logInteraction, deleteInteraction, setPartnerStrength, setPartnerNextOutreach, setPartnerNotes, selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal } from './actions/network.js';
 import { renderTasks } from './views/taskTracker.js';
 import { addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter } from './actions/taskTracker.js';
+import { renderDaily } from './views/dailyRoutine.js';
+import { setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday, savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, getWeekKey } from './actions/dailyRoutine.js';
+import { openCallDebrief, saveCallDebrief, skipCallDebrief } from './views/callDebriefModal.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -63,6 +66,9 @@ Object.assign(window, {
   setPartnerStrength, setPartnerNextOutreach, setPartnerNotes,
   selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal,
   renderTasks, addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter,
+  renderDaily, setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday,
+  savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone,
+  openCallDebrief, saveCallDebrief, skipCallDebrief,
 });
 
 document.addEventListener('keydown', e => {
@@ -88,9 +94,25 @@ setOnSave(() => {
   if (state.activeTab === 'okr') renderOKR();
   if (state.activeTab === 'network') renderNetwork();
   if (state.activeTab === 'tasks') renderTasks();
+  if (state.activeTab === 'daily') renderDaily();
   updateNetworkBadge();
   updateTasksBadge();
+  updateIdentityRibbon();
 });
+
+function updateIdentityRibbon() {
+  const ribbon = document.getElementById('identityRibbon');
+  if (!ribbon) return;
+  const r = state.routine || {};
+  const themeIsCurrent = r.weeklyTheme && r.weeklyThemeWeekKey === getWeekKey();
+  if (!r.identity && !themeIsCurrent) {
+    ribbon.innerHTML = `<span class="ir-empty">✍️ Set your identity statement & weekly theme</span><span class="ir-edit">→</span>`;
+  } else {
+    const idHtml = r.identity ? `<span class="ir-id">"${esc(r.identity)}"</span>` : `<span class="ir-empty">✍️ Set identity</span>`;
+    const themeHtml = themeIsCurrent ? `<span class="ir-theme">🎯 ${esc(r.weeklyTheme)}</span>` : '';
+    ribbon.innerHTML = `${idHtml}${themeHtml}<span class="ir-edit">✎</span>`;
+  }
+}
 
 function updateTasksBadge() {
   const t = today();
@@ -117,6 +139,7 @@ switchTab('kanban');
 setTimeout(() => {
   updateNetworkBadge();
   updateTasksBadge();
+  updateIdentityRibbon();
   const oc = getOverdueCount();
   if (oc > 0) showToast(`🤝 ${oc} networking partner${oc > 1 ? 's' : ''} overdue for check-in`);
   const t = today();
@@ -124,6 +147,14 @@ setTimeout(() => {
   if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
   const taskDue = state.tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
   if (taskDue > 0) showToast(`✅ ${taskDue} task${taskDue > 1 ? 's' : ''} due or overdue`);
+  // Weekly momentum cues
+  const dow = new Date().getDay();
+  const themeIsCurrent = state.routine.weeklyTheme && state.routine.weeklyThemeWeekKey === getWeekKey();
+  if (dow === 1 && !themeIsCurrent) showToast(`☀️ Monday — what's this week's theme?`);
+  if (dow === 5) {
+    const reviewDone = state.routineLog[t]?.fridayReview?.done;
+    if (!reviewDone) showToast(`🪞 Friday — time for your weekly identity review`);
+  }
 }, 500);
 
 // ── Firestore real-time sync ────────────────────────────────────────────────
@@ -156,5 +187,14 @@ onSnapshot(CRM_DOC, (snap) => {
     state.tasks = JSON.parse(data.tasks);
     localStorage.setItem('bpcrm2_tasks', data.tasks);
   }
+  if (data.routine) {
+    state.routine = JSON.parse(data.routine);
+    localStorage.setItem('bpcrm2_routine', data.routine);
+  }
+  if (data.routineLog) {
+    state.routineLog = JSON.parse(data.routineLog);
+    localStorage.setItem('bpcrm2_routineLog', data.routineLog);
+  }
   switchTab(state.activeTab);
+  updateIdentityRibbon();
 }, (err) => console.warn('Firestore listener error:', err));
