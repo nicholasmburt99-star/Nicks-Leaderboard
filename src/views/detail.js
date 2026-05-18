@@ -87,8 +87,8 @@ export function renderDetail() {
   // Scripts HTML
   let scriptsHtml = '';
   if(st.scripts.length){
-    // In default (non-live-call) mode, only show Email, Text, and Voicemail scripts
-    const isVisible = sc => !sc.isCallScript && (sc.tab.includes('📬') || sc.tab.includes('💬') || sc.tab.includes('📱'));
+    // Show only Text and Voicemail scripts (emails removed from product); call scripts shown via Live Call mode
+    const isVisible = sc => !sc.isCallScript && !sc.tab.includes('📬') && (sc.tab.includes('💬') || sc.tab.includes('📱'));
     const scriptCards = st.scripts.map((sc,si)=>{
       if(sc.isCallScript) return ''; // shown only via live call dropdown
       if(!isVisible(sc)) return ''; // hide LinkedIn, call scripts etc.
@@ -128,7 +128,6 @@ export function renderDetail() {
           </div>
           <div style="display:flex;gap:5px;flex-shrink:0">
             <button class="btn bg copy-btn" onclick="event.stopPropagation();copyScript(${si},'${lead.id}')" style="font-size:10px;padding:3px 8px">📋 Copy</button>
-            ${sc.subject !== undefined ? `<button class="btn bg" onclick="event.stopPropagation();sendEmail(${si},'${lead.id}')" style="font-size:10px;padding:3px 8px;background:#eff6ff;color:#2563eb">📧 Send</button>` : ''}
             <button class="btn bg" onclick="event.stopPropagation();startStageEdit('${skey}',${si},'${lead.stageId}')" style="font-size:10px;padding:3px 8px">✏️ Edit</button>
           </div>
         </div>
@@ -161,7 +160,7 @@ export function renderDetail() {
         <div style="margin-top:10px">${liveContent}</div>
       </div>`;
     } else {
-      // DEFAULT — show outreach scripts (emails, texts, LinkedIn) collapsed
+      // DEFAULT — show outreach scripts (texts, voicemails) collapsed
       scriptsHtml = `<div class="card">
         <div class="sec-title">📋 Outreach Scripts</div>
         ${selectorHtml}
@@ -249,6 +248,22 @@ export function renderDetail() {
 
     ${tasksHtml}
     ${scriptsHtml}
+
+    <div class="card">
+      <div class="sec-title" style="color:#0369a1">🏆 Credibility Anchors</div>
+      <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">Three specific wins or data points that prove your credibility. Drop one early in every conversation — not as bragging, but as anchoring.</div>
+      ${[0,1,2].map(i => {
+        const val = (lead.credibilityAnchors || [])[i] || '';
+        return `<div style="margin-bottom:8px">
+          <label style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Anchor ${i+1}</label>
+          <textarea id="cred_${lead.id}_${i}" rows="2"
+            style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b"
+            placeholder="e.g. 'Saved a Bay Area dental practice $14K/year on premiums'"
+            onblur="saveCredibilityAnchor('${lead.id}',${i},this.value)">${esc(val)}</textarea>
+        </div>`;
+      }).join('')}
+    </div>
+
     ${renderDiscoveryHtml(lead)}
 
     <div class="card">
@@ -300,6 +315,35 @@ export function renderDetail() {
         onblur="saveLostReason('${lead.id}',this.value)">${esc(lead.lostReason||'')}</textarea>
       <button class="btn bp" style="font-size:12px" onclick="saveLostReason('${lead.id}',document.getElementById('lost_reason_ta_${lead.id}').value);showToast('✅ Lost reason saved!')">Save</button>
     </div>
+
+    ${lead.stageId === 'lost' ? (() => {
+      const r = lead.lostReflection || { signal: '', sequence: '', self: '' };
+      return `<div class="card" style="border:1.5px solid #fde68a;background:#fffbeb">
+        <div class="sec-title" style="color:#92400e">🧠 Lost Reflection</div>
+        <div style="font-size:11px;color:#78350f;margin-bottom:12px;line-height:1.5">Three questions to learn from this loss. Be honest — the patterns repeat unless you spot them.</div>
+        <div style="margin-bottom:10px">
+          <label style="font-size:10px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Signal</label>
+          <div style="font-size:11px;color:#78350f;margin-bottom:4px;font-style:italic">What belief did the buyer hold that you didn't disarm?</div>
+          <textarea id="lref_signal_${lead.id}" rows="2"
+            style="width:100%;box-sizing:border-box;border:1px solid #fde68a;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;background:white"
+            onblur="saveLostReflection('${lead.id}','signal',this.value)">${esc(r.signal || '')}</textarea>
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="font-size:10px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Sequence</label>
+          <div style="font-size:11px;color:#78350f;margin-bottom:4px;font-style:italic">Where in your cadence did trust weaken?</div>
+          <textarea id="lref_sequence_${lead.id}" rows="2"
+            style="width:100%;box-sizing:border-box;border:1px solid #fde68a;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;background:white"
+            onblur="saveLostReflection('${lead.id}','sequence',this.value)">${esc(r.sequence || '')}</textarea>
+        </div>
+        <div>
+          <label style="font-size:10px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Self</label>
+          <div style="font-size:11px;color:#78350f;margin-bottom:4px;font-style:italic">What emotion drove your reaction — ego, fear, or frustration?</div>
+          <textarea id="lref_self_${lead.id}" rows="2"
+            style="width:100%;box-sizing:border-box;border:1px solid #fde68a;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;background:white"
+            onblur="saveLostReflection('${lead.id}','self',this.value)">${esc(r.self || '')}</textarea>
+        </div>
+      </div>`;
+    })() : ''}
 
     <div class="card">
       <div class="sec-title">🕐 Activity Log</div>

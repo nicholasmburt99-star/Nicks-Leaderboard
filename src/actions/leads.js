@@ -245,6 +245,20 @@ export function saveLostReason(leadId, text) {
   l.lostReason = text;
   save();
 }
+export function saveCredibilityAnchor(leadId, idx, val) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  if (!Array.isArray(l.credibilityAnchors)) l.credibilityAnchors = ['', '', ''];
+  l.credibilityAnchors[idx] = val;
+  save();
+}
+export function saveLostReflection(leadId, key, val) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  if (!l.lostReflection) l.lostReflection = { signal: '', sequence: '', self: '' };
+  l.lostReflection[key] = val;
+  save();
+}
 export function dismissResearch(leadId) {
   const panel = document.getElementById('research_panel_' + leadId);
   if (panel) panel.remove();
