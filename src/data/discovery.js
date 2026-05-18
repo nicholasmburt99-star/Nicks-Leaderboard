@@ -2,15 +2,15 @@
 //  DISCOVERY QUESTIONS
 // ═══════════════════════════════
 export const DISC_NO_INS = [
-  { key:'q2',      label:"What's your familiarity with health insurance — have you looked into it at all? And how many W2 employees do you have?" },
-  { key:'q3',      label:"What's driving the decision to offer benefits right now — is it keeping your team around, attracting new hires, or something else?" },
-  { key:'q5',      label:"Where would you like to be with business health insurance in the next 90 days — and when would you want group coverage to start?" },
-  { key:'q8',      label:"So if we can find you an affordable health insurance plan — and you were paying somewhere around $200 to $500 per employee — would that return on investment make sense for keeping your team?" },
-  { key:'q9',      label:"Who else would be involved in making this decision with you?" },
-  { key:'qp',      label:"Would you like benefits to integrate into payroll? If so, who is your current payroll provider? And who are you offering 401k through?" },
-  { key:'q_ready', label:'Once we go over the quote together — if everything looks right and the numbers make sense — are you ready to move forward with health insurance right away? (If no: "Help me understand — what\'s holding you back from moving forward?")' },
-  { key:'q11',     label:"To get you accurate quotes, I just need an employee census — basic DOBs and zip codes for each of your eligible employees. Do you have that info readily available? If not, I can send an email requesting this info." },
-  { key:'q_slot',  label:"What's a good 15-minute slot next week for us to review the quotes? I'll send a Google Calendar invite to meet." },
+  { key:'q2',      label:`What's driving the conversation around benefits right now — is something pushing this, or is it more of a 'we've been meaning to look at this' moment?` },
+  { key:'q3',      label:`If this worked exactly how you'd want it to — six months from now, what would be different for you and your team?` },
+  { key:'q5',      label:`What's happened so far when looking at group benefits has come up internally — has there been any pushback, or is the team aligned?` },
+  { key:'q8',      label:`What's the cost of NOT having benefits right now — have you lost anyone over it, or felt the pressure when hiring?` },
+  { key:'q9',      label:`Who else would need to feel good about this for it to move forward — and how do those conversations usually go internally?` },
+  { key:'qp',      label:`What does your current HR setup look like — payroll, 401k, any existing benefits — and how integrated do you need everything to be?` },
+  { key:'q_ready', label:`When we look at the quotes together — what would need to be true for this to feel like a clear yes for you?` },
+  { key:'q11',     label:`The last thing I need to get you accurate numbers is a quick employee census — just dates of birth and zip codes. I can send a simple template right now if that's easier than hunting it down. How do you want to handle that?` },
+  { key:'q_slot',  label:`Based on everything you've shared — the goal of getting coverage in place by {{Desired_Start_Date}}, and making sure {{Key_Stakeholder}} feels good about it — let's lock in 20 minutes to walk through the numbers together. What does your week look like?` },
 ];
 
 export const DISC_HAS_INS = [
