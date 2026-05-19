@@ -35,7 +35,7 @@ import { addPartner, editPartner, deletePartner, logInteraction, deleteInteracti
 import { renderTasks } from './views/taskTracker.js';
 import { addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter } from './actions/taskTracker.js';
 import { renderDaily } from './views/dailyRoutine.js';
-import { setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday, savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, getWeekKey } from './actions/dailyRoutine.js';
+import { setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday, savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, getWeekKey, saveAnchor } from './actions/dailyRoutine.js';
 import { openCallDebrief, saveCallDebrief, skipCallDebrief } from './views/callDebriefModal.js';
 
 Object.assign(window, {
@@ -67,7 +67,7 @@ Object.assign(window, {
   selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal,
   renderTasks, addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter,
   renderDaily, setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday,
-  savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone,
+  savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, saveAnchor,
   openCallDebrief, saveCallDebrief, skipCallDebrief,
 });
 

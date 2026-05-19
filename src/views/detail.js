@@ -258,18 +258,21 @@ export function renderDetail() {
     ${scriptsHtml}
 
     <div class="card">
-      <div class="sec-title" style="color:#0369a1">🏆 Credibility Anchors</div>
-      <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">Three specific wins or data points that prove your credibility. Drop one early in every conversation — not as bragging, but as anchoring.</div>
-      ${[0,1,2].map(i => {
-        const val = (lead.credibilityAnchors || [])[i] || '';
-        return `<div style="margin-bottom:8px">
-          <label style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Anchor ${i+1}</label>
-          <textarea id="cred_${lead.id}_${i}" rows="2"
-            style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b"
-            placeholder="e.g. 'Saved a Bay Area dental practice $14K/year on premiums'"
-            onblur="saveCredibilityAnchor('${lead.id}',${i},this.value)">${esc(val)}</textarea>
-        </div>`;
-      }).join('')}
+      <div class="sec-title" style="color:#0369a1">🏆 Today's Credibility Anchors</div>
+      <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">Three specific wins or data points that prove your credibility. Drop one early in every conversation — not as bragging, but as anchoring. <strong style="color:#0369a1">Resets daily</strong> — same anchors show on every lead today.</div>
+      ${(()=>{
+        const todayAnchors = (state.routineLog[today()] && state.routineLog[today()].anchors) || ['', '', ''];
+        return [0,1,2].map(i => {
+          const val = todayAnchors[i] || '';
+          return `<div style="margin-bottom:8px">
+            <label style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Anchor ${i+1}</label>
+            <textarea id="cred_${lead.id}_${i}" rows="2"
+              style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b"
+              placeholder="e.g. 'Saved a Bay Area dental practice $14K/year on premiums'"
+              onblur="saveCredibilityAnchor('${lead.id}',${i},this.value)">${esc(val)}</textarea>
+          </div>`;
+        }).join('');
+      })()}
     </div>
 
     ${renderDiscoveryHtml(lead)}

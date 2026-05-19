@@ -19,9 +19,17 @@ function getTodayLog() {
       midday: { done: false, at: '' },
       postDay: { done: false, controlled: '', controlledMe: '' },
       fridayReview: { done: false, identityCheck: '', reinforced: '', letSlide: '' },
+      anchors: ['', '', ''],
     };
   }
+  if (!Array.isArray(state.routineLog[t].anchors)) state.routineLog[t].anchors = ['', '', ''];
   return state.routineLog[t];
+}
+
+export function saveAnchor(idx, val) {
+  const day = getTodayLog();
+  day.anchors[idx] = val;
+  saveRoutineLog();
 }
 
 export function setIdentity(val) {
