@@ -1,5 +1,6 @@
 import { STAGES } from '../data/stages.js';
-import { state, save, saveRoutineLog } from '../store.js';
+import { state, save, saveRoutine } from '../store.js';
+import { getWeekKey } from './dailyRoutine.js';
 import { gS } from '../data/stages.js';
 import { today, addDays } from '../utils/date.js';
 import { uid, esc, log, showToast } from '../utils/dom.js';
@@ -246,21 +247,16 @@ export function saveLostReason(leadId, text) {
   save();
 }
 export function saveCredibilityAnchor(leadId, idx, val) {
-  // Global, resets daily. Stored on state.routineLog[today()].anchors so it
-  // appears the same across every lead and auto-resets each new day.
-  const t = today();
-  if (!state.routineLog[t]) {
-    state.routineLog[t] = {
-      preDay: { done: false, focusSkill: '', strengthTrait: '', emotionalImpact: '' },
-      midday: { done: false, at: '' },
-      postDay: { done: false, controlled: '', controlledMe: '' },
-      fridayReview: { done: false, identityCheck: '', reinforced: '', letSlide: '' },
-      anchors: ['', '', ''],
-    };
+  // Global, resets weekly. Stored on state.routine.anchors + anchorsWeekKey
+  // so it appears the same across every lead and refreshes each Monday.
+  if (!state.routine) state.routine = { identity: '', weeklyTheme: '', weeklyThemeWeekKey: '' };
+  const wk = getWeekKey();
+  if (!Array.isArray(state.routine.anchors) || state.routine.anchorsWeekKey !== wk) {
+    state.routine.anchors = ['', '', ''];
+    state.routine.anchorsWeekKey = wk;
   }
-  if (!Array.isArray(state.routineLog[t].anchors)) state.routineLog[t].anchors = ['', '', ''];
-  state.routineLog[t].anchors[idx] = val;
-  saveRoutineLog();
+  state.routine.anchors[idx] = val;
+  saveRoutine();
 }
 export function saveLostReflection(leadId, key, val) {
   const l = state.leads.find(x => x.id === leadId);

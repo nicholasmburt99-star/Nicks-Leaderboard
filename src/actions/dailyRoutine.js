@@ -1,4 +1,5 @@
 import { state, saveRoutine, saveRoutineLog } from '../store.js';
+// Note: state.routine.anchors (weekly) used for credibility anchors
 import { today } from '../utils/date.js';
 import { renderDaily } from '../views/dailyRoutine.js';
 
@@ -27,9 +28,23 @@ function getTodayLog() {
 }
 
 export function saveAnchor(idx, val) {
-  const day = getTodayLog();
-  day.anchors[idx] = val;
-  saveRoutineLog();
+  // Weekly: resets every Monday. Stored on state.routine.
+  if (!state.routine) state.routine = { identity: '', weeklyTheme: '', weeklyThemeWeekKey: '' };
+  const wk = getWeekKey();
+  if (!Array.isArray(state.routine.anchors) || state.routine.anchorsWeekKey !== wk) {
+    state.routine.anchors = ['', '', ''];
+    state.routine.anchorsWeekKey = wk;
+  }
+  state.routine.anchors[idx] = val;
+  saveRoutine();
+}
+
+export function getWeekAnchors() {
+  const wk = getWeekKey();
+  if (state.routine?.anchorsWeekKey === wk && Array.isArray(state.routine.anchors)) {
+    return state.routine.anchors;
+  }
+  return ['', '', ''];
 }
 
 export function setIdentity(val) {

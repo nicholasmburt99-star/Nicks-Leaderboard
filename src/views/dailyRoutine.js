@@ -1,7 +1,7 @@
 import { state } from '../store.js';
 import { esc } from '../utils/dom.js';
 import { today, fmtD, fmtDT } from '../utils/date.js';
-import { getWeekKey } from '../actions/dailyRoutine.js';
+import { getWeekKey, getWeekAnchors } from '../actions/dailyRoutine.js';
 
 function getTodayLog() {
   return state.routineLog[today()] || {
@@ -81,15 +81,15 @@ export function renderDaily() {
     </div>
 
     <div class="dr-section">
-      <div class="dr-section-title">🏆 Today's Credibility Anchors</div>
-      <div class="dr-helper">Three specific wins or data points to drop early in calls today. Resets every morning.</div>
+      <div class="dr-section-title">🏆 This Week's Credibility Anchors</div>
+      <div class="dr-helper">Three specific wins or data points to drop early in calls this week. Resets every Monday.</div>
       ${(()=>{
-        const todayAnchors = day.anchors || ['', '', ''];
+        const weekAnchors = getWeekAnchors();
         return [0,1,2].map(i => `<div class="dr-field">
           <label>Anchor ${i+1}</label>
           <textarea class="dr-textarea" rows="2"
             placeholder="${i === 0 ? "e.g. 'Saved a Bay Area dental practice $14K/year on premiums'" : ''}"
-            onblur="saveAnchor(${i},this.value)">${esc(todayAnchors[i] || '')}</textarea>
+            onblur="saveAnchor(${i},this.value)">${esc(weekAnchors[i] || '')}</textarea>
         </div>`).join('');
       })()}
     </div>

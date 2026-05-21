@@ -2,6 +2,7 @@ import { STAGES, gS, gSI } from '../data/stages.js';
 import { state, getScriptBody, isEdited } from '../store.js';
 import { today, fmtD, fmtDT, fuSt, addDays } from '../utils/date.js';
 import { toggleLeadCall } from '../actions/dailyCalls.js';
+import { getWeekAnchors } from '../actions/dailyRoutine.js';
 import { esc, escPre, log } from '../utils/dom.js';
 import { CONV_STAGES } from '../data/discovery.js';
 import { renderCallScript, renderLiveCallScript } from '../engines/callScript.js';
@@ -258,12 +259,12 @@ export function renderDetail() {
     ${scriptsHtml}
 
     <div class="card">
-      <div class="sec-title" style="color:#0369a1">🏆 Today's Credibility Anchors</div>
-      <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">Three specific wins or data points that prove your credibility. Drop one early in every conversation — not as bragging, but as anchoring. <strong style="color:#0369a1">Resets daily</strong> — same anchors show on every lead today.</div>
+      <div class="sec-title" style="color:#0369a1">🏆 This Week's Credibility Anchors</div>
+      <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">Three specific wins or data points that prove your credibility. Drop one early in every conversation — not as bragging, but as anchoring. <strong style="color:#0369a1">Resets every Monday</strong> — same anchors show on every lead this week.</div>
       ${(()=>{
-        const todayAnchors = (state.routineLog[today()] && state.routineLog[today()].anchors) || ['', '', ''];
+        const weekAnchors = getWeekAnchors();
         return [0,1,2].map(i => {
-          const val = todayAnchors[i] || '';
+          const val = weekAnchors[i] || '';
           return `<div style="margin-bottom:8px">
             <label style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px">Anchor ${i+1}</label>
             <textarea id="cred_${lead.id}_${i}" rows="2"
