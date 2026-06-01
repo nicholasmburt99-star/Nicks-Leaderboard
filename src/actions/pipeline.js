@@ -8,6 +8,7 @@ import { renderDetail } from '../views/detail.js';
 import { renderOverview } from '../views/overview.js';
 import { renderQueue } from '../views/queue.js';
 import { showLostReasonPicker } from './lostReasonPicker.js';
+import { openLostReflection } from '../views/lostReflectionModal.js';
 
 export function markLost(leadId) {
   if (!leadId) leadId = state.selId;
@@ -42,9 +43,11 @@ export function moveS(leadId,dir){
   if(ni===i)return;
   const old=gS(l.stageId);l.stageId=STAGES[ni].id;const nw=gS(l.stageId);
   if(nw.followDays>0)l.nextFU=addDays(nw.followDays);
+  if(nw.id==='lost')l.reContactDate=addDays(90);
   log(l,`Stage: ${old.label} → ${nw.label}`,nw.color);
   save();renderList();renderDetail();
   if(state.activeTab==='queue')renderQueue();
+  if(nw.id==='lost'&&old.id!=='lost')openLostReflection(l.id);
 }
 export function jumpS(stageId){
   if(!state.selId)return;
@@ -55,6 +58,7 @@ export function jumpS(stageId){
   log(l,`Stage: ${old.label} → ${nw.label}`,nw.color);
   save();renderList();renderDetail();
   if(state.activeTab==='queue')renderQueue();
+  if(stageId==='lost'&&old.id!=='lost')openLostReflection(l.id);
 }
 export function setFU(leadId,date){
   const l=state.leads.find(x=>x.id===leadId);if(!l)return;

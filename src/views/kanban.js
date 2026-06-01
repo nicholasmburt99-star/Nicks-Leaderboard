@@ -5,6 +5,7 @@ import { today, fuSt, addDays } from '../utils/date.js';
 import { esc, log } from '../utils/dom.js';
 import { renderList } from './list.js';
 import { renderDetail } from './detail.js';
+import { openLostReflection } from './lostReflectionModal.js';
 
 let _kanbanScrollTimer = null;
 let dragLeadId = null;
@@ -115,10 +116,13 @@ export function kanbanDrop(e, stageId) {
   l.stageId = stageId;
   const nw = gS(stageId);
   if (nw.followDays > 0) l.nextFU = addDays(nw.followDays);
+  if (stageId === 'lost') l.reContactDate = addDays(90);
   log(l, `Stage: ${old.label} → ${nw.label} (moved via board)`, nw.color);
   save();
   renderList();
   if (state.selId === dragLeadId) renderDetail();
+  const movedId = dragLeadId;
   dragLeadId = null;
   renderKanban();
+  if (stageId === 'lost' && old.id !== 'lost') openLostReflection(movedId);
 }

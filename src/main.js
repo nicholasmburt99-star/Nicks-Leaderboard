@@ -21,7 +21,7 @@ import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscovery
 import { fmtRich, buildRichToolbar, getPlainText, toRichHtml, getRichVal, renderScriptBody } from './editor/richText.js';
 import { startStageEdit, saveStageEdit, cancelStageEdit, resetStageEdit, startCallEdit, saveCallEdit, cancelCallEdit, resetCallEdit, startObjEdit, saveObjEdit, cancelObjEdit, resetObjEdit, escForVal } from './editor/scriptEditor.js';
 import { selLead, onSearch, setF, moveS, jumpS, setFU, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse, markLost, changeLostCategory } from './actions/pipeline.js';
-import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, deleteNote, startNoteEdit, saveNoteEdit, researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, saveCredibilityAnchor, saveLostReflection, sendEmail } from './actions/leads.js';
+import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, deleteNote, startNoteEdit, saveNoteEdit, researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, saveCredibilityAnchor, saveLostReflection, saveCallReflection, sendEmail } from './actions/leads.js';
 import { daysInStage, logCallOutcome, requestCallback } from './actions/callOutcomes.js';
 import { exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
 import { switchTab, goToLead } from './tabs.js';
@@ -37,6 +37,7 @@ import { addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cance
 import { renderDaily } from './views/dailyRoutine.js';
 import { setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday, savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, getWeekKey, saveAnchor } from './actions/dailyRoutine.js';
 import { openCallDebrief, saveCallDebrief, skipCallDebrief } from './views/callDebriefModal.js';
+import { openLostReflection, saveLostReflectionModal, skipLostReflection } from './views/lostReflectionModal.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -44,7 +45,7 @@ Object.assign(window, {
   selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
   setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection,
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote, deleteNote, startNoteEdit, saveNoteEdit,
-  researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, saveCredibilityAnchor, saveLostReflection,
+  researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, saveCredibilityAnchor, saveLostReflection, saveCallReflection,
   logCallOutcome, requestCallback,
   exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile,
   setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, setConvStage,
@@ -69,6 +70,7 @@ Object.assign(window, {
   renderDaily, setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday,
   savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, saveAnchor,
   openCallDebrief, saveCallDebrief, skipCallDebrief,
+  openLostReflection, saveLostReflectionModal, skipLostReflection,
 });
 
 document.addEventListener('keydown', e => {

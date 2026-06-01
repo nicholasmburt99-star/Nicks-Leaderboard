@@ -265,6 +265,17 @@ export function saveLostReflection(leadId, key, val) {
   l.lostReflection[key] = val;
   save();
 }
+export function saveCallReflection(leadId, key, val) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  // Reflection is per-stage: a fresh block starts whenever the tile has moved
+  // to a new day/section since the last reflection was saved.
+  if (!l.callReflection || l.callReflection.stageId !== l.stageId) {
+    l.callReflection = { emotion: '', mirror: '', microWin: '', stageId: l.stageId };
+  }
+  l.callReflection[key] = val;
+  save();
+}
 export function dismissResearch(leadId) {
   const panel = document.getElementById('research_panel_' + leadId);
   if (panel) panel.remove();

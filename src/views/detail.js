@@ -200,6 +200,29 @@ export function renderDetail() {
       }).join('')
     : '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px">No notes yet.</div>';
 
+  // Call Reflection — a single inline block scoped to the lead's current stage.
+  // It only shows the saved answers while the tile is still in the stage they
+  // were written for; moving the tile to a new day/section resets it (the stored
+  // stageId no longer matches), giving a fresh prompt for the new position.
+  const crStored = (lead.callReflection && lead.callReflection.stageId === lead.stageId)
+    ? lead.callReflection
+    : { emotion: '', mirror: '', microWin: '' };
+  const crTA = (key, q, val) => `
+        <div style="margin-bottom:8px">
+          <div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:3px">${q}</div>
+          <textarea id="cref_${key}_${lead.id}" rows="2"
+            style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;background:white"
+            onblur="saveCallReflection('${lead.id}','${key}',this.value)">${esc(val || '')}</textarea>
+        </div>`;
+  const callReflectionHtml = `
+      <div style="border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;padding:12px;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:800;color:#1e293b;margin-bottom:2px">🪞 Call Reflection</div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:10px">For this stage — ${esc(gS(lead.stageId).label)}. Resets when you move the tile to a new day or section.</div>
+        ${crTA('emotion', 'What emotion did I feel most?', crStored.emotion)}
+        ${crTA('mirror', 'What did I mirror?', crStored.mirror)}
+        ${crTA('microWin', 'What micro-win can I anchor for next time?', crStored.microWin)}
+      </div>`;
+
   // Activity
   const actHtml = (lead.activity||[]).length
     ? (lead.activity||[]).slice().reverse().map(a=>`<div class="act-item"><div class="act-dot" style="background:${a.col||'#2563eb'}"></div><div><div class="act-txt">${esc(a.txt)}</div><div class="act-time">${fmtDT(a.at)}</div></div></div>`).join('')
@@ -280,6 +303,7 @@ export function renderDetail() {
 
     <div class="card">
       <div class="sec-title">📝 Notes</div>
+      ${callReflectionHtml}
       <div class="notes-list">${notesHtml}</div>
       <div class="note-add">
         <textarea class="note-input" id="ni_${lead.id}" placeholder="Add a note…"></textarea>

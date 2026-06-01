@@ -12,7 +12,8 @@ export function openCallDebrief(leadId, outcome, afterSave) {
   const modal = document.getElementById('callDebriefModal');
   if (!modal) return;
   const name = [lead.firstName, lead.lastName].filter(Boolean).join(' ') || lead.company || 'this lead';
-  const outcomeLabel = outcome === 'connected' ? '🤝 Connected' : outcome === 'not_interested' ? '🚫 Not Interested' : outcome;
+  const OUTCOME_LABELS = { connected: '🤝 Connected', not_interested: '🚫 Not Interested', no_answer: '📵 No Answer', vm_left: '📨 Voicemail Left' };
+  const outcomeLabel = OUTCOME_LABELS[outcome] || outcome;
   modal.innerHTML = `
     <div class="modal-box" style="max-width:520px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
