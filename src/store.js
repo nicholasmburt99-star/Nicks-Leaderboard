@@ -9,6 +9,8 @@ export const state = {
   tasks: JSON.parse(localStorage.getItem('bpcrm2_tasks') || '[]'),
   routine: JSON.parse(localStorage.getItem('bpcrm2_routine') || '{"identity":"","weeklyTheme":"","weeklyThemeWeekKey":""}'),
   routineLog: JSON.parse(localStorage.getItem('bpcrm2_routineLog') || '{}'),
+  callLog: JSON.parse(localStorage.getItem('bpcrm2_callLog') || '{}'),
+  apptLog: JSON.parse(localStorage.getItem('bpcrm2_apptLog') || '{}'),
   selId: null,
   editId: null,
   networkSelId: null,
@@ -31,6 +33,8 @@ function _writeToFirestore() {
       tasks: JSON.stringify(state.tasks),
       routine: JSON.stringify(state.routine),
       routineLog: JSON.stringify(state.routineLog),
+      callLog: JSON.stringify(state.callLog),
+      apptLog: JSON.stringify(state.apptLog),
     }).catch(e => console.warn('Firestore save error:', e));
   }, 1500);
 }
@@ -72,6 +76,14 @@ export function saveRoutineLog() {
   localStorage.setItem('bpcrm2_routineLog', JSON.stringify(state.routineLog));
   _writeToFirestore();
   if (_onSave) _onSave();
+}
+export function saveCallLog() {
+  localStorage.setItem('bpcrm2_callLog', JSON.stringify(state.callLog));
+  _writeToFirestore();
+}
+export function saveApptLog() {
+  localStorage.setItem('bpcrm2_apptLog', JSON.stringify(state.apptLog));
+  _writeToFirestore();
 }
 export function getScriptBody(key, defaultText) { return state.scriptOverrides[key] !== undefined ? state.scriptOverrides[key] : defaultText; }
 export function isEdited(key) { return state.scriptOverrides[key] !== undefined; }

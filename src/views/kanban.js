@@ -6,9 +6,44 @@ import { esc, log } from '../utils/dom.js';
 import { renderList } from './list.js';
 import { renderDetail } from './detail.js';
 import { openLostReflection } from './lostReflectionModal.js';
+import { getTodayCalls, getWeekAppts, CALLS_GOAL, APPTS_GOAL } from '../actions/tickers.js';
 
 let _kanbanScrollTimer = null;
 let dragLeadId = null;
+
+function tickerColor(pct) {
+  if (pct >= 100) return '#10b981';
+  if (pct >= 50) return '#f59e0b';
+  return '#ef4444';
+}
+
+function renderTickerRow() {
+  const calls = getTodayCalls();
+  const appts = getWeekAppts();
+  const callsPct = Math.round((calls / CALLS_GOAL) * 100);
+  const apptsPct = Math.round((appts / APPTS_GOAL) * 100);
+  const callsCol = tickerColor(callsPct);
+  const apptsCol = tickerColor(apptsPct);
+  return `
+    <div class="ticker-row">
+      <div class="ticker-card" onclick="incCalls()" title="Click to log a call">
+        <div class="ticker-top">
+          <span class="ticker-label">📞 Calls Today</span>
+          <button class="ticker-mini-btn" onclick="event.stopPropagation();decCalls()" title="Undo one">&minus;</button>
+        </div>
+        <div class="ticker-val" style="color:${callsCol}">${calls}<span class="ticker-goal">/${CALLS_GOAL}</span></div>
+        <div class="ticker-bar"><div class="ticker-fill" style="width:${Math.min(100, callsPct)}%;background:${callsCol}"></div></div>
+      </div>
+      <div class="ticker-card" onclick="incAppts()" title="Click to log an appointment set">
+        <div class="ticker-top">
+          <span class="ticker-label">📅 Appts This Week</span>
+          <button class="ticker-mini-btn" onclick="event.stopPropagation();decAppts()" title="Undo one">&minus;</button>
+        </div>
+        <div class="ticker-val" style="color:${apptsCol}">${appts}<span class="ticker-goal">/${APPTS_GOAL}</span></div>
+        <div class="ticker-bar"><div class="ticker-fill" style="width:${Math.min(100, apptsPct)}%;background:${apptsCol}"></div></div>
+      </div>
+    </div>`;
+}
 
 export function renderKanban() {
   const container = document.getElementById('kanbanInner');
@@ -66,6 +101,7 @@ export function renderKanban() {
           title="Scroll right">▶</button>
       </div>
     </div>
+    ${renderTickerRow()}
     <div id="kanbanBoard" style="flex:1;overflow-x:auto;overflow-y:auto;padding-bottom:8px">
       <div class="pipeline-board">${cols}</div>
     </div>

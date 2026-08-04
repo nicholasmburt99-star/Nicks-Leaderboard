@@ -38,6 +38,7 @@ import { renderDaily } from './views/dailyRoutine.js';
 import { setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMidday, savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, getWeekKey, saveAnchor } from './actions/dailyRoutine.js';
 import { openCallDebrief, saveCallDebrief, skipCallDebrief } from './views/callDebriefModal.js';
 import { openLostReflection, saveLostReflectionModal, skipLostReflection } from './views/lostReflectionModal.js';
+import { incCalls, decCalls, incAppts, decAppts } from './actions/tickers.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -71,6 +72,7 @@ Object.assign(window, {
   savePostDayField, togglePostDayDone, saveFridayReviewField, toggleFridayReviewDone, saveAnchor,
   openCallDebrief, saveCallDebrief, skipCallDebrief,
   openLostReflection, saveLostReflectionModal, skipLostReflection,
+  incCalls, decCalls, incAppts, decAppts,
 });
 
 document.addEventListener('keydown', e => {
@@ -196,6 +198,14 @@ onSnapshot(CRM_DOC, (snap) => {
   if (data.routineLog) {
     state.routineLog = JSON.parse(data.routineLog);
     localStorage.setItem('bpcrm2_routineLog', data.routineLog);
+  }
+  if (data.callLog) {
+    state.callLog = JSON.parse(data.callLog);
+    localStorage.setItem('bpcrm2_callLog', data.callLog);
+  }
+  if (data.apptLog) {
+    state.apptLog = JSON.parse(data.apptLog);
+    localStorage.setItem('bpcrm2_apptLog', data.apptLog);
   }
   switchTab(state.activeTab);
   updateIdentityRibbon();
