@@ -53,7 +53,7 @@ function lastActivityAgo(l) {
   return `${diff}d ago`;
 }
 
-function dueBadge(d) {
+export function dueBadge(d) {
   if (!d) return '';
   const t = new Date(); t.setHours(0,0,0,0);
   const due = new Date(d + 'T00:00:00');

@@ -11,6 +11,38 @@ import { renderScriptBody, buildRichToolbar } from '../editor/richText.js';
 import { getChecks } from '../actions/tasks.js';
 import { daysInStage } from '../actions/callOutcomes.js';
 import { LOST_CATEGORIES } from '../data/lostCategories.js';
+import { dueBadge } from './pipeline.js';
+
+function renderPipelineTaskBar(lead) {
+  const tasks = Array.isArray(lead.pipelineTasks) ? lead.pipelineTasks : [];
+  const sorted = [...tasks].sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (a.dueDate || '9999-99-99').localeCompare(b.dueDate || '9999-99-99');
+  });
+  const rows = sorted.length ? sorted.map(t => `
+    <div class="pt-row ${t.done ? 'pt-row-done' : ''}">
+      <div class="pt-top">
+        <div class="pt-check" onclick="togglePipelineTask('${lead.id}','${t.id}')">${t.done ? '✓' : ''}</div>
+        <div class="pt-text">${esc(t.text)}</div>
+      </div>
+      <div class="pt-meta">
+        <input type="date" class="pt-date" value="${t.dueDate || ''}" onchange="setPipelineTaskDue('${lead.id}','${t.id}',this.value)">
+        ${dueBadge(t.dueDate)}
+        <button class="pt-del" onclick="deletePipelineTask('${lead.id}','${t.id}')" title="Remove">&times;</button>
+      </div>
+    </div>`).join('') : '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px">No tasks yet — add what\'s needed to keep this moving.</div>';
+
+  return `<div class="card">
+    <div class="sec-title">🧾 Tasks To Move Forward</div>
+    <div class="pt-list">${rows}</div>
+    <div class="pt-add">
+      <input type="text" id="pt_new_text_${lead.id}" class="pt-add-text" placeholder="New task…"
+        onkeydown="if(event.key==='Enter'){addPipelineTask('${lead.id}',this.value,document.getElementById('pt_new_date_${lead.id}').value);this.value='';document.getElementById('pt_new_date_${lead.id}').value='';}">
+      <input type="date" id="pt_new_date_${lead.id}" class="pt-add-date">
+      <button class="btn bp" onclick="addPipelineTask('${lead.id}',document.getElementById('pt_new_text_${lead.id}').value,document.getElementById('pt_new_date_${lead.id}').value);document.getElementById('pt_new_text_${lead.id}').value='';document.getElementById('pt_new_date_${lead.id}').value=''">Add</button>
+    </div>
+  </div>`;
+}
 
 export function renderDetail() {
   const panelId = state.activeTab === 'pipeline' ? 'pipeline-detail' : state.activeTab === 'kanban' ? 'kanban-detail' : 'detail';
@@ -19,6 +51,7 @@ export function renderDetail() {
   if(!state.selId){panel.innerHTML=`<div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>Click a row to view details</p></div>`;return;}
   const lead = state.leads.find(l=>l.id===state.selId);
   if(!lead){state.selId=null;renderDetail();return;}
+  const isPipeline = panelId === 'pipeline-detail';
   const st = gS(lead.stageId), idx = gSI(lead.stageId), fu = fuSt(lead);
   const checks = getChecks(lead, lead.stageId);
 
@@ -56,7 +89,7 @@ export function renderDetail() {
 
   // Tasks HTML
   let tasksHtml = '';
-  {
+  if (!isPipeline) {
     const hideCallChecks = ['live','quoted','lost','new'].includes(lead.stageId);
     const todayStr = today();
     const dc = ((lead.dailyCalls && lead.dailyCalls[todayStr]) || [false, false]).slice(0, 2);
@@ -87,7 +120,7 @@ export function renderDetail() {
 
   // Scripts HTML
   let scriptsHtml = '';
-  if(st.scripts.length){
+  if(!isPipeline && st.scripts.length){
     // Show only Text and Voicemail scripts (emails removed from product); call scripts shown via Live Call mode
     const isVisible = sc => !sc.isCallScript && !sc.tab.includes('📬') && (sc.tab.includes('💬') || sc.tab.includes('📱'));
     const scriptCards = st.scripts.map((sc,si)=>{
@@ -214,7 +247,7 @@ export function renderDetail() {
             style="width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:12px;resize:vertical;font-family:inherit;color:#1e293b;background:white"
             onblur="saveCallReflection('${lead.id}','${key}',this.value)">${esc(val || '')}</textarea>
         </div>`;
-  const callReflectionHtml = `
+  const callReflectionHtml = isPipeline ? '' : `
       <div style="border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;padding:12px;margin-bottom:12px">
         <div style="font-size:12px;font-weight:800;color:#1e293b;margin-bottom:2px">🪞 Call Reflection</div>
         <div style="font-size:10px;color:#94a3b8;margin-bottom:10px">For this stage — ${esc(gS(lead.stageId).label)}. Resets when you move the tile to a new day or section.</div>
@@ -255,6 +288,7 @@ export function renderDetail() {
       <button class="btn bg" style="font-size:10px;padding:3px 8px" onclick="setFU('${lead.id}','${addDays(7)}')">+1wk</button>
     </div>
 
+    ${!isPipeline ? `
     <div class="call-outcomes">
       <button class="call-outcome-btn" onclick="logCallOutcome('${lead.id}','connected')">🤝 Connected</button>
       <button class="call-outcome-btn" onclick="requestCallback('${lead.id}')">📅 Callback Requested</button>
@@ -300,6 +334,7 @@ export function renderDetail() {
     </div>
 
     ${renderDiscoveryHtml(lead)}
+    ` : ''}
 
     <div class="card">
       <div class="sec-title">📝 Notes</div>
@@ -311,6 +346,9 @@ export function renderDetail() {
       </div>
     </div>
 
+    ${isPipeline ? renderPipelineTaskBar(lead) : ''}
+
+    ${!isPipeline ? `
     <div class="card">
       <div class="sec-title" style="color:#0369a1">🔍 AI Research</div>
       ${(()=>{
@@ -337,6 +375,7 @@ export function renderDetail() {
           </div>`;
       })()}
     </div>
+    ` : ''}
 
     <div class="card" style="${lead.stageId==='lost'?'border:1.5px solid #fecaca;':''}">
       <div class="sec-title" style="color:${lead.stageId==='lost'?'#dc2626':'#64748b'}">❌ Lost Reason</div>

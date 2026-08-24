@@ -39,6 +39,7 @@ import { setIdentity, setWeeklyTheme, savePreDayField, togglePreDayDone, markMid
 import { openCallDebrief, saveCallDebrief, skipCallDebrief } from './views/callDebriefModal.js';
 import { openLostReflection, saveLostReflectionModal, skipLostReflection } from './views/lostReflectionModal.js';
 import { incCalls, decCalls, incAppts, decAppts } from './actions/tickers.js';
+import { addPipelineTask, togglePipelineTask, deletePipelineTask, setPipelineTaskDue, getDuePipelineTaskCount } from './actions/pipelineTasks.js';
 
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
@@ -73,6 +74,7 @@ Object.assign(window, {
   openCallDebrief, saveCallDebrief, skipCallDebrief,
   openLostReflection, saveLostReflectionModal, skipLostReflection,
   incCalls, decCalls, incAppts, decAppts,
+  addPipelineTask, togglePipelineTask, deletePipelineTask, setPipelineTaskDue,
 });
 
 document.addEventListener('keydown', e => {
@@ -151,6 +153,8 @@ setTimeout(() => {
   if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
   const taskDue = state.tasks.filter(x => !x.done && x.dueDate && x.dueDate <= t).length;
   if (taskDue > 0) showToast(`✅ ${taskDue} task${taskDue > 1 ? 's' : ''} due or overdue`);
+  const ptDue = getDuePipelineTaskCount();
+  if (ptDue > 0) showToast(`🧾 ${ptDue} pipeline task${ptDue > 1 ? 's' : ''} due or overdue`);
   // Weekly momentum cues
   const dow = new Date().getDay();
   const themeIsCurrent = state.routine.weeklyTheme && state.routine.weeklyThemeWeekKey === getWeekKey();
