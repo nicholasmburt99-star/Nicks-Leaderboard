@@ -659,6 +659,10 @@ body {
   font-size: 11px; border: 1px solid #e2e8f0; border-radius: 5px;
   padding: 2px 4px; background: white; color: #1e293b; cursor: pointer;
 }
+.pl-status-select {
+  font-size: 11px; border: 1px solid #e2e8f0; border-radius: 5px;
+  padding: 2px 4px; background: white; color: #1e293b; cursor: pointer;
+}
 .pl-cat-badge {
   font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 10px;
   text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0;
