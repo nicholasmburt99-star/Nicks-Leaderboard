@@ -23,7 +23,6 @@ const RISK_CYCLE = [null, 'green', 'yellow', 'red'];
 const RISK_COLORS = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444' };
 const RISK_LABELS = { green: 'Low', yellow: 'Medium', red: 'High' };
 const CATEGORIES = ['', 'Pipeline', 'Best Case', 'Commit'];
-const NEXT_STEP_STATUSES = ['', 'Holding Pattern'];
 const CAT_COLORS = {
   'Pipeline':  { bg: '#eff6ff', color: '#2563eb' },
   'Best Case': { bg: '#fefce8', color: '#ca8a04' },
@@ -174,11 +173,6 @@ export function renderPipeline() {
             class="pl-steps-input">
         </div>
         <div class="pl-card-row" onclick="event.stopPropagation()">
-          <select onchange="setPipelineNextStepStatus('${l.id}',this.value)" class="pl-status-select" style="flex:1;min-width:0">
-            ${NEXT_STEP_STATUSES.map(s => `<option value="${s}" ${s === (l.pipelineNextStepStatus || '') ? 'selected' : ''}>${s || '— Status —'}</option>`).join('')}
-          </select>
-        </div>
-        <div class="pl-card-row" onclick="event.stopPropagation()">
           <select onchange="setPipelineStage('${l.id}',this.value)" class="pl-stage-select" style="background:${stage.bg};color:${stage.color};flex:1;min-width:0">
             ${stageOptionHtml(l.pipelineStage || 'census')}
           </select>
@@ -289,12 +283,5 @@ export function setPipelineNextSteps(id, val) {
   const l = state.leads.find(l => l.id === id);
   if (!l) return;
   l.pipelineNextSteps = val;
-  save();
-}
-
-export function setPipelineNextStepStatus(id, val) {
-  const l = state.leads.find(l => l.id === id);
-  if (!l) return;
-  l.pipelineNextStepStatus = val;
   save();
 }

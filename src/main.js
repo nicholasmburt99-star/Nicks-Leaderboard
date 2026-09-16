@@ -14,7 +14,7 @@ import { renderDetail } from './views/detail.js';
 import { renderOverview } from './views/overview.js';
 import { renderKanban } from './views/kanban.js';
 import { renderLost } from './views/lost.js';
-import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineNextStepStatus, setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection } from './views/pipeline.js';
+import { renderPipeline, selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection } from './views/pipeline.js';
 import { openOutreachModal, closeOutreachModal, sendAllOutreach, saveGmailClientId } from './views/outreachModal.js';
 import { renderCallScript, renderLiveCallScript, setConvStage } from './engines/callScript.js';
 import { setDiscoveryType, saveDiscoveryAnswer, updateScoreHint, renderDiscoveryHtml } from './engines/discovery.js';
@@ -44,7 +44,7 @@ import { addPipelineTask, togglePipelineTask, deletePipelineTask, setPipelineTas
 Object.assign(window, {
   selLead, onSearch, setF, moveS, jumpS, setFU, goToLead, switchTab, markLost, changeLostCategory,
   renderList, renderDetail, renderOverview, renderKanban, renderLost, renderPipeline,
-  selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps, setPipelineNextStepStatus,
+  selectPipelineLead, cyclePipelineRisk, setPipelineCategory, setPipelineNextSteps,
   setPipelineStage, setPipelineNextOutreach, setPipelineFilter, togglePipelineSection,
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote, deleteNote, startNoteEdit, saveNoteEdit,
   researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, saveCredibilityAnchor, saveLostReflection, saveCallReflection,
