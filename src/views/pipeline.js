@@ -16,6 +16,9 @@ const PL_STAGES = [
 ];
 const PL_STAGE_MAP = Object.fromEntries(PL_STAGES.map(s => [s.id, s]));
 
+// Stages still assignable via the dropdown, but not shown as a section on the board
+const HIDDEN_BOARD_STAGES = ['onboarding'];
+
 // Leads enter Pipeline when their outreach stageId is one of these
 const PIPELINE_STAGEIDS = ['live', 'quoted', 'lost'];
 
@@ -124,8 +127,8 @@ export function renderPipeline() {
     arr.sort((a, b) => (a.company || '').localeCompare(b.company || ''));
   });
 
-  // Build sections
-  const sections = PL_STAGES.map(stage => {
+  // Build sections (skip stages hidden from the board view)
+  const sections = PL_STAGES.filter(stage => !HIDDEN_BOARD_STAGES.includes(stage.id)).map(stage => {
     const groupLeads = groups[stage.id];
     const count = groupLeads.length;
 
